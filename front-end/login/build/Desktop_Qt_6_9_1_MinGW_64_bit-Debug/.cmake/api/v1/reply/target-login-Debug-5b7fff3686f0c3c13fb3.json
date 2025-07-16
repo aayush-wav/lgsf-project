@@ -75,13 +75,13 @@
 			{
 				"command" : 4,
 				"file" : 1,
-				"line" : 63,
+				"line" : 65,
 				"parent" : 0
 			},
 			{
 				"command" : 5,
 				"file" : 1,
-				"line" : 46,
+				"line" : 48,
 				"parent" : 0
 			},
 			{
@@ -379,7 +379,8 @@
 				0,
 				1,
 				2,
-				8
+				9,
+				10
 			]
 		}
 	],
@@ -503,7 +504,8 @@
 				0,
 				1,
 				2,
-				8
+				9,
+				10
 			]
 		},
 		{
@@ -511,7 +513,7 @@
 			"sourceIndexes" : 
 			[
 				3,
-				6
+				7
 			]
 		},
 		{
@@ -525,22 +527,24 @@
 			"name" : "Resources",
 			"sourceIndexes" : 
 			[
-				5
+				5,
+				6
 			]
 		},
 		{
 			"name" : "",
 			"sourceIndexes" : 
 			[
-				7
+				8
 			]
 		},
 		{
 			"name" : "CMake Rules",
 			"sourceIndexes" : 
 			[
-				9,
-				10
+				11,
+				12,
+				13
 			]
 		}
 	],
@@ -581,6 +585,11 @@
 			"sourceGroupIndex" : 3
 		},
 		{
+			"backtrace" : 4,
+			"path" : "icons.qrc",
+			"sourceGroupIndex" : 3
+		},
+		{
 			"backtrace" : 0,
 			"isGenerated" : true,
 			"path" : "build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/include/ui_mainwindow.h",
@@ -601,6 +610,13 @@
 		},
 		{
 			"backtrace" : 0,
+			"compileGroupIndex" : 0,
+			"isGenerated" : true,
+			"path" : "build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/EWIEGA46WW/qrc_icons.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
 			"isGenerated" : true,
 			"path" : "build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/timestamp.rule",
 			"sourceGroupIndex" : 5
@@ -609,6 +625,12 @@
 			"backtrace" : 0,
 			"isGenerated" : true,
 			"path" : "build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/EWIEGA46WW/qrc_image.cpp.rule",
+			"sourceGroupIndex" : 5
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/EWIEGA46WW/qrc_icons.cpp.rule",
 			"sourceGroupIndex" : 5
 		}
 	],
