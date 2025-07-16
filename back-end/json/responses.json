@@ -1,0 +1,22 @@
+[
+  {
+    "intent": "greeting",
+    "patterns": ["hello", "hi", "hey", "good morning", "namaste"],
+    "response": "Hello! How can I assist you today?"
+  },
+  {
+    "intent": "farewell",
+    "patterns": ["bye", "goodbye", "see you", "later"],
+    "response": "Goodbye! Have a great day."
+  },
+  {
+    "intent": "service_info",
+    "patterns": ["documents", "charge", "how much", "where", "office"],
+    "response": "To apply for {service_name}, go to {office_name}, office number {office_number}. Required documents: {required_documents}. The charge is Rs. {charge}."
+  },
+  {
+    "intent": "unknown",
+    "patterns": [],
+    "response": "Sorry, I couldn't understand that. Can you please be more specific?"
+  }
+]
