@@ -1,0 +1,160 @@
+{
+    "services": [
+        {
+            "ServiceNo": "1",
+            "Service": "Tenant Name Transfer",
+            "Required Documents": [
+                "Application and tenant certificate",
+                "Recommendation from local authority",
+                "Death registration",
+                "Photocopy of relationship certificate",
+                "Photocopy of citizenship certificate",
+                "Receipt of crop payment",
+                "Consent if other heirs",
+                "Consent of landowner",
+                "Other necessary documents"
+            ],
+            "Charge": "Rs. 10 ticket",
+            "Time Taken": "Same day if process is complete, after process if not complete",
+            "Grievance Handling Officer / Section": "Tenant Section",
+            "Remarks": "-"
+        },
+        {
+            "ServiceNo": "2",
+            "Service": "Land Partition (if joint or separate claim by tenant/landowner)",
+            "Required Documents": [
+                "Claim application",
+                "Photocopy of landowner and tenant certificate",
+                "Land revenue receipt",
+                "Receipt of crop payment",
+                "Map",
+                "Other necessary documents"
+            ],
+            "Charge": "Rs. 10 ticket",
+            "Time Taken": "After completion of process",
+            "Grievance Handling Officer / Section": "-",
+            "Remarks": "-"
+        },
+        {
+            "ServiceNo": "3",
+            "Service": "Crop Payment Tenant Eviction",
+            "Required Documents": [
+                "Tenant must pay crop to landowner",
+                "If not deposited or paid within legal period, landowner can file complaint with supporting documents",
+                "Landowner certificate",
+                "Tax payment receipt",
+                "Citizenship certificate"
+            ],
+            "Charge": "Rs. 50 ticket (complaint and response fee also Rs. 50 each)",
+            "Time Taken": "After both parties are notified with 15 days' notice and evidence is submitted, decision will be made after process is complete",
+            "Grievance Handling Officer / Section": "Tenant Section",
+            "Remarks": "-"
+        },
+        {
+            "ServiceNo": "4",
+            "Service": "Old Applications for Tenant Establishment",
+            "Required Documents": [
+                "Only applications before 2054/3/23 will be processed",
+                "Consent document",
+                "Receipt of crop payment",
+                "Recommendation from local authority",
+                "Copy of citizenship certificate",
+                "Other necessary documents as required Documents"
+            ],
+            "Charge": "After both parties are notified with 15 days' notice and evidence is submitted, decision will be made after process is complete",
+            "Time Taken": "Rs. 50 ticket (complaint and response fee also Rs. 50 each)",
+            "Grievance Handling Officer / Section": "Tenant Section",
+            "Remarks": "-"
+        },
+        {
+            "ServiceNo": "5",
+            "Service": "Tenant Eviction",
+            "Required Documents": [
+                "If landowner prevents tenant from cultivating, tenant must apply within 35 days",
+                "Consent or tenant right certificate",
+                "Receipt of crop payment",
+                "Recommendation from local authority if possible",
+                "Copy of citizenship certificate"
+            ],
+            "Charge": "As per law",
+            "Time Taken": "Same day if process is complete, after process if not complete",
+            "Grievance Handling Officer / Section": "-",
+            "Remarks": "-"
+        },
+        {
+            "ServiceNo": "6",
+            "Service": "Tenant Record Removal",
+            "Required Documents": [
+                "Claim application",
+                "Recommendation from local authority",
+                "Copy of citizenship certificate",
+                "Public notice for claim as required Documents",
+                "Landowner certificate",
+                "Tax payment receipt",
+                "Photocopy"
+            ],
+            "Charge": "Rs. 10 ticket",
+            "Time Taken": "15 days' notice issued for response",
+            "Grievance Handling Officer / Section": "Tenant Section",
+            "Remarks": "-"
+        },
+        {
+            "ServiceNo": "7",
+            "Service": "Land Ceiling",
+            "Required Documents": [
+                "As per submitted Form No. 7, details of all land in the name of the person and family across the country must be disclosed",
+                "Match with Form No. 1, verify family number, match with field book and records, after all details are verified, submit to Land Ceiling Settlement Committee"
+            ],
+            "Charge": "Rs. 10 ticket",
+            "Time Taken": "After completion of process",
+            "Grievance Handling Officer / Section": "Ceiling Section",
+            "Remarks": "-"
+        },
+        {
+            "ServiceNo": "8",
+            "Service": "Crop Deposit",
+            "Required Documents": [
+                "Tenant must deposit the determined value of crop in Land Reform Office or municipality/VDC within the legal period each year, mentioning name and address of landowner, with tenant certificate and citizenship"
+            ],
+            "Charge": "Rs. 10 ticket",
+            "Time Taken": "Same day",
+            "Grievance Handling Officer / Section": "Deposit Section",
+            "Remarks": "-"
+        },
+        {
+            "ServiceNo": "9",
+            "Service": "Return of Crop Deposit to Landowner",
+            "Required Documents": [
+                "Landowner must apply for return of crop deposit made by tenant, with landowner certificate, land tax receipt, and copy of citizenship"
+            ],
+            "Charge": "Rs. 10 ticket",
+            "Time Taken": "Same day after verification",
+            "Grievance Handling Officer / Section": "Deposit Section",
+            "Remarks": "-"
+        },
+        {
+            "ServiceNo": "10",
+            "Service": "Copy Issuance",
+            "Required Documents": [
+                "Application with proof of concerned person eligible for copy issuance, and recommendation as required Documents"
+            ],
+            "Charge": "As per Financial Act",
+            "Time Taken": "Generally same day",
+            "Grievance Handling Officer / Section": "Related Moth Section, Tameli Section",
+            "Remarks": "-"
+        },
+        {
+            "ServiceNo": "11",
+            "Service": "Lien (Rokka)",
+            "Required Documents": [
+                "Approved mortgage deed",
+                "Letter from government office, court, or financial institution for lien or release",
+                "Original landowner certificate"
+            ],
+            "Charge": "As per Financial Act",
+            "Time Taken": "1 to 2 hours",
+            "Grievance Handling Officer / Section": "Lien Section",
+            "Remarks": "-"
+        }
+    ]
+}

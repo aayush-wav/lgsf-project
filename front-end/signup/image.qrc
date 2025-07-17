@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/res">
+        <file>lgsf bg.jpeg</file>
+    </qresource>
+</RCC>
