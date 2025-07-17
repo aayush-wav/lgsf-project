@@ -3,7 +3,6 @@ D:/LGSF/front-end/login/mainwindow.h
  mmc:Q_OBJECT
  mdp:D:/LGSF/front-end/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/moc_predefs.h
  mdp:D:/LGSF/front-end/login/mainwindow.h
- mdp:D:/QT/6.9.1/mingw_64/include/QtCore/QEvent
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/q17memory.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/q20functional.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/q20iterator.h
@@ -11,7 +10,6 @@ D:/LGSF/front-end/login/mainwindow.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/q20type_traits.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/q20utility.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/q23utility.h
- mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qabstracteventdispatcher.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qalgorithms.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qanystringview.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qarraydata.h
@@ -21,7 +19,6 @@ D:/LGSF/front-end/login/mainwindow.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qatomic.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qatomic_cxx11.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qbasicatomic.h
- mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qbasictimer.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qbindingstorage.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qbytearray.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qbytearrayalgorithms.h
@@ -38,14 +35,10 @@ D:/LGSF/front-end/login/mainwindow.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qcontainerinfo.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qcontainertools_impl.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qcontiguouscache.h
- mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qcoreevent.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qdarwinhelpers.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qdatastream.h
- mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qdeadlinetimer.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qdebug.h
- mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qelapsedtimer.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qendian.h
- mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qeventloop.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qexceptionhandling.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qflags.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qfloat16.h
@@ -129,7 +122,6 @@ D:/LGSF/front-end/login/mainwindow.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qtversionchecks.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qtypeinfo.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qtypes.h
- mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qurl.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qutf8stringview.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qvariant.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtCore/qvarlengtharray.h
@@ -150,27 +142,19 @@ D:/LGSF/front-end/login/mainwindow.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qkeysequence.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qpaintdevice.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qpalette.h
- mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qpen.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qpixelformat.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qpixmap.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qpolygon.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qregion.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qrgb.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qrgba64.h
- mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qtextcursor.h
- mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qtextdocument.h
- mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qtextformat.h
- mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qtextoption.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qtgui-config.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qtguiexports.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qtguiglobal.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qtransform.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qwindowdefs.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtGui/qwindowdefs_win.h
- mdp:D:/QT/6.9.1/mingw_64/include/QtWidgets/QLineEdit
  mdp:D:/QT/6.9.1/mingw_64/include/QtWidgets/QMainWindow
- mdp:D:/QT/6.9.1/mingw_64/include/QtWidgets/qframe.h
- mdp:D:/QT/6.9.1/mingw_64/include/QtWidgets/qlineedit.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtWidgets/qmainwindow.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtWidgets/qsizepolicy.h
  mdp:D:/QT/6.9.1/mingw_64/include/QtWidgets/qtabwidget.h

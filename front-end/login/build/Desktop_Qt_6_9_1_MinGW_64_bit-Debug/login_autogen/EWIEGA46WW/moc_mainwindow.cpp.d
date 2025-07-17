@@ -1,6 +1,5 @@
 D:/LGSF/front-end/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/EWIEGA46WW/moc_mainwindow.cpp: D:/LGSF/front-end/login/mainwindow.h \
   D:/LGSF/front-end/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/moc_predefs.h \
-  D:/QT/6.9.1/mingw_64/include/QtCore/QEvent \
   D:/QT/6.9.1/mingw_64/include/QtCore/q17memory.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/q20functional.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/q20iterator.h \
@@ -8,7 +7,6 @@ D:/LGSF/front-end/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/
   D:/QT/6.9.1/mingw_64/include/QtCore/q20type_traits.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/q20utility.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/q23utility.h \
-  D:/QT/6.9.1/mingw_64/include/QtCore/qabstracteventdispatcher.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qalgorithms.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qanystringview.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qarraydata.h \
@@ -18,7 +16,6 @@ D:/LGSF/front-end/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/
   D:/QT/6.9.1/mingw_64/include/QtCore/qatomic.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qatomic_cxx11.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qbasicatomic.h \
-  D:/QT/6.9.1/mingw_64/include/QtCore/qbasictimer.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qbindingstorage.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qbytearray.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qbytearrayalgorithms.h \
@@ -35,14 +32,10 @@ D:/LGSF/front-end/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/
   D:/QT/6.9.1/mingw_64/include/QtCore/qcontainerinfo.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qcontainertools_impl.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qcontiguouscache.h \
-  D:/QT/6.9.1/mingw_64/include/QtCore/qcoreevent.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qdarwinhelpers.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qdatastream.h \
-  D:/QT/6.9.1/mingw_64/include/QtCore/qdeadlinetimer.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qdebug.h \
-  D:/QT/6.9.1/mingw_64/include/QtCore/qelapsedtimer.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qendian.h \
-  D:/QT/6.9.1/mingw_64/include/QtCore/qeventloop.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qexceptionhandling.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qflags.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qfloat16.h \
@@ -126,7 +119,6 @@ D:/LGSF/front-end/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/
   D:/QT/6.9.1/mingw_64/include/QtCore/qtversionchecks.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qtypeinfo.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qtypes.h \
-  D:/QT/6.9.1/mingw_64/include/QtCore/qurl.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qutf8stringview.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qvariant.h \
   D:/QT/6.9.1/mingw_64/include/QtCore/qvarlengtharray.h \
@@ -147,27 +139,19 @@ D:/LGSF/front-end/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/
   D:/QT/6.9.1/mingw_64/include/QtGui/qkeysequence.h \
   D:/QT/6.9.1/mingw_64/include/QtGui/qpaintdevice.h \
   D:/QT/6.9.1/mingw_64/include/QtGui/qpalette.h \
-  D:/QT/6.9.1/mingw_64/include/QtGui/qpen.h \
   D:/QT/6.9.1/mingw_64/include/QtGui/qpixelformat.h \
   D:/QT/6.9.1/mingw_64/include/QtGui/qpixmap.h \
   D:/QT/6.9.1/mingw_64/include/QtGui/qpolygon.h \
   D:/QT/6.9.1/mingw_64/include/QtGui/qregion.h \
   D:/QT/6.9.1/mingw_64/include/QtGui/qrgb.h \
   D:/QT/6.9.1/mingw_64/include/QtGui/qrgba64.h \
-  D:/QT/6.9.1/mingw_64/include/QtGui/qtextcursor.h \
-  D:/QT/6.9.1/mingw_64/include/QtGui/qtextdocument.h \
-  D:/QT/6.9.1/mingw_64/include/QtGui/qtextformat.h \
-  D:/QT/6.9.1/mingw_64/include/QtGui/qtextoption.h \
   D:/QT/6.9.1/mingw_64/include/QtGui/qtgui-config.h \
   D:/QT/6.9.1/mingw_64/include/QtGui/qtguiexports.h \
   D:/QT/6.9.1/mingw_64/include/QtGui/qtguiglobal.h \
   D:/QT/6.9.1/mingw_64/include/QtGui/qtransform.h \
   D:/QT/6.9.1/mingw_64/include/QtGui/qwindowdefs.h \
   D:/QT/6.9.1/mingw_64/include/QtGui/qwindowdefs_win.h \
-  D:/QT/6.9.1/mingw_64/include/QtWidgets/QLineEdit \
   D:/QT/6.9.1/mingw_64/include/QtWidgets/QMainWindow \
-  D:/QT/6.9.1/mingw_64/include/QtWidgets/qframe.h \
-  D:/QT/6.9.1/mingw_64/include/QtWidgets/qlineedit.h \
   D:/QT/6.9.1/mingw_64/include/QtWidgets/qmainwindow.h \
   D:/QT/6.9.1/mingw_64/include/QtWidgets/qsizepolicy.h \
   D:/QT/6.9.1/mingw_64/include/QtWidgets/qtabwidget.h \

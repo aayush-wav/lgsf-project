@@ -1,0 +1,79 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-b0969e5811bef2f1f72b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "login",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "login::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-login-Debug-96e6498fa8bbe5240ef6.json",
+					"name" : "login",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "login_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-login_autogen-Debug-8164b26bf5b370eb88c1.json",
+					"name" : "login_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "login_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-login_autogen_timestamp_deps-Debug-4dd91a49e6d3601d1289.json",
+					"name" : "login_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/LGSF/front-end/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug",
+		"source" : "D:/LGSF/front-end/login"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

@@ -6,145 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1123</width>
-    <height>651</height>
+    <width>1063</width>
+    <height>416</height>
    </rect>
-  </property>
-  <property name="font">
-   <font>
-    <family>montserrat</family>
-    <pointsize>16</pointsize>
-    <kerning>false</kerning>
-   </font>
-  </property>
-  <property name="acceptDrops">
-   <bool>true</bool>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <property name="autoFillBackground">
-   <bool>false</bool>
-  </property>
-  <property name="styleSheet">
-   <string notr="true">*{
-	background-image: url(:/res/background.png);
-	background-position: center;
-	background-size:100% 100%;
-	font-family: montserrat;
-	background-color:  #1C1C1C;
-}
-</string>
-  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
-    <string notr="true">background-image: url(:/res/background.png);
-background-position: center;
-background-size: 100% 100%;
-background-repeat: no-repeat;
-background: transparent;
-</string>
+    <string notr="true"/>
    </property>
-   <widget class="QPushButton" name="loginBtn">
-    <property name="geometry">
-     <rect>
-      <x>640</x>
-      <y>483</y>
-      <width>300</width>
-      <height>45</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>montserrat</family>
-      <pointsize>12</pointsize>
-      <bold>true</bold>
-      <kerning>false</kerning>
-     </font>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 255, 255);
-border-radius: 4;
-color: #2148C0;</string>
-    </property>
-    <property name="text">
-     <string>LOGIN</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="passwordLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>640</x>
-      <y>395</y>
-      <width>300</width>
-      <height>45</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="usernameLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>640</x>
-      <y>330</y>
-      <width>300</width>
-      <height>45</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelBadapatra">
-    <property name="geometry">
-     <rect>
-      <x>640</x>
-      <y>208</y>
-      <width>345</width>
-      <height>111</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>montserrat</family>
-      <pointsize>22</pointsize>
-      <bold>true</bold>
-      <kerning>false</kerning>
-     </font>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">text-alignment: center;</string>
-    </property>
-    <property name="text">
-     <string>ई - BADAPATRA</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelNewUser">
-    <property name="geometry">
-     <rect>
-      <x>640</x>
-      <y>450</y>
-      <width>300</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="cursor">
-     <cursorShape>PointingHandCursor</cursorShape>
-    </property>
-    <property name="text">
-     <string>New User?</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignCenter</set>
-    </property>
-   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1123</width>
-     <height>25</height>
+     <width>1063</width>
+     <height>27</height>
     </rect>
    </property>
   </widget>

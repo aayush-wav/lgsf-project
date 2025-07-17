@@ -1,0 +1,9 @@
+D:/LGSF/front-end/lgsf_login_scratch/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/CMakeFiles/lgsf_login_scratch.dir
+D:/LGSF/front-end/lgsf_login_scratch/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/CMakeFiles/edit_cache.dir
+D:/LGSF/front-end/lgsf_login_scratch/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/CMakeFiles/rebuild_cache.dir
+D:/LGSF/front-end/lgsf_login_scratch/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/CMakeFiles/list_install_components.dir
+D:/LGSF/front-end/lgsf_login_scratch/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/CMakeFiles/install.dir
+D:/LGSF/front-end/lgsf_login_scratch/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/CMakeFiles/install/local.dir
+D:/LGSF/front-end/lgsf_login_scratch/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/CMakeFiles/install/strip.dir
+D:/LGSF/front-end/lgsf_login_scratch/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/CMakeFiles/lgsf_login_scratch_autogen_timestamp_deps.dir
+D:/LGSF/front-end/lgsf_login_scratch/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/CMakeFiles/lgsf_login_scratch_autogen.dir
