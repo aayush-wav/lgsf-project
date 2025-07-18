@@ -39,11 +39,11 @@ private:
     int currentCharIndex = 0;
     QTimer *typingTimer = nullptr;
 
+    void startTypingAnimation(const QString &text);
+    void handleUserInput(const QString &userInput);
     QJsonDocument loadIntents(const QString &fileName);
     QVector<Intent> parseIntents(const QJsonArray &intentsArray);
     const Intent* matchIntent(const QString &userInput);
-    void startTypingAnimation(const QString &text);
-    void handleUserInput(const QString &userInput);
 };
 
 #endif // MAINWINDOW_H
