@@ -1,22 +1,60 @@
 [
   {
     "intent": "greeting",
-    "patterns": ["hello", "hi", "hey", "good morning", "namaste"],
-    "response": "Hello! How can I assist you today?"
+    "patterns": ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "namaste", "namaskar"],
+    "response": "Hello! How can I assist you with government services today?"
   },
   {
     "intent": "farewell",
-    "patterns": ["bye", "goodbye", "see you", "later"],
-    "response": "Goodbye! Have a great day."
+    "patterns": ["bye", "goodbye", "see you", "later", "thank you", "thanks", "dhanyabad"],
+    "response": "Goodbye! Have a great day. Feel free to ask if you need any help with government services."
   },
   {
     "intent": "service_info",
-    "patterns": ["documents", "charge", "how much", "where", "office"],
-    "response": "To apply for {service_name}, go to {office_name}, office number {office_number}. Required documents: {required_documents}. The charge is Rs. {charge}."
+    "patterns": [
+      "documents", "document", "charge", "cost", "fee", "how much", "price",
+      "apply", "application", "service", "process", "procedure",
+      "passport", "citizenship", "license", "permit", "certificate",
+      "registration", "tax", "birth certificate", "death certificate",
+      "marriage certificate", "driving license", "voter id", "pan card",
+      "aadhar", "ration card", "business license", "vehicle registration"
+    ],
+    "response": "To apply for the service **{service_name}**, please visit **{office_name}**, Office No. **{service_no}**.\n\n **Required Documents:**\n{required_documents}\n\n **Fee:** {charge}"
+  },
+  {
+    "intent": "office_info",
+    "patterns": [
+      "office", "where", "location", "address", "ward", "municipality",
+      "department", "branch", "counter", "desk", "room", "building"
+    ],
+    "response": "The **{office_name}** is under the **{ministry_name}**. You can find it at: {office_location}.\nPlease let me know the specific service if you'd like detailed room or section info."
+  },
+  {
+    "intent": "ministry_info",
+    "patterns": [
+      "ministry", "minister", "ministries", "department", "government",
+      "contact", "phone", "email", "headquarters"
+    ],
+    "response": "The **{ministry_name}** oversees this service. You can reach them through their central office. If you want contact details, let me know the exact ministry name."
+  },
+  {
+    "intent": "help",
+    "patterns": ["help", "assist", "support", "guide", "how to", "what can you do"],
+    "response": "I can help you with information about government services including:\n\n Required documents\n Application fees\n Office locations\n Processing times\n\nJust ask me about any specific service!"
+  },
+  {
+    "intent": "office_hours",
+    "patterns": ["office hours", "timing", "when open", "working hours", "schedule"],
+    "response": " Most government offices are open from **10:00 AM to 5:00 PM**, Sunday to Thursday.\n Note: Friday and Saturday are usually holidays. Timings can vary by office."
+  },
+  {
+    "intent": "contact",
+    "patterns": ["contact", "phone", "email", "reach", "call"],
+    "response": " For contact details, please provide the name of the office or service you're interested in, and I'll fetch the relevant phone number or email address."
   },
   {
     "intent": "unknown",
     "patterns": [],
-    "response": "Sorry, I couldn't understand that. Can you please be more specific?"
-  }
+    "response": " Sorry, I couldn't understand that. Can you please be more specific?\nI can help with documents, charges, locations, or office info for government services."
+  }
 ]
