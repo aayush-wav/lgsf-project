@@ -8,6 +8,8 @@
 #include <QJsonArray>
 #include <QDebug>
 #include <QDir>
+#include <QTextCursor>
+#include <QScrollBar>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -15,9 +17,13 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    ui->inputLineEdit->setPlaceholderText("Ask ई - BADAPATRA");
+
+    connect(ui->inputLineEdit, &QLineEdit::returnPressed, this, &MainWindow::on_sendButton_clicked);
+
     qDebug() << "Current working directory:" << QDir::currentPath();
 
-    QJsonDocument doc = loadIntents("LGSF/back-end/responses.json");
+    QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
     if (!doc.isNull()) {
         QJsonArray intentsArray = doc.array();
         intentList = parseIntents(intentsArray);
@@ -83,7 +89,6 @@ const Intent* MainWindow::matchIntent(const QString &userInput)
         }
     }
 
-    // If no match found, return the "unknown" intent
     for (const Intent &intent : intentList) {
         if (intent.tag == "unknown") {
             qDebug() << "Returning 'unknown' intent";
@@ -94,22 +99,68 @@ const Intent* MainWindow::matchIntent(const QString &userInput)
     return nullptr;
 }
 
+void MainWindow::startTypingAnimation(const QString &text)
+{
+    if (typingTimer) {
+        typingTimer->stop();
+        typingTimer->deleteLater();
+    }
+
+    pendingText = text;
+    typedText.clear();
+    currentCharIndex = 0;
+
+    ui->responseTextEdit->append("<p style='text-align:left; color:white; margin: 5px 10px;' class='botReply'></p>");
+
+    typingTimer = new QTimer(this);
+
+    connect(typingTimer, &QTimer::timeout, this, [=]() mutable {
+        if (currentCharIndex < pendingText.length()) {
+            typedText += pendingText[currentCharIndex++];
+
+            QTextCursor cursor = ui->responseTextEdit->textCursor();
+            cursor.movePosition(QTextCursor::End);
+            cursor.select(QTextCursor::BlockUnderCursor);
+            cursor.removeSelectedText();
+            cursor.deletePreviousChar();
+
+            ui->responseTextEdit->append(
+                "<p style='text-align:left; color:white; margin: 5px 10px;' class='botReply'>"
+                + typedText.toHtmlEscaped() + "</p>");
+
+            ui->responseTextEdit->verticalScrollBar()->setValue(ui->responseTextEdit->verticalScrollBar()->maximum());
+        } else {
+            typingTimer->stop();
+            typingTimer->deleteLater();
+        }
+    });
+
+    typingTimer->start(30);
+}
+
+void MainWindow::handleUserInput(const QString &userText)
+{
+    const Intent* matched = matchIntent(userText);
+
+    ui->responseTextEdit->append(
+        "<p style='text-align:right; color:white; margin: 5px 10px;'>"
+        + userText.toHtmlEscaped() + "</p>");
+
+    if (matched) {
+        startTypingAnimation(matched->response);
+    } else {
+        startTypingAnimation("Sorry, I couldn't understand that.");
+    }
+}
+
 void MainWindow::on_sendButton_clicked()
 {
     QString userText = ui->inputLineEdit->text();
-
     if (userText.isEmpty()) return;
 
-    const Intent* matched = matchIntent(userText);
+    if (ui->badapatraLabel) ui->badapatraLabel->hide();
 
-    ui->responseTextEdit->append(userText);
-
-    if (matched) {
-        ui->responseTextEdit->append(matched->response);
-    } else {
-        ui->responseTextEdit->append("Bot: Sorry, I couldn't understand that.");
-    }
-
+    handleUserInput(userText);
     ui->inputLineEdit->clear();
 }
 

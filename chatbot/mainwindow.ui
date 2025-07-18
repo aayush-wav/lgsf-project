@@ -10,6 +10,11 @@
     <height>720</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <pointsize>13</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -26,12 +31,25 @@
       <height>51</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>0xProto Nerd Font</family>
+      <pointsize>13</pointsize>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+      <fontweight>Medium</fontweight>
+     </font>
+    </property>
     <property name="contextMenuPolicy">
      <enum>Qt::ContextMenuPolicy::PreventContextMenu</enum>
     </property>
     <property name="styleSheet">
      <string notr="true">border-radius: 6;
-background-color: rgba(88, 88, 88,88,8);</string>
+background-color: rgba(88, 88, 88,88,8);
+padding: 10px;</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
     </property>
    </widget>
    <widget class="QPushButton" name="sendButton">
@@ -63,17 +81,29 @@ border-radius: 6;</string>
    <widget class="QTextEdit" name="responseTextEdit">
     <property name="geometry">
      <rect>
-      <x>89</x>
-      <y>-20</y>
-      <width>1191</width>
+      <x>150</x>
+      <y>40</y>
+      <width>1031</width>
       <height>540</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>0xProto Nerd Font Mono</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::NoFrame</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Plain</enum>
     </property>
     <property name="textInteractionFlags">
      <set>Qt::TextInteractionFlag::TextSelectableByKeyboard|Qt::TextInteractionFlag::TextSelectableByMouse</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="badapatraLabel">
     <property name="geometry">
      <rect>
       <x>468</x>

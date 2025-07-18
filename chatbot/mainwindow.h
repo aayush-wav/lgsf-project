@@ -6,12 +6,12 @@
 #include <QStringList>
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-// Intent Struct outside the class
 struct Intent {
     QString tag;
     QStringList patterns;
@@ -31,12 +31,17 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-
     QVector<Intent> intentList;
+
+    QString pendingText;
+    QString typedText;
+    int currentCharIndex = 0;
+    QTimer *typingTimer = nullptr;
 
     QJsonDocument loadIntents(const QString &fileName);
     QVector<Intent> parseIntents(const QJsonArray &intentsArray);
     const Intent* matchIntent(const QString &userInput);
+    void startTypingAnimation(const QString &text);
     void handleUserInput(const QString &userInput);
 };
 
