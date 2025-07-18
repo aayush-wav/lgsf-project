@@ -45,7 +45,7 @@
   {
     "intent": "office_hours",
     "patterns": ["office hours", "timing", "when open", "working hours", "schedule"],
-    "response": " Most government offices are open from **10:00 AM to 5:00 PM**, Sunday to Thursday.\n Note: Friday and Saturday are usually holidays. Timings can vary by office."
+    "response": " Most government offices are open from **10:00 AM to 5:00 PM**, Sunday to Thursday.\n Note: Fridays are partial holiday and Saturdays are usually holidays. Timings can vary by office."
   },
   {
     "intent": "contact",
