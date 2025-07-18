@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     qDebug() << "Current working directory:" << QDir::currentPath();
 
-    QJsonDocument doc = loadIntents("C:/Users/ACER/Downloads/lgsf2/lgsf-project/back-end/responses.json");
+    QJsonDocument doc = loadIntents("LGSF/back-end/responses.json");
     if (!doc.isNull()) {
         QJsonArray intentsArray = doc.array();
         intentList = parseIntents(intentsArray);
