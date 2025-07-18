@@ -81,7 +81,7 @@ const Intent* MainWindow::matchIntent(const QString &userInput)
 
     for (const Intent &intent : intentList) {
         for (const QString &pattern : intent.patterns) {
-            if (input.contains(pattern.toLower())) {
+            if (input == pattern.toLower()) {
                 return &intent;
             }
         }
