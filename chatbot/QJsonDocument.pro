@@ -15,6 +15,8 @@ SOURCES += \
 HEADERS += \
     mainwindow.h
 
+QT += core gui sql
+
 FORMS += \
     mainwindow.ui
 
