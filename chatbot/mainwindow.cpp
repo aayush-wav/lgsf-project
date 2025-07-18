@@ -17,19 +17,16 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->inputLineEdit->setPlaceholderText("Ask ई - BADAPATRA");
+    ui->inputLineEdit->setPlaceholderText("ask anything");
+    ui->responseTextEdit->setReadOnly(true);
+    ui->responseTextEdit->setStyleSheet("background-color: #1C1C1C; color: rgba(255, 255, 255, 0.9); border: none;");
 
     connect(ui->inputLineEdit, &QLineEdit::returnPressed, this, &MainWindow::on_sendButton_clicked);
-
-    qDebug() << "Current working directory:" << QDir::currentPath();
 
     QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
     if (!doc.isNull()) {
         QJsonArray intentsArray = doc.array();
         intentList = parseIntents(intentsArray);
-        qDebug() << "Loaded intents count:" << intentList.size();
-    } else {
-        qWarning() << "Failed to load intents.";
     }
 }
 
@@ -37,7 +34,6 @@ QJsonDocument MainWindow::loadIntents(const QString &fileName)
 {
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "Cannot open intent file:" << fileName;
         return {};
     }
 
@@ -45,7 +41,6 @@ QJsonDocument MainWindow::loadIntents(const QString &fileName)
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &parseError);
 
     if (parseError.error != QJsonParseError::NoError) {
-        qWarning() << "JSON parse error in" << fileName << ":" << parseError.errorString();
         return {};
     }
 
@@ -83,7 +78,6 @@ const Intent* MainWindow::matchIntent(const QString &userInput)
     for (const Intent &intent : intentList) {
         for (const QString &pattern : intent.patterns) {
             if (input.contains(pattern.toLower())) {
-                qDebug() << "Matched intent:" << intent.tag;
                 return &intent;
             }
         }
@@ -91,7 +85,6 @@ const Intent* MainWindow::matchIntent(const QString &userInput)
 
     for (const Intent &intent : intentList) {
         if (intent.tag == "unknown") {
-            qDebug() << "Returning 'unknown' intent";
             return &intent;
         }
     }
@@ -110,8 +103,6 @@ void MainWindow::startTypingAnimation(const QString &text)
     typedText.clear();
     currentCharIndex = 0;
 
-    ui->responseTextEdit->append("<p style='text-align:left; color:white; margin: 5px 10px;' class='botReply'></p>");
-
     typingTimer = new QTimer(this);
 
     connect(typingTimer, &QTimer::timeout, this, [=]() mutable {
@@ -120,13 +111,12 @@ void MainWindow::startTypingAnimation(const QString &text)
 
             QTextCursor cursor = ui->responseTextEdit->textCursor();
             cursor.movePosition(QTextCursor::End);
+            cursor.movePosition(QTextCursor::PreviousBlock);
             cursor.select(QTextCursor::BlockUnderCursor);
-            cursor.removeSelectedText();
-            cursor.deletePreviousChar();
 
-            ui->responseTextEdit->append(
-                "<p style='text-align:left; color:white; margin: 5px 10px;' class='botReply'>"
-                + typedText.toHtmlEscaped() + "</p>");
+            cursor.removeSelectedText();
+            cursor.insertHtml("<p style='text-align:left; color: rgba(255, 255, 255, 0.8); margin: 5px 10px;'>"
+                              + typedText.toHtmlEscaped() + "</p>");
 
             ui->responseTextEdit->verticalScrollBar()->setValue(ui->responseTextEdit->verticalScrollBar()->maximum());
         } else {
@@ -140,16 +130,18 @@ void MainWindow::startTypingAnimation(const QString &text)
 
 void MainWindow::handleUserInput(const QString &userText)
 {
-    const Intent* matched = matchIntent(userText);
-
     ui->responseTextEdit->append(
-        "<p style='text-align:right; color:white; margin: 5px 10px;'>"
+        "<p style='text-align:right; color: rgba(255, 255, 255, 0.9); margin: 5px 10px;'>"
         + userText.toHtmlEscaped() + "</p>");
+
+    ui->responseTextEdit->append("<p style='text-align:left; color: rgba(255, 255, 255, 0.8); margin: 5px 10px;'></p>");
+
+    const Intent* matched = matchIntent(userText);
 
     if (matched) {
         startTypingAnimation(matched->response);
     } else {
-        startTypingAnimation("Sorry, I couldn't understand that.");
+        startTypingAnimation("Bot: Sorry, I couldn't understand that.");
     }
 }
 
