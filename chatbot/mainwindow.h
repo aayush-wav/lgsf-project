@@ -28,6 +28,7 @@ public:
 
 private slots:
     void on_sendButton_clicked();
+    void onTypingTimeout();
 
 private:
     Ui::MainWindow *ui;

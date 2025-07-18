@@ -2,12 +2,12 @@
   {
     "intent": "greeting",
     "patterns": ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "namaste", "namaskar"],
-    "response": "Hello! How can I assist you with government services today?"
+    "response": "Namaste! How can I assist you today?"
   },
   {
     "intent": "farewell",
     "patterns": ["bye", "goodbye", "see you", "later", "thank you", "thanks", "dhanyabad"],
-    "response": "Goodbye! Have a great day. Feel free to ask if you need any help with government services."
+    "response": "Dhanyabaad for using me! Have a great day. Feel free to ask if you need any help with government services."
   },
   {
     "intent": "service_info",

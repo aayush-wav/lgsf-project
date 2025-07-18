@@ -17,9 +17,13 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->inputLineEdit->setPlaceholderText("Ask ई - BADAPATRA");
+    ui->inputLineEdit->setPlaceholderText("Ask ई - BADAPATRA anything");
     ui->responseTextEdit->setReadOnly(true);
     ui->responseTextEdit->setStyleSheet("background-color: #1C1C1C; color: rgba(255, 255, 255, 0.9); border: none;");
+
+    typingTimer = new QTimer(this);
+    typingTimer->setInterval(30);
+    connect(typingTimer, &QTimer::timeout, this, &MainWindow::onTypingTimeout);
 
     connect(ui->inputLineEdit, &QLineEdit::returnPressed, this, &MainWindow::on_sendButton_clicked);
 
@@ -94,38 +98,30 @@ const Intent* MainWindow::matchIntent(const QString &userInput)
 
 void MainWindow::startTypingAnimation(const QString &text)
 {
-    if (typingTimer) {
-        typingTimer->stop();
-        typingTimer->deleteLater();
-    }
-
     pendingText = text;
     typedText.clear();
     currentCharIndex = 0;
+    typingTimer->start();
+}
 
-    typingTimer = new QTimer(this);
+void MainWindow::onTypingTimeout()
+{
+    if (currentCharIndex < pendingText.length()) {
+        typedText += pendingText[currentCharIndex++];
 
-    connect(typingTimer, &QTimer::timeout, this, [=]() mutable {
-        if (currentCharIndex < pendingText.length()) {
-            typedText += pendingText[currentCharIndex++];
+        QTextCursor cursor = ui->responseTextEdit->textCursor();
+        cursor.movePosition(QTextCursor::End);
+        cursor.movePosition(QTextCursor::PreviousBlock);
+        cursor.select(QTextCursor::BlockUnderCursor);
 
-            QTextCursor cursor = ui->responseTextEdit->textCursor();
-            cursor.movePosition(QTextCursor::End);
-            cursor.movePosition(QTextCursor::PreviousBlock);
-            cursor.select(QTextCursor::BlockUnderCursor);
+        cursor.removeSelectedText();
+        cursor.insertHtml("<p style='text-align:left; color: rgba(255, 255, 255, 0.8); margin: 5px 10px;'>"
+                          + typedText.toHtmlEscaped() + "</p>");
 
-            cursor.removeSelectedText();
-            cursor.insertHtml("<p style='text-align:left; color: rgba(255, 255, 255, 0.8); margin: 5px 10px;'>"
-                              + typedText.toHtmlEscaped() + "</p>");
-
-            ui->responseTextEdit->verticalScrollBar()->setValue(ui->responseTextEdit->verticalScrollBar()->maximum());
-        } else {
-            typingTimer->stop();
-            typingTimer->deleteLater();
-        }
-    });
-
-    typingTimer->start(30);
+        ui->responseTextEdit->verticalScrollBar()->setValue(ui->responseTextEdit->verticalScrollBar()->maximum());
+    } else {
+        typingTimer->stop();
+    }
 }
 
 void MainWindow::handleUserInput(const QString &userText)
@@ -141,7 +137,7 @@ void MainWindow::handleUserInput(const QString &userText)
     if (matched) {
         startTypingAnimation(matched->response);
     } else {
-        startTypingAnimation("Bot: Sorry, I couldn't understand that.");
+        startTypingAnimation("Sorry, I couldn't understand that.");
     }
 }
 
