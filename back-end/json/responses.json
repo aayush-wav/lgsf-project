@@ -40,7 +40,7 @@
   {
     "intent": "help",
     "patterns": ["help", "assist", "support", "guide", "how to", "what can you do"],
-    "response": "I can help you with information about government services including:\n\n Required documents\n Application fees\n Office locations\n Processing times\n\nJust ask me about any specific service!"
+    "response": "I can help you with information about government services including:\n\n Required documents,\n Application fees,\n Office locations,\n Processing times.\n\nJust ask me about any specific service!"
   },
   {
     "intent": "office_hours",

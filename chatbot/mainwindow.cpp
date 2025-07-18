@@ -150,7 +150,7 @@ void MainWindow::handleUserInput(const QString &userText)
             if (!response.isEmpty())
                 startTypingAnimation(response);
             else
-                startTypingAnimation("Sorry, I don't have details on that specific service.");
+                startTypingAnimation("Sorry, I don't have details on that specific service currently.");
         } else {
             startTypingAnimation(matched->response);
         }
