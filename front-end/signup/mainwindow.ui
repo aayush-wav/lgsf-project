@@ -6,54 +6,50 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1378</width>
-    <height>956</height>
+    <width>1290</width>
+    <height>869</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>montserrat</family>
+    <pointsize>16</pointsize>
+    <kerning>false</kerning>
+   </font>
+  </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
   <property name="styleSheet">
    <string notr="true">*{
-	background-image: url(:/res/lgsf bg.jpeg);
-	font-family:montserrat;
+	background-image: url(:/res/background.png);
+	background-position: center;
 	background-size:100% 100%;
-	background-color: rgb(28, 28, 28);
-	color: white;
-}</string>
+	font-family: montserrat;
+	background-color:  #1C1C1C;
+}
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLineEdit" name="lastNameLineEdit">
+   <property name="styleSheet">
+    <string notr="true">background-image: url(:/res/background.png);
+background-position: center;
+background-size: 100% 100%;
+background-repeat: no-repeat;
+background: transparent;
+</string>
+   </property>
+   <widget class="QPushButton" name="loginBtn">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>280</y>
-      <width>300</width>
-      <height>45</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="firstNameLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>510</x>
-      <y>220</y>
-      <width>300</width>
-      <height>45</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="signupLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>510</x>
-      <y>490</y>
+      <x>640</x>
+      <y>483</y>
       <width>300</width>
       <height>45</height>
      </rect>
@@ -67,21 +63,41 @@
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: white;
-color: #2148C0;
-border-radius: 4;</string>
+     <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 4;
+color: #2148C0;</string>
     </property>
     <property name="text">
-     <string>SIGN UP</string>
+     <string>NEXT</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QLineEdit" name="lastNameLineEdit">
     <property name="geometry">
      <rect>
-      <x>480</x>
-      <y>90</y>
+      <x>640</x>
+      <y>395</y>
+      <width>300</width>
+      <height>45</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="firstNameLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>330</y>
+      <width>300</width>
+      <height>45</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelBadapatra">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>208</y>
       <width>345</width>
-      <height>151</height>
+      <height>111</height>
      </rect>
     </property>
     <property name="font">
@@ -89,55 +105,27 @@ border-radius: 4;</string>
       <family>montserrat</family>
       <pointsize>22</pointsize>
       <bold>true</bold>
+      <kerning>false</kerning>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">text-alignment: center;</string>
+    </property>
     <property name="text">
-     <string>इ-BADAPATRA</string>
+     <string>ई - BADAPATRA</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLineEdit" name="passwordLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>510</x>
-      <y>340</y>
-      <width>300</width>
-      <height>45</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="retypePasswordLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>510</x>
-      <y>400</y>
-      <width>300</width>
-      <height>45</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <zorder>label_3</zorder>
-   <zorder>lastNameLineEdit</zorder>
-   <zorder>firstNameLineEdit</zorder>
-   <zorder>signupLineEdit</zorder>
-   <zorder>passwordLineEdit</zorder>
-   <zorder>retypePasswordLineEdit</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1378</width>
-     <height>19</height>
+     <width>1290</width>
+     <height>26</height>
     </rect>
    </property>
   </widget>

@@ -2,11 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QEvent>
+#include <QLineEdit>
 
 QT_BEGIN_NAMESPACE
-namespace Ui {
-class MainWindow;
-}
+namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -17,12 +17,21 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
-    void on_lineEdit_cursorPositionChanged(int arg1, int arg2);
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
-    void on_signupLineEdit_clicked();
+private slots:
+    void on_pushButton_Login_clicked();
 
 private:
     Ui::MainWindow *ui;
+
+    QLineEdit *lastNameLineEdit;
+    QAction *togglePasswordAction;
+    bool passwordVisible = false;
+
+    void setupUI();
+    void togglePasswordVisibility();
 };
+
 #endif // MAINWINDOW_H

@@ -27,11 +27,6 @@ MainWindow::MainWindow(QWidget *parent)
     }
 }
 
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
 QJsonDocument MainWindow::loadIntents(const QString &fileName)
 {
     QFile file(fileName);
@@ -107,13 +102,18 @@ void MainWindow::on_sendButton_clicked()
 
     const Intent* matched = matchIntent(userText);
 
-    ui->responseTextEdit->append("You: " + userText);
+    ui->responseTextEdit->append(userText);
 
     if (matched) {
-        ui->responseTextEdit->append("Bot: " + matched->response);
+        ui->responseTextEdit->append(matched->response);
     } else {
         ui->responseTextEdit->append("Bot: Sorry, I couldn't understand that.");
     }
 
     ui->inputLineEdit->clear();
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
 }
