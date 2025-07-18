@@ -1,4 +1,3 @@
-// mainwindow.h
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -35,19 +34,19 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QVector<Intent> intentList;
-    QSqlDatabase db;
-
     QString pendingText;
     QString typedText;
     int currentCharIndex = 0;
     QTimer *typingTimer = nullptr;
+    QSqlDatabase db;
 
     QJsonDocument loadIntents(const QString &fileName);
     QVector<Intent> parseIntents(const QJsonArray &intentsArray);
     const Intent* matchIntent(const QString &userInput);
     void startTypingAnimation(const QString &text);
     void handleUserInput(const QString &userInput);
-    QString fetchServiceData(const QString &serviceName);
+    QString fetchServiceData(const QString &serviceKeyword, QString responseTemplate);
+    void setupDatabase();
 };
 
 #endif // MAINWINDOW_H
