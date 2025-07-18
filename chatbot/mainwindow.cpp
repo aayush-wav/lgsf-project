@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->inputLineEdit->setPlaceholderText("ask anything");
+    ui->inputLineEdit->setPlaceholderText("Ask ई - BADAPATRA");
     ui->responseTextEdit->setReadOnly(true);
     ui->responseTextEdit->setStyleSheet("background-color: #1C1C1C; color: rgba(255, 255, 255, 0.9); border: none;");
 
