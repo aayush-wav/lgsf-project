@@ -28,11 +28,11 @@
   </property>
   <property name="styleSheet">
    <string notr="true">*{
-	background-image: url(:/res/background.png);
-	background-position: center;
-	background-size:100% 100%;
-	font-family: montserrat;
-	background-color:  #1C1C1C;
+        background-image: url(:/res/background.png);
+        background-position: center;
+        background-size:100% 100%;
+        font-family: montserrat;
+        background-color:  #1C1C1C;
 }
 </string>
   </property>
@@ -48,8 +48,8 @@ background: transparent;
    <widget class="QPushButton" name="loginBtn">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>483</y>
+      <x>410</x>
+      <y>443</y>
       <width>300</width>
       <height>45</height>
      </rect>
@@ -74,8 +74,8 @@ color: #2148C0;</string>
    <widget class="QLineEdit" name="passwordLineEdit">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>395</y>
+      <x>410</x>
+      <y>355</y>
       <width>300</width>
       <height>45</height>
      </rect>
@@ -84,8 +84,8 @@ color: #2148C0;</string>
    <widget class="QLineEdit" name="usernameLineEdit">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>330</y>
+      <x>410</x>
+      <y>290</y>
       <width>300</width>
       <height>45</height>
      </rect>
@@ -94,8 +94,8 @@ color: #2148C0;</string>
    <widget class="QLabel" name="labelBadapatra">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>208</y>
+      <x>390</x>
+      <y>168</y>
       <width>345</width>
       <height>111</height>
      </rect>
@@ -121,8 +121,8 @@ color: #2148C0;</string>
    <widget class="QLabel" name="labelNewUser">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>450</y>
+      <x>410</x>
+      <y>410</y>
       <width>300</width>
       <height>20</height>
      </rect>
