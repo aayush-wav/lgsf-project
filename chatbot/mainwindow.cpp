@@ -6,8 +6,6 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QJsonArray>
-#include <QDebug>
-#include <QDir>
 #include <QTextCursor>
 #include <QScrollBar>
 
@@ -20,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->inputLineEdit->setPlaceholderText("Ask ई - BADAPATRA anything");
     ui->responseTextEdit->setReadOnly(true);
     ui->responseTextEdit->setStyleSheet("background-color: #1C1C1C; color: rgba(255, 255, 255, 0.9); border: none;");
+    ui->responseTextEdit->setLineWrapMode(QTextEdit::WidgetWidth);
 
     typingTimer = new QTimer(this);
     typingTimer->setInterval(30);
@@ -101,6 +100,7 @@ void MainWindow::startTypingAnimation(const QString &text)
     pendingText = text;
     typedText.clear();
     currentCharIndex = 0;
+    ui->responseTextEdit->append("<p style='text-align:left; color: rgba(255, 255, 255, 0.8); margin: 5px 10px; max-width:85%; word-wrap:break-word; white-space:normal;'></p>");
     typingTimer->start();
 }
 
@@ -115,7 +115,7 @@ void MainWindow::onTypingTimeout()
         cursor.select(QTextCursor::BlockUnderCursor);
 
         cursor.removeSelectedText();
-        cursor.insertHtml("<p style='text-align:left; color: rgba(255, 255, 255, 0.8); margin: 5px 10px;'>"
+        cursor.insertHtml("<p style='text-align:left; color: rgba(255, 255, 255, 0.8); margin: 5px 10px; max-width:85%; word-wrap:break-word; white-space:normal;'>"
                           + typedText.toHtmlEscaped() + "</p>");
 
         ui->responseTextEdit->verticalScrollBar()->setValue(ui->responseTextEdit->verticalScrollBar()->maximum());
@@ -127,10 +127,8 @@ void MainWindow::onTypingTimeout()
 void MainWindow::handleUserInput(const QString &userText)
 {
     ui->responseTextEdit->append(
-        "<p style='text-align:right; color: rgba(255, 255, 255, 0.9); margin: 5px 10px;'>"
+        "<p style='text-align:right; color: rgba(255, 255, 255, 0.9); margin: 5px 10px; max-width:85%; word-wrap:break-word; white-space:normal;'>"
         + userText.toHtmlEscaped() + "</p>");
-
-    ui->responseTextEdit->append("<p style='text-align:left; color: rgba(255, 255, 255, 0.8); margin: 5px 10px;'></p>");
 
     const Intent* matched = matchIntent(userText);
 
