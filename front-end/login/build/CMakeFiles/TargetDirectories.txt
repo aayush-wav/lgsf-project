@@ -1,4 +1,5 @@
 D:/LGSF/lgsf-project/front-end/login/build/CMakeFiles/login.dir
-D:/LGSF/lgsf-project/front-end/login/build/CMakeFiles/INSTALL.dir
-D:/LGSF/lgsf-project/front-end/login/build/CMakeFiles/ALL_BUILD.dir
-D:/LGSF/lgsf-project/front-end/login/build/CMakeFiles/ZERO_CHECK.dir
+D:/LGSF/lgsf-project/front-end/login/build/CMakeFiles/edit_cache.dir
+D:/LGSF/lgsf-project/front-end/login/build/CMakeFiles/rebuild_cache.dir
+D:/LGSF/lgsf-project/front-end/login/build/CMakeFiles/login_autogen_timestamp_deps.dir
+D:/LGSF/lgsf-project/front-end/login/build/CMakeFiles/login_autogen.dir

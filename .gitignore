@@ -1,0 +1,11 @@
+*.user
+*.user.*
+*.pro.user*
+*.vcxproj*
+*.sln
+build/
+out/
+.qtc_clangd/
+CMakeFiles/
+CMakeCache.txt
+.vs/

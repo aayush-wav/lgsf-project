@@ -40,9 +40,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         QLineEdit *lineEdit = qobject_cast<QLineEdit*>(obj);
         if (lineEdit && lineEdit->text().isEmpty()) {
             if (lineEdit == ui->firstNameLineEdit)
-                lineEdit->setPlaceholderText("Username.");
-            else if (lineEdit == ui->usernameLineEdit)
-                lineEdit->setPlaceholderText("Password.");
+                lineEdit->setPlaceholderText("Username");
+            else if (lineEdit == ui->lastNameLineEdit)
+                lineEdit->setPlaceholderText("Password");
         }
     }
 
