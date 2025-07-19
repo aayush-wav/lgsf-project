@@ -28,7 +28,7 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_sendButton_clicked();
+    void handleSendButtonClicked();
     void onTypingTimeout();
 
 private:
@@ -36,8 +36,8 @@ private:
     QVector<Intent> intentList;
     QString pendingText;
     QString typedText;
-    int currentCharIndex = 0;
     QTimer *typingTimer = nullptr;
+    int currentCharIndex = 0;
     QSqlDatabase db;
 
     QJsonDocument loadIntents(const QString &fileName);

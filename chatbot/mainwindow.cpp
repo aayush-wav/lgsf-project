@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
 #include <QFile>
 #include <QJsonParseError>
 #include <QJsonObject>
@@ -24,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     typingTimer->setInterval(30);
     connect(typingTimer, &QTimer::timeout, this, &MainWindow::onTypingTimeout);
-    connect(ui->inputLineEdit, &QLineEdit::returnPressed, this, &MainWindow::on_sendButton_clicked);
+    connect(ui->inputLineEdit, &QLineEdit::returnPressed, this, &MainWindow::handleSendButtonClicked);
 
     QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
     if (!doc.isNull()) {
@@ -186,7 +185,7 @@ void MainWindow::handleUserInput(const QString &userText)
     }
 }
 
-void MainWindow::on_sendButton_clicked()
+void MainWindow::handleSendButtonClicked()
 {
     QString userText = ui->inputLineEdit->text().trimmed();
     if (userText.isEmpty()) return;
