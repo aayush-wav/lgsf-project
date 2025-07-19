@@ -45,9 +45,9 @@ void MainWindow::setupDatabase()
 {
     db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName("localhost");
-    db.setDatabaseName("your_db_name");
-    db.setUserName("your_username");
-    db.setPassword("your_password");
+    db.setDatabaseName("");
+    db.setUserName("");
+    db.setPassword("");
     if (!db.open()) {
         qWarning() << "Database connection failed:" << db.lastError().text();
     }
