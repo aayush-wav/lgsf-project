@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
 #include <QFile>
 #include <QJsonParseError>
 #include <QJsonObject>
@@ -46,9 +45,9 @@ void MainWindow::setupDatabase()
 {
     db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName("localhost");
-    db.setDatabaseName("");
-    db.setUserName("");
-    db.setPassword("");
+    db.setDatabaseName("LgsfInfo");
+    db.setUserName("postgres");
+    db.setPassword("00618");
     if (!db.open()) {
         qWarning() << "Database connection failed:" << db.lastError().text();
     }
