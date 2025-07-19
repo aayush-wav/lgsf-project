@@ -1,0 +1,182 @@
+{
+    "services": [
+    {
+        "ServiceNo": "1",
+        "Service": "Registration Pass",
+        "Required Documents": [
+            "Original land ownership certificate",
+            "Original citizenship certificate and copies (of both buyer and seller)",
+            "Current fiscal year's land tax payment receipt",
+            "Tax clearance certificate if includes house and deed document"
+        ],
+        "Time Taken": "Same day",
+        "Charge": "As specified by Financial Act of each fiscal year",
+        "Grievance Handling Officer / Section": "Registration Section Moth",
+        "Remarks": "-"
+    },
+    {
+        "ServiceNo": "2",
+        "Service": "Name Transfer",
+        "Required Documents": [
+            "Original land ownership certificate",
+            "Current fiscal year's land tax receipt",
+            "Relationship proof",
+            "Death certificate",
+            "Consent letter if multiple heirs",
+            "Recommendation from municipality/VDC of permanent address",
+            "Public notice and local inquiry for heirs other than spouse and children"
+        ],
+        "Time Taken": "After completion of process",
+        "Charge": "Free within 35 days of death, Rs. 10 thereafter",
+        "Grievance Handling Officer / Section": "Name Transfer Section",
+        "Remarks": "-"
+    },
+    {
+        "ServiceNo": "3",
+        "Service": "Land Registration (Raikar Land)",
+        "Required Documents": [
+            "Previous Raikar conversion records",
+            "Field book",
+            "Map",
+            "Municipality/VDC recommendation",
+            "Relationship proof and death certificate for heir claims",
+            "Municipality/VDC recommendation showing permanent residence and heirs",
+            "Land Form No. 7 if possible",
+            "Public notice for claim rights",
+            "Citizenship certificate and other necessary documents"
+        ],
+        "Time Taken": "After completion of process",
+        "Charge": "Rs. 10 for name transfer registration and land tax receipts from previous to current fiscal year",
+        "Grievance Handling Officer / Section": "Land Registration Section",
+        "Remarks": "On-site verification as needed and field inspection report by officer level for possession verification"
+    },
+    {
+        "ServiceNo": "4",
+        "Service": "Birta Land Registration for Birta holders",
+        "Required Documents": [
+            "Pota Birta records",
+            "Application within legal deadline",
+            "Tenant statement",
+            "Field book",
+            "Field map",
+            "Land Form No. 7 if possible",
+            "Municipality/VDC recommendation",
+            "For name transfer - relationship proof",
+            "death certificate",
+            "permanent residence recommendation",
+            "public notice for claims and other necessary documents"
+        ],
+        "Time Taken": "After completion of process",
+        "Charge": "Fine from Rs. 100 to 1,000 as determined, plus Rs. 10 if name transfer after 35 days, and land tax from 2016 BS to current fiscal year",
+        "Grievance Handling Officer / Section": "Land Registration Section",
+        "Remarks": "On-site verification as needed and field inspection report by officer level for possession verification"
+    },
+    {
+        "ServiceNo": "5",
+        "Service": "Birta Land Registration for tenants",
+        "Required Documents": [
+            "Registration application by end of 2053 Ashar",
+            "Tenant certificate",
+            "Field book",
+            "Field map",
+            "Land Form No. 2 schedule if possible",
+            "Municipality/VDC recommendation",
+            "For name transfer - relationship proof",
+            "death certificate",
+            "public notice for claims and other necessary documents"
+        ],
+        "Time Taken": "After completion of process",
+        "Charge": "10% of valuation amount for registration purpose, double service charge of current fiscal year's land tax",
+        "Grievance Handling Officer / Section": "Land Registration Section",
+        "Remarks": "On-site verification as needed and field inspection report by officer"
+    },
+    {
+        "ServiceNo": "6",
+        "Service": [
+            "(a) Registration",
+            "(b) Registration as per court decision",
+            "(c) Share transfer registration"
+        ],
+        "Required Documents": [
+            "(a) Tenant registration - Land Reform decision and notice letter, Original land ownership certificate, Citizenship certificate and other necessary documents",
+            "(b) Registration as per court settlement - Court's final decisions and notice letter, Applicant's citizenship, complete land registration procedure if pending",
+            "(c) Share transfer deed, recommendation, death certificate, deed validation, citizenship, land tax receipt and other necessary documents as required Documents"
+        ],
+        "Time Taken": [
+            "Same day if possible",
+            "After completion of process",
+            "After completion of process"
+        ],
+        "Charge": [
+            "As specified by law",
+            "Settlement fee (as specified by Financial Act)",
+            "Rs. 10 after 35 days of donor's death, free before that"
+        ],
+        "Grievance Handling Officer / Section": [
+            "Registration and Decision Implementation Section",
+            "Registration and Decision Implementation Section",
+            "Registration and Decision Implementation Section"
+        ],
+        "Remarks": [
+            "-",
+            "-",
+            "On-site verification for share transfer deeds without land details"
+        ]
+    },
+    {
+        "ServiceNo": "7",
+        "Service": "Amendment",
+        "Required Documents": [
+            "Name amendment (Land ownership certificate",
+            "Citizenship certificate",
+            "Specific recommendation from VDC/Municipality for name/surname difference",
+            "notice verification and other necessary documents)"
+        ],
+        "Time Taken": "After completion of process",
+        "Charge": "As specified by Financial Act",
+        "Grievance Handling Officer / Section": "Amendment Section",
+        "Remarks": "-"
+    },
+    {
+        "ServiceNo": "8",
+        "Service": "Record Registration and Cancellation",
+        "Required Documents": [
+            "Original registered deed",
+            "decision file",
+            "person must be present with 2 photos to be affixed",
+            "thumbprint required Documents"
+        ],
+        "Time Taken": "Generally same day",
+        "Charge": "Free",
+        "Grievance Handling Officer / Section": "Moth Section",
+        "Remarks": "-"
+    },
+    {
+        "ServiceNo": "9",
+        "Service": "Photo Affixation",
+        "Required Documents": [
+            "Original land ownership certificate",
+            "Citizenship certificate",
+            "Three generation details with certified photo",
+            "Recommendation from permanent residence VDC/Municipality",
+            "Source document of ownership and other necessary documents"
+        ],
+        "Time Taken": "Generally same day",
+        "Charge": "Free",
+        "Grievance Handling Officer / Section": "Moth Section",
+        "Remarks": "-"
+    },
+    {
+        "ServiceNo": "10",
+        "Service": "Three Generation Details",
+        "required Documents Documents": ["Original land ownership certificate, Citizenship certificate",
+                        "Three generation details with certified photo", 
+                        "Recommendation from permanent residence VDC/Municipality", 
+                        "Source document of ownership and other necessary documents"],
+        "Time Taken": "Generally same day",
+        "Charge": "Free",
+        "Grievance Handling Officer / Section": "Moth Section",
+        "Remarks": "-"
+    }
+]
+}

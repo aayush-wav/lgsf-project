@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\mocs_compilation_Debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\LGSF\lgsf-project\front-end\login\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\LGSF\lgsf-project\front-end\login\mainwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\EWIEGA46WW_Debug\qrc_image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\EWIEGA46WW_Debug\qrc_icons.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\mocs_compilation_Release.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\EWIEGA46WW_Release\qrc_image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\EWIEGA46WW_Release\qrc_icons.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\mocs_compilation_MinSizeRel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\EWIEGA46WW_MinSizeRel\qrc_image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\EWIEGA46WW_MinSizeRel\qrc_icons.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\mocs_compilation_RelWithDebInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\EWIEGA46WW_RelWithDebInfo\qrc_image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\EWIEGA46WW_RelWithDebInfo\qrc_icons.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\LGSF\lgsf-project\front-end\login\mainwindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\include_Debug\ui_mainwindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\include_Release\ui_mainwindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\include_MinSizeRel\ui_mainwindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\include_RelWithDebInfo\ui_mainwindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\LGSF\lgsf-project\front-end\login\build\CMakeFiles\dd99b5fb02c7d74f658e1c811e0fe73d\autouic_(CONFIG).stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\LGSF\lgsf-project\front-end\login\build\CMakeFiles\1718f8ac12708244c2da75da68630f81\qrc_image.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\LGSF\lgsf-project\front-end\login\build\CMakeFiles\1718f8ac12708244c2da75da68630f81\qrc_icons.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\LGSF\lgsf-project\front-end\login\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\LGSF\lgsf-project\front-end\login\mainwindow.ui" />
+    <None Include="D:\LGSF\lgsf-project\front-end\login\image.qrc" />
+    <None Include="D:\LGSF\lgsf-project\front-end\login\icons.qrc" />
+    <None Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\autouic_Debug.stamp" />
+    <None Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\autouic_Release.stamp" />
+    <None Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\autouic_MinSizeRel.stamp" />
+    <None Include="D:\LGSF\lgsf-project\front-end\login\build\login_autogen\autouic_RelWithDebInfo.stamp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{AB2CBBCD-9ED3-3836-8473-62EE6C3210DE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{A7E53454-0AFE-3B3B-A0A1-3981C0F0F952}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{6A73D0C9-A52D-35AE-902C-47B32E73C16D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

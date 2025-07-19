@@ -1,0 +1,143 @@
+{
+  "services": [
+    {
+      "ServiceNo": "1",
+      "Service": "फलफूल विरुवाको श्रोत  केन्द्र निर्धारण",
+      "RequiredDocuments": [" नर्सरी दर्ता प्रमाणको प्रतिलिपी", 
+                    "नर्सरी निरिक्षण प्रतिवेदन", 
+                    "सम्बन्धित स्थानीय निकायको सिफारिस पत्र",
+                    "नर्सरीमा गुणस्तरिय विरुवाको लगत सहित नर्सरी धनीको निवेदन "],
+      "TimeTaken": "हिउँदे फलफूलको लागि कार्तिक १५ र वर्षे फलफूलको लागि चैत्र मसान्त भित्र सम्बन्धित स्थानिय तहबाट केन्द्रमा सिफारिस सहित पेश पर्ने",
+      "Charge": "No charge",
+      "Responsible Officer": "Section Cheif",
+      "Room Number": "5",
+      "Grievance Officer" : "Cheif",
+      "Brach": "Technical Branch"
+    },
+    {
+      "ServiceNo": "2",
+      "Service": "फलफूल विरुवाको वार्षिक माग संकलन र आपूर्तीको लागि वासताल तयार एवं ब्यवस्थापन",
+      "RequiredDocuments": ["प्रदेश/स्थानीय निकाय र फार्म/केन्द्रको वार्षिक लक्ष्य र माग सम्बन्धी आधिकारीक पत्र र नीजि नसरीहरुको गुणस्तरिय विरुवा लगत"],
+      "TimeTaken": " हिउँदे फलफूलको लागि कार्तिक मसान्तर वर्ष फलफूलको लागि बैशाख १५ भित्र केन्द्रबाट बासलात तयार गरि पत्राचार गरिसक्नु पर्ने ",
+      "Charge": "No charge",
+      "Responsible Officer": "Section Cheif",
+      "Room Number": "5",
+      "Grievance Officer" : "Cheif",
+      "Brach": "Technical Branch"
+    },
+    {
+      "ServiceNo": "3",
+      "Service": "फलफूल नर्सरी एवं खेती विशेषका लागि प्राबिधिक सेवा प्रवाह",
+      "RequiredDocuments": ["ब्यक्ति /संस्थाले लिखित", 
+                    "टेलीफोन",
+                    "फ्याक्सद्वारा वा स्वंयम उपस्थित भई माग गर्नुपर्ने "],
+      "TimeTaken": "माग प्रात भए अनुसार गर्ने",
+      "Charge": "No charge",
+      "Responsible Officer": "Section Cheif",
+      "Room Number": "5",
+      "Grievance Officer" : "Cheif",
+      "Brach": "Technical Branch"
+    },
+    {
+      "ServiceNo": "4",
+      "Service": "ब्यक्ति/संस्थाको मौखिक वा लिखित आधिकारीक पत्र",
+      "RequiredDocuments": ["ब्यक्ति/संस्थाको मौखिक वा लिखित आधिकारीक पत्र"],
+      "TimeTaken": "वार्षिक रुपमा अद्यावधिक गरी माग अनुसार उपलब्ध गराईने ",
+      "Charge": "No charge",
+      "Responsible Officer": "Section Cheif",
+      "Room Number": "5",
+      "Grievance Officer" : "Cheif",
+      "Brach": "Technical Branch"
+    },
+    {
+      "ServiceNo": "5",
+      "Service": "फलफूल विशेषका प्रबिधि प्रकाशन व्यव्थापन तथा वितरण",
+      "RequiredDocuments": ["ब्यक्ति/ संस्थाको मौखिक वा लिखित आधिकारीक माग पत्र"],
+      "TimeTaken": "वार्षिक/चौमासिक रुपमा तयार गरि माग अनुसार तुरुन्त उपलब्ध गराईने ",
+      "Charge": "No charge",
+      "Responsible Officer": "Section Cheif",
+      "Room Number": "5",
+      "Grievance Officer" : "Cheif",
+      "Brach": "Technical Branch"
+    },
+    {
+      "ServiceNo": "6",
+      "Service": "फलफूल सम्बन्धी प्राविधिक जानकारी प्रदान र समस्या समधान",
+      "RequiredDocuments": ["ब्यक्ति/संस्थाको मौखिक वा लिखित आधिकारीक माग पत्र"],
+      "TimeTaken": "माग प्राप्त हुनासाथ सेवा दिने ",
+      "Charge": "No charge",
+      "Responsible Officer": "Horticulture Development Officer (Bishnu Prasad Giri)",
+      "Room Number": "12",
+      "Grievance Officer" : "Cheif",
+      "Brach": "Technical Branch"
+    },
+    {
+      "ServiceNo": "7",
+      "Service": "विभिन्न निकायसंग फलफूल विकास विस्तार सम्बन्धी समन्वय एवं साझेदारी/सहकार्य",
+      "RequiredDocuments": ["सम्बन्धित ब्यक्ति / निकायकोदर्ता प्रमाणपत्र",
+                    "कर चुक्ता प्रमाणपत्रको प्रतिलिपी",
+                    "अन्य आवश्यक कागजातहरु"],
+      "TimeTaken": "नियमित रुपमा आवश्यकता अनुसार",
+      "Charge": "No charge",
+      "Responsible Officer": "Section Cheif",
+      "Room Number": "8",
+      "Grievance Officer" : "Cheif",
+      "Brach": "Technical Branch"
+    },
+    {
+      "ServiceNo": "8",
+      "Service": "बजेट तथा कार्यक्रम सम्बन्धी र निवेदनहरुको कारवाही तथा सहजीकरण",
+      "RequiredDocuments": ["मागर औचित्य खुलेको विवरण"],
+      "TimeTaken": "माग प्राप्त हुनासाथ सेवा दिने",
+      "Charge": "No charge",
+      "Responsible Officer": "Section Cheif",
+      "Room Number": "8",
+      "Grievance Officer" : "Cheif",
+      "Brach": "Technical Branch"
+    },
+    {
+      "ServiceNo": "9",
+      "Service": "अनुगमन/मुल्यांकन एवं गुनासो ब्यवस्थापन",
+      "RequiredDocuments": ["स्वीकृत कार्यक्रमहरुको जानकारी र गुनासोको लागि लिखित पत्र"],
+      "TimeTaken": "गुनासो पेश/प्रस्तुत भएको ३ दिन भित्र आवश्यकता र नियम अनुसार यथासिघ्र",
+      "Charge": "No charge",
+      "Responsible Officer": "Section Cheif",
+      "Room Number": "8",
+      "Grievance Officer" : "Cheif",
+      "Brach": "Technical Branch"
+    },
+    {
+      "ServiceNo": "10",
+      "Service": "प्रशासनिक जानकारी एवं सेवा प्रवाह",
+      "RequiredDocuments": ["निजामती सेवा ऐन तथा नियमावली अनुसार"],
+      "TimeTaken": "माग प्राप्त हुनासाथ सेवा दिने",
+      "Charge": "No charge",
+      "Responsible Officer": "Section Cheif",
+      "Room Number": "7",
+      "Grievance Officer" : " Cheif",
+      "Brach": "Technical Branch"
+    },
+    {
+      "ServiceNo": "11",
+      "Service": "केन्द्रबाट प्रकाशित वार्षिक प्रगति प्रतिवेदन तथा पुस्तिका वितरण",
+      "RequiredDocuments": ["ब्यक्ति/ संस्थाको मौखिक वा लिखित आधिकारीक माग पत्र"],
+      "TimeTaken": "माग प्राप्त हुनासाथ सेवा दिने ",
+      "Charge": "No charge",
+      "Responsible Officer": "Section Cheif",
+      "Room Number": "7",
+      "Grievance Officer" : " Cheif",
+      "Brach": "Technical Branch"
+    },
+    {
+      "ServiceNo": "12",
+      "Service": "केन्द्र सम्बन्धी खर्च भुक्तानी व्यवस्थापन",
+      "RequiredDocuments": ["निवेदन, स्वीकृत आदेश, बिल भरपाइ र निर्णय एवं पुष्ट्याइ हुने अन्य आवश्यक कागजातहरु"],
+      "TimeTaken": "आवश्यक कागजात पेश गरेको 3 दिन भित्र ",
+      "Charge": "No charge",
+      "Responsible Officer": "Section Cheif",
+      "Room Number": "7",
+      "Grievance Officer" : "Cheif",
+      "Brach": "Technical Branch"
+    }
+  ]
+}

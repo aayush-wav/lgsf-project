@@ -1,0 +1,76 @@
+{
+  "services": [
+    {
+      "ServiceNo": "1",
+      "Service": "Determination/Update of Public Vehicle Fare",
+      "Required Documents": ["Documents required as per the subject matter"],
+      "Time Taken": "As per the specific case",
+      "Charge": "Free",
+      "Grievance Handling Officer / Section": "Director/CDE/ME Technical Branch and Administration, Planning, Monitoring and Evaluation Branch",
+      "Responsible Officer": "Great, Chief, or Principal/Director"
+    },
+    {
+      "ServiceNo": "2",
+      "Service": "Issue Road Worthiness Certificate",
+      "Required Documents": ["Application, Technical Specification, Test Report, Catalog, Drawing Estimate"],
+      "Time Taken": "Not more than 15 days",
+      "Charge": "Free",
+      "Grievance Handling Officer / Section": "Director/ME Technical Branch",
+      "Responsible Officer": "Great, Chief, or Principal/Director"
+    },
+    {
+      "ServiceNo": "3",
+      "Service": "Transport Business Association, Organization Registration Related Opinion/Feedback",
+      "Required Documents": ["Letter requesting opinion/feedback with proposed constitution of the association/organization"],
+      "Time Taken": "Not more than 15 days",
+      "Charge": "Free",
+      "Grievance Handling Officer / Section": "Director/Section Officer Vehicle Monitoring Standards Formulation and Driver Management, Inter-Provincial Coordination Study/Research Branch",
+      "Responsible Officer": "Great, Chief, or Principal/Director"
+    },
+    {
+      "ServiceNo": "4",
+      "Service": "Factory or Workshop Registration and Renewal",
+      "Required Documents": ["As per Factory and Workshop Operation Guidelines, 2074"],
+      "Time Taken": "Not more than 15 days",
+      "Charge": "Rs. 1000 to Rs. 4000",
+      "Grievance Handling Officer / Section": "Director/Section Officer Vehicle Monitoring Standards Formulation and Driver Management, Inter-Provincial Coordination Study/Research Branch / Director/ME Technical Branch",
+      "Responsible Officer": "Great, Chief, or Principal/Director"
+    },
+    {
+      "ServiceNo": "5",
+      "Service": "Regarding Instructions Requested from Transport Management Office",
+      "Required Documents": ["Documents required as per the subject matter"],
+      "Time Taken": "Not more than 3 days",
+      "Charge": "Free",
+      "Grievance Handling Officer / Section": "Director/Section Officer Administration, Planning, Monitoring and Evaluation Branch",
+      "Responsible Officer": "Great, Chief, or Principal/Director"
+    },
+    {
+      "ServiceNo": "6",
+      "Service": "Provide Vehicle Related Statistics",
+      "Required Documents": ["Request letter/application"],
+      "Time Taken": "Same day",
+      "Charge": "Free",
+      "Grievance Handling Officer / Section": "Director/Section Officer Administration, Planning, Monitoring and Evaluation Branch",
+      "Responsible Officer": "Great, Chief, or Principal/Director"
+    },
+    {
+      "ServiceNo": "7",
+      "Service": "Provide Approved Fare Rates for Passenger Public Vehicles",
+      "Required Documents": ["Request letter/application"],
+      "Time Taken": "Same day",
+      "Charge": "Free",
+      "Grievance Handling Officer / Section": "Director/Section Officer Vehicle Monitoring Standards Formulation and Driver Management, Inter-Provincial Coordination Study/Research Branch",
+      "Responsible Officer": "Great, Chief, or Principal/Director"
+    },
+    {
+      "ServiceNo": "8",
+      "Service": "Verify and Approve New Vehicles According to Nepal Vehicle Pollution Standards, 2069",
+      "Required Documents": ["Application, Technical Specification, Test Report (007 and 10), Catalog, Dealership Agreement, Company Registration and Other Related Documents"],
+      "Time Taken": "Maximum 1 month",
+      "Charge": "Free",
+      "Grievance Handling Officer / Section": "Director/ME Technical Branch",
+      "Responsible Officer": "Great, Chief, or Principal/Director"
+    }
+  ]
+}

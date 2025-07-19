@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="image.qrc">D:/LGSF/lgsf-project/front-end/login/image.qrc</file>
+  </qresource>
+</RCC>
+

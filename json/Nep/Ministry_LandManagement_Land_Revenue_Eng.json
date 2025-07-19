@@ -1,0 +1,116 @@
+[
+    {
+        "S.N.": "1.",
+        "Type_of_Service_Facility": "Registration Pass",
+        "Process_and_Documents_Required_by_Service_Recipient": "Original land ownership certificate, original and copy of citizenship certificate (of both parties), current fiscal year's land revenue receipt, if available, tax clearance letter and resignation document",
+        "Fee": "As specified by the Economic Act of each fiscal year",
+        "Time_Required": "Same day",
+        "Responsible_Officer_Section_Unit": "Registration Section Main",
+        "Remarks": ""
+    },
+    {
+        "S.N.": "2.",
+        "Type_of_Service_Facility": "Name Transfer",
+        "Process_and_Documents_Required_by_Service_Recipient": "Original land ownership certificate, current fiscal year's land revenue receipt, relationship certificate, death registration, consent letter if multiple heirs, recommendation from local authority with permanent address, public notice and field verification as required for heirs other than spouse and children of the deceased",
+        "Fee": "No fee if within 35 days of death, otherwise Rs. 10 only",
+        "Time_Required": "After process completion",
+        "Responsible_Officer_Section_Unit": "Name Transfer Section",
+        "Remarks": ""
+    },
+    {
+        "S.N.": "3.",
+        "Type_of_Service_Facility": "Land Registration (Raikar Land)",
+        "Process_and_Documents_Required_by_Service_Recipient": "Previous record of converted Raikar, field book, map, recommendation from local authority where land is located, relationship certificate and death registration if heir is requesting registration, recommendation from local authority confirming permanent residence, public notice regarding claim, citizenship certificate and other necessary documents",
+        "Fee": "Rs. 10 for name transfer registration and land revenue receipt from previous to current fiscal year",
+        "Time_Required": "After process completion",
+        "Responsible_Officer_Section_Unit": "Land Registration Section",
+        "Remarks": "Field inspection report regarding possession as required by authorized level"
+    },
+    {
+        "S.N.": "4.",
+        "Type_of_Service_Facility": "Registration of Birta Land in Favor of Birta Owner",
+        "Process_and_Documents_Required_by_Service_Recipient": "Birta record, application within the legal period, statement of tenant, field book, field map, recommendation from local authority where land is located, relationship certificate if name transfer or Raikar registration, death registration, recommendation from local authority confirming permanent residence, public notice regarding claim and other necessary documents",
+        "Fee": "Rs. 100 to 1,000 as per discretion, additional Rs. 10 if name transfer after 35 days, and land revenue from 2016 to current fiscal year",
+        "Time_Required": "After process completion",
+        "Responsible_Officer_Section_Unit": "Land Registration Section",
+        "Remarks": "Field inspection report regarding possession as required by authorized level"
+    },
+    {
+        "S.N.": "5.",
+        "Type_of_Service_Facility": "Registration of Birta Land in Favor of Tenant",
+        "Process_and_Documents_Required_by_Service_Recipient": "Application for Raikar registration by end of Ashad 2053, tenant certificate, field book, field map, recommendation from local authority where land is located, relationship certificate if name transfer or Raikar registration, death registration certificate, public notice regarding claim and other necessary documents",
+        "Fee": "10% of permanent valuation for registration purpose, double the service fee of current fiscal year's land revenue",
+        "Time_Required": "After process completion",
+        "Responsible_Officer_Section_Unit": "Land Registration Section",
+        "Remarks": "Field inspection report as required by authorized level"
+    },
+    {
+        "S.N.": "6.",
+        "Type_of_Service_Facility": [
+            "(a) Mohi Registration",
+            "(b) Mohi Registration as per Court Decision",
+            "(c) Shewa Mohi Registration"
+        ],
+        "Process_and_Documents_Required_by_Service_Recipient": [
+            "(a) Mohi registration decision and notice from Land Revenue Office, original land ownership certificate, citizenship certificate and other necessary documents",
+            "(b) Court decision and reconciliation document, final court decisions and notice, applicant's citizenship - if registration is pending, land registration procedure must be completed, etc.",
+            "(c) Shewa document, recommendation, death registration, document approval, citizenship, land revenue receipt and other documents as required"
+        ],
+        "Fee": [
+            "As specified by the Act",
+            "Reconciliation document (fee as per Economic Act)",
+            "Rs. 10 after 35 days of donor's death, nothing before that"
+        ],
+        "Time_Required": [
+            "On the day of application (as far as possible)",
+            "After process completion",
+            "After process completion"
+        ],
+        "Responsible_Officer_Section_Unit": [
+            "Mohi and Decision Implementation Section",
+            "Mohi and Decision Implementation Section",
+            "Mohi and Decision Implementation Section"
+        ],
+        "Remarks": [
+            "",
+            "",
+            "Field inspection in case of Shewa document without land details"
+        ]
+    },
+    {
+        "S.N.": "7.",
+        "Type_of_Service_Facility": "Amendment",
+        "Process_and_Documents_Required_by_Service_Recipient": "Name amendment (land ownership certificate, citizenship certificate, recommendation from local authority in case of name/surname difference, public notice and other necessary documents)",
+        "Fee": "As specified by the Economic Act",
+        "Time_Required": "After process completion",
+        "Responsible_Officer_Section_Unit": "Amendment Section",
+        "Remarks": ""
+    },
+    {
+        "S.N.": "8.",
+        "Type_of_Service_Facility": "Cancellation of Shresta Filing",
+        "Process_and_Documents_Required_by_Service_Recipient": "Original document of approved decision, decision file, concerned person must be present and affix photo in 2 copies, thumbprint required.",
+        "Fee": "No fee",
+        "Time_Required": "Generally same day",
+        "Responsible_Officer_Section_Unit": "Main Section",
+        "Remarks": ""
+    },
+    {
+        "S.N.": "9.",
+        "Type_of_Service_Facility": "Photo Affixation",
+        "Process_and_Documents_Required_by_Service_Recipient": "Original land ownership certificate, citizenship certificate, three-generation lineage with certified photo, recommendation from local authority confirming permanent residence, source document of acquired ownership and other necessary documents",
+        "Fee": "No fee",
+        "Time_Required": "Generally same day",
+        "Responsible_Officer_Section_Unit": "Main Section",
+        "Remarks": ""
+    },
+    {
+        "S.N.": "10.",
+        "Type_of_Service_Facility": "Three Generation",
+        "Process_and_Documents_Required_by_Service_Recipient": "Original land ownership certificate, citizenship certificate, three-generation lineage with certified photo, recommendation from local authority confirming permanent residence, source document of acquired ownership and other necessary documents",
+        "Fee": "No fee",
+        "Time_Required": "Generally same day",
+        "Responsible_Officer_Section_Unit": "Main Section",
+        "Remarks": ""
+    }
+]
