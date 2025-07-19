@@ -12,7 +12,8 @@
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), typingTimer(new QTimer(this)), currentCharIndex(0)
+     : QMainWindow(parent), ui(new Ui::MainWindow), currentCharIndex(0), typingTimer(new QTimer(this))
+
 {
     ui->setupUi(this);
 
