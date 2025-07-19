@@ -139,7 +139,7 @@ void MainWindow::onTypingTimeout()
 QString MainWindow::fetchServiceData(const QString &serviceKeyword, QString responseTemplate)
 {
     if (!db.isOpen()) {
-        return "Database is not connected.";
+        return "Database is not connected. Please check your settings.";
     }
 
     QSqlQuery query(db);
