@@ -1,3 +1,5 @@
+//mainwindow.cpp
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QFile>
@@ -33,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->chatScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     ui->inputLineEdit->setPlaceholderText("Ask ई - BADAPATRA anything");
+    ui->sendButton->setText("Send");
+    ui->sendButton->setStyleSheet("font-family: '0xNerdFont'; font-size: 14px;");
     ui->sendButton->setEnabled(true);
     typingTimer->setInterval(30);
     connect(typingTimer, &QTimer::timeout, this, &MainWindow::onTypingTimeout);
@@ -121,7 +125,8 @@ void MainWindow::startTypingAnimation(const QString &text)
     pendingText = text;
     typedText.clear();
     currentCharIndex = 0;
-    ui->sendButton->setEnabled(false);
+    ui->sendButton->setText("STOP");
+    ui->sendButton->setEnabled(true);
 
     typingLabel = new QLabel("");
     typingLabel->setStyleSheet("font-family: '0xNerdFont'; font-size: 18px; color: rgb(180, 180, 180); background: transparent; padding: 8px;");
@@ -190,6 +195,7 @@ void MainWindow::onTypingTimeout()
     else
     {
         typingTimer->stop();
+        ui->sendButton->setText("Send");
         ui->sendButton->setEnabled(true);
         addTimeLabelToTypingMessage();
         typingLabel = nullptr;
@@ -283,8 +289,6 @@ void MainWindow::handleUserInput(const QString &userText)
 void MainWindow::handleSendButtonClicked()
 {
     QString userText = ui->inputLineEdit->text().trimmed();
-    if (userText.isEmpty())
-        return;
 
     if (typingTimer->isActive()) {
         typingTimer->stop();
@@ -293,8 +297,13 @@ void MainWindow::handleSendButtonClicked()
             addTimeLabelToTypingMessage();
             typingLabel = nullptr;
         }
+        ui->sendButton->setText("Send");
         ui->sendButton->setEnabled(true);
+        return;
     }
+
+    if (userText.isEmpty())
+        return;
 
     if (ui->badapatraLabel)
         ui->badapatraLabel->hide();
