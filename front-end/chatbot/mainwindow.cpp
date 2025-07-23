@@ -12,6 +12,7 @@
 #include <QVBoxLayout>
 #include <QDateTime>
 #include <QCoreApplication>
+#include <QRegularExpression>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -119,7 +120,7 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
     QString input = userInput.trimmed().toLower();
     
     // Remove common punctuation and extra spaces
-    input = input.remove(QRegExp("[.,!?;:]")).simplified();
+    input = input.remove(QRegularExpression("[.,!?;:]")).simplified();
     
     // Direct exact match first (highest priority)
     for (const Intent &intent : intentList)
