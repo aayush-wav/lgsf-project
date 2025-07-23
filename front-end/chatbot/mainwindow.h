@@ -50,6 +50,7 @@ private:
     void addUserMessage(const QString &text);
     void addBotMessage(const QString &text);
     void handleUserInput(const QString &userText);
+    void clearChat();
 };
 
 #endif
