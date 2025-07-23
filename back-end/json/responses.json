@@ -1,60 +1,158 @@
 [
   {
     "intent": "greeting",
-    "patterns": ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "namaste", "namaskar"],
-    "response": "Namaste! How can I assist you today?"
+    "patterns": [
+      "hello", "hi", "hey", "good morning", "good afternoon", "good evening", 
+      "namaste", "namaskar", "helo", "hii", "heyyy", "morning", "evening",
+      "greetings", "howdy", "yo", "sup", "what's up", "whatsup", "kya hal",
+      "ke cha", "kasto cha", "sanchai", "start", "begin"
+    ],
+    "response": "Namaste! I'm ई-BADAPATRA, your government services assistant. How can I help you today? I can provide information about documents, fees, office locations, and application procedures."
   },
   {
-    "intent": "farewell",
-    "patterns": ["bye", "goodbye", "see you", "later", "thank you", "thanks", "dhanyabad"],
-    "response": "Dhanyabaad for using me! Have a great day. Feel free to ask if you need any help with government services."
+    "intent": "farewell", 
+    "patterns": [
+      "bye", "goodbye", "see you", "later", "thank you", "thanks", "dhanyabad",
+      "byee", "good bye", "see ya", "catch you later", "ttyl", "talk to you later",
+      "thik cha", "bas", "enough", "done", "finish", "end", "exit", "quit",
+      "dhanyabaad", "thank u", "thanku", "thnx", "appreciate"
+    ],
+    "response": "Dhanyabaad for using ई-BADAPATRA! Have a great day. Feel free to ask anytime if you need help with government services. Take care!"
   },
   {
     "intent": "service_info",
     "patterns": [
-      "documents", "document", "charge", "cost", "fee", "how much", "price",
-      "apply", "application", "service", "process", "procedure",
-      "passport", "citizenship", "license", "permit", "certificate",
-      "registration", "tax", "birth certificate", "death certificate",
-      "marriage certificate", "driving license", "voter id", "pan card",
-      "aadhar", "ration card", "business license", "vehicle registration"
+      "documents", "document", "charge", "cost", "fee", "how much", "price", "rate",
+      "apply", "application", "service", "process", "procedure", "steps", "how to apply",
+      "passport", "citizenship", "license", "permit", "certificate", "nagarikta",
+      "registration", "tax", "birth certificate", "death certificate", "janma praman patra",
+      "marriage certificate", "driving license", "voter id", "pan card", "voter card",
+      "aadhar", "ration card", "business license", "vehicle registration", "gadi darta",
+      "kharcha", "paisa", "rupiya", "lagcha", "chahiye", "what documents", "ke document",
+      "form", "paper", "kagaj", "certificate", "praman patra", "license", "anumati patra"
     ],
-    "response": "To apply for the service **{service_name}**, please visit **{office_name}**, Office No. **{service_no}**.\n\n **Required Documents:**\n{required_documents}\n\n **Fee:** {charge}"
+    "response": "To apply for the service **{service_name}**, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\nWould you like more information about the application process or office hours?"
   },
   {
     "intent": "office_info",
     "patterns": [
-      "office", "where", "location", "address", "ward", "municipality",
-      "department", "branch", "counter", "desk", "room", "building"
+      "office", "where", "location", "address", "ward", "municipality", "kaha cha",
+      "department", "branch", "counter", "desk", "room", "building", "karyalaya",
+      "kaha", "kata", "location", "thegana", "jagga", "place", "office kaha",
+      "shakha", "bivag", "mantralaya", "office location", "kaha paincha"
     ],
-    "response": "The **{office_name}** is under the **{ministry_name}**. You can find it at: {office_location}.\nPlease let me know the specific service if you'd like detailed room or section info."
+    "response": "The **{office_name}** is under the **{ministry_name}**. You can find it at: {office_location}.\n\nPlease let me know the specific service if you'd like detailed room or section information. Do you need directions or contact details?"
   },
   {
     "intent": "ministry_info",
     "patterns": [
-      "ministry", "minister", "ministries", "department", "government",
-      "contact", "phone", "email", "headquarters"
+      "ministry", "minister", "ministries", "department", "government", "mantralaya",
+      "contact", "phone", "email", "headquarters", "phone number", "telephone",
+      "sarkar", "mantri", "secretary", "sachib", "government office"
     ],
-    "response": "The **{ministry_name}** oversees this service. You can reach them through their central office. If you want contact details, let me know the exact ministry name."
+    "response": "The **{ministry_name}** oversees this service. You can reach them through their central office.\n\nFor specific contact details like phone numbers or email addresses, please let me know the exact ministry or department name you're interested in."
   },
   {
     "intent": "help",
-    "patterns": ["help", "assist", "support", "guide", "how to", "what can you do"],
-    "response": "I can help you with information about government services including:\n\n Required documents,\n Application fees,\n Office locations,\n Processing times.\n\nJust ask me about any specific service!"
+    "patterns": [
+      "help", "assist", "support", "guide", "how to", "what can you do", "maddat",
+      "sahayata", "help me", "can you help", "I need help", "support chahiye",
+      "guide gara", "batau", "sikhau", "bhannu", "what services", "ke service",
+      "menu", "options", "features", "capabilities", "about you", "introduce"
+    ],
+    "response": "I'm ई-BADAPATRA, your digital assistant for government services in Nepal! I can help you with:\n\n✓ Required documents for any service\n✓ Application fees and charges\n✓ Office locations and addresses\n✓ Processing times and procedures\n✓ Ministry and department information\n✓ Contact details\n\nJust ask me about any specific government service like passport, citizenship, licenses, certificates, etc. What would you like to know?"
   },
   {
     "intent": "office_hours",
-    "patterns": ["office hours", "timing", "when open", "working hours", "schedule"],
-    "response": " Most government offices are open from **10:00 AM to 5:00 PM**, Sunday to Thursday.\n Note: Fridays are partial holiday and Saturdays are usually holidays. Timings can vary by office."
+    "patterns": [
+      "office hours", "timing", "when open", "working hours", "schedule", "samaya",
+      "kati baje", "khulla", "banda", "office time", "working time", "office timing",
+      "open time", "close time", "holiday", "working days", "kaam garne din"
+    ],
+    "response": "Most government offices are open:\n\n⏰ **Working Hours:** 10:00 AM to 5:00 PM\n📅 **Working Days:** Sunday to Thursday\n🔴 **Holidays:** Fridays (partial holiday), Saturdays (full holiday)\n\n**Note:** Timings may vary by office and some services may have different schedules. Would you like information about a specific office?"
   },
   {
     "intent": "contact",
-    "patterns": ["contact", "phone", "email", "reach", "call"],
-    "response": " For contact details, please provide the name of the office or service you're interested in, and I'll fetch the relevant phone number or email address."
+    "patterns": [
+      "contact", "phone", "email", "reach", "call", "number", "telephone",
+      "phone number", "contact number", "email address", "kura garna",
+      "call garna", "sambandha", "phone gara", "contact details"
+    ],
+    "response": "For contact details, please provide the name of the specific office or service you're interested in, and I'll fetch the relevant phone number or email address.\n\nYou can also mention the ministry or department name for general contact information."
+  },
+  {
+    "intent": "about_system",
+    "patterns": [
+      "what are you", "who are you", "about you", "your name", "introduce yourself",
+      "ke ho", "ko ho", "name ke ho", "badapatra", "system", "chatbot", "AI",
+      "robot", "computer", "digital assistant", "virtual assistant"
+    ],
+    "response": "I'm ई-BADAPATRA (E-BADAPATRA), your intelligent digital assistant for government services in Nepal! 🇳🇵\n\nI'm designed to help citizens easily access information about government services, documents, fees, and procedures. Think of me as your personal guide to navigate government services efficiently.\n\nHow can I assist you with your government service needs today?"
+  },
+  {
+    "intent": "language_support",
+    "patterns": [
+      "nepali", "english", "language", "bhasha", "nepali ma", "english ma",
+      "translate", "meaning", "matlab", "artha", "hindi", "understand"
+    ],
+    "response": "I can understand and respond in both Nepali and English! Feel free to ask your questions in either language or mix both languages - I'll do my best to help you.\n\nYou can ask about government services in the language you're most comfortable with. What would you like to know?"
+  },
+  {
+    "intent": "complaints",
+    "patterns": [
+      "complain", "complaint", "problem", "issue", "grunaso", "samasya",
+      "not working", "error", "wrong", "galat", "kaam gardaina", "issue cha",
+      "problem cha", "help gardaina", "slow", "dhilo", "bekar"
+    ],
+    "response": "I'm sorry you're experiencing issues! Could you please tell me more specifically what problem you're facing?\n\nIf it's about:\n• A specific government service - I can help find the right information\n• Office procedures - I can clarify the process\n• Document requirements - I can list what's needed\n• Technical issues with my responses - Please describe what's not working\n\nHow can I better assist you?"
+  },
+  {
+    "intent": "appreciation",
+    "patterns": [
+      "good", "nice", "excellent", "great", "awesome", "helpful", "useful",
+      "ramro", "thik", "mitho", "helpful cha", "good job", "well done",
+      "impressed", "satisfied", "happy", "khushi", "thanks", "dhanyabad"
+    ],
+    "response": "Thank you for the kind words! I'm glad I could help you with your government service inquiry. 😊\n\nIf you need any other information about documents, fees, office locations, or procedures, feel free to ask anytime. I'm here to make government services more accessible for everyone!"
+  },
+  {
+    "intent": "clarification",
+    "patterns": [
+      "what", "how", "why", "when", "where", "which", "ke", "kaha", "kina",
+      "kasari", "kati", "kun", "explain", "bujhau", "clear", "details",
+      "more info", "tell me more", "elaborate", "specific", "exactly"
+    ],
+    "response": "I'd be happy to provide more specific information! Could you please tell me:\n\n• Which government service are you asking about?\n• What specific aspect do you need help with? (documents, fees, location, process)\n• Any particular office or ministry you're interested in?\n\nThe more specific you are, the better I can assist you!"
+  },
+  {
+    "intent": "emergency_services",
+    "patterns": [
+      "emergency", "urgent", "immediate", "fast", "quick", "jhatpat", "chito",
+      "apatkal", "emergency service", "urgent chahiye", "tatkal", "express"
+    ],
+    "response": "For urgent government services, here are some options:\n\n🚨 **Emergency Services:**\n• Tatkal/Express processing (additional fees apply)\n• Walk-in services at some offices\n• Online applications where available\n\nPlease specify which service you need urgently, and I can provide information about expedited processing options and requirements."
+  },
+  {
+    "intent": "online_services",
+    "patterns": [
+      "online", "internet", "website", "digital", "e-service", "app", "mobile",
+      "online apply", "internet bata", "ghar bata", "website ma", "digital service",
+      "e-governance", "portal", "online form"
+    ],
+    "response": "Many government services are now available online! 💻\n\nFor online services, you can visit:\n• Official government portals\n• Ministry websites\n• E-governance platforms\n\nWhich specific service are you looking to apply for online? I can guide you to the right digital platform and tell you what documents you'll need to upload."
   },
   {
     "intent": "unknown",
     "patterns": [],
-    "response": " Sorry, I couldn't understand that. Can you please be more specific?\nI can help with documents, charges, locations, or office info for government services."
+    "response": "I didn't quite understand that, but I'm here to help! 🤔\n\nI specialize in government services information. You can ask me about:\n• Document requirements for any service\n• Fees and charges\n• Office locations and contact details\n• Application procedures\n• Ministry information\n\nCould you please rephrase your question or let me know which government service you need help with? For example, you could ask: 'passport documents chahiye' or 'citizenship fee kati ho?'"
+  },
+  {
+    "intent": "casual_chat",
+    "patterns": [
+      "how are you", "kasto cha", "ke gari rahachu", "what's up", "how's it going",
+      "fine", "ok", "alright", "sanchai", "thik chu", "ramro", "maja ma",
+      "weather", "mausam", "today", "aja", "news", "khabar"
+    ],
+    "response": "I'm doing well, thank you for asking! I'm here and ready to help you with any government service information you need. 😊\n\nIs there any particular government service, document, or procedure you'd like to know about today? I'm here to make your government service experience easier!"
   }
 ]
