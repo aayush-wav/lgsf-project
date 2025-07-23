@@ -2,12 +2,14 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QVector>
-#include <QStringList>
-#include <QJsonDocument>
-#include <QJsonArray>
 #include <QTimer>
+#include <QVector>
 #include <QSqlDatabase>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QJsonParseError>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -15,7 +17,7 @@ QT_END_NAMESPACE
 
 struct Intent {
     QString tag;
-    QStringList patterns;
+    QVector<QString> patterns;
     QString response;
 };
 
@@ -24,29 +26,31 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
-private slots:
-    void handleSendButtonClicked();
-    void onTypingTimeout();
 
 private:
     Ui::MainWindow *ui;
     QVector<Intent> intentList;
+    QSqlDatabase db;
+    QTimer *typingTimer;
+    int currentCharIndex;
     QString pendingText;
     QString typedText;
-    QTimer *typingTimer = nullptr;
-    int currentCharIndex = 0;
-    QSqlDatabase db;
 
     QJsonDocument loadIntents(const QString &fileName);
     QVector<Intent> parseIntents(const QJsonArray &intentsArray);
     const Intent* matchIntent(const QString &userInput);
-    void startTypingAnimation(const QString &text);
-    void handleUserInput(const QString &userInput);
     QString fetchServiceData(const QString &serviceKeyword, QString responseTemplate);
     void setupDatabase();
+
+    void addUserMessage(const QString &text);
+    void addBotMessage(const QString &text);
+
+private slots:
+    void onTypingTimeout();
+    void handleSendButtonClicked();
+    void handleUserInput(const QString &userText);
 };
 
-#endif // MAINWINDOW_H
+#endif

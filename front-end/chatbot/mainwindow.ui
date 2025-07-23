@@ -27,7 +27,7 @@
      <rect>
       <x>150</x>
       <y>590</y>
-      <width>741</width>
+      <width>1000</width>
       <height>51</height>
      </rect>
     </property>
@@ -55,7 +55,7 @@ padding: 10px;</string>
    <widget class="QPushButton" name="sendButton">
     <property name="geometry">
      <rect>
-      <x>900</x>
+      <x>1180</x>
       <y>590</y>
       <width>171</width>
       <height>51</height>
@@ -76,31 +76,6 @@ border-radius: 6;</string>
     </property>
     <property name="text">
      <string>SEND</string>
-    </property>
-   </widget>
-   <widget class="QTextEdit" name="responseTextEdit">
-    <property name="geometry">
-     <rect>
-      <x>150</x>
-      <y>40</y>
-      <width>1031</width>
-      <height>540</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>0xProto Nerd Font Mono</family>
-      <pointsize>12</pointsize>
-     </font>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Shape::NoFrame</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Shadow::Plain</enum>
-    </property>
-    <property name="textInteractionFlags">
-     <set>Qt::TextInteractionFlag::TextSelectableByKeyboard|Qt::TextInteractionFlag::TextSelectableByMouse</set>
     </property>
    </widget>
    <widget class="QLabel" name="badapatraLabel">
@@ -126,6 +101,53 @@ border-radius: 6;</string>
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
+   <widget class="QScrollArea" name="chatScrollArea">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1280</width>
+      <height>550</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>0xProto Nerd Font</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
+    </property>
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <widget class="QWidget" name="chatContainer">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>1261</width>
+       <height>548</height>
+      </rect>
+     </property>
+     <widget class="QWidget" name="verticalLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>1251</width>
+        <height>521</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="chatLayout"/>
+     </widget>
+    </widget>
+   </widget>
+   <zorder>inputLineEdit</zorder>
+   <zorder>sendButton</zorder>
+   <zorder>chatScrollArea</zorder>
+   <zorder>badapatraLabel</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
