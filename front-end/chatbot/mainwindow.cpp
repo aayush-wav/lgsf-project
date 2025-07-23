@@ -59,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->sendButton, &QPushButton::clicked, this, &MainWindow::handleSendButtonClicked);
 
 
-    QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
+    QJsonDocument doc = loadIntents("D:/LGSF/lgsf-project/back-end/json/responses.json");
     if (!doc.isNull())
         intentList = parseIntents(doc.array());
     setupDatabase();
@@ -117,13 +117,58 @@ QVector<Intent> MainWindow::parseIntents(const QJsonArray &intentsArray)
 const Intent *MainWindow::matchIntent(const QString &userInput)
 {
     QString input = userInput.trimmed().toLower();
+    
+    // Remove common punctuation and extra spaces
+    input = input.remove(QRegExp("[.,!?;:]")).simplified();
+    
+    // Direct exact match first (highest priority)
     for (const Intent &intent : intentList)
         for (const QString &pattern : intent.patterns)
             if (input == pattern.toLower())
                 return &intent;
+    
+    // Partial match - check if input contains any pattern
+    for (const Intent &intent : intentList) {
+        for (const QString &pattern : intent.patterns) {
+            if (input.contains(pattern.toLower()) || pattern.toLower().contains(input)) {
+                return &intent;
+            }
+        }
+    }
+    
+    // Word-based matching - split input into words and check
+    QStringList inputWords = input.split(' ', Qt::SkipEmptyParts);
+    for (const Intent &intent : intentList) {
+        for (const QString &pattern : intent.patterns) {
+            QStringList patternWords = pattern.toLower().split(' ', Qt::SkipEmptyParts);
+            
+            // Check if any input word matches any pattern word
+            for (const QString &inputWord : inputWords) {
+                for (const QString &patternWord : patternWords) {
+                    if (inputWord == patternWord || 
+                        inputWord.contains(patternWord) || 
+                        patternWord.contains(inputWord)) {
+                        return &intent;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Fuzzy matching for typos (simple Levenshtein distance)
+    for (const Intent &intent : intentList) {
+        for (const QString &pattern : intent.patterns) {
+            if (calculateSimilarity(input, pattern.toLower()) > 0.7) {
+                return &intent;
+            }
+        }
+    }
+    
+    // Return unknown intent if no match found
     for (const Intent &intent : intentList)
         if (intent.tag == "unknown")
             return &intent;
+    
     return nullptr;
 }
 
@@ -353,3 +398,4 @@ void MainWindow::handleSendButtonClicked()
     handleUserInput(userText);
     ui->inputLineEdit->clear();
 }
+
