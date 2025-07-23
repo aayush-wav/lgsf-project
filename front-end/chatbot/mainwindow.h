@@ -1,6 +1,5 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
 #include <QMainWindow>
 #include <QTimer>
 #include <QJsonDocument>
@@ -51,6 +50,8 @@ private:
     void addBotMessage(const QString &text);
     void handleUserInput(const QString &userText);
     void clearChat();
+    double calculateSimilarity(const QString &str1, const QString &str2);
+    QString generateContextualResponse(const QString &userInput, const Intent *intent);
 };
 
 #endif

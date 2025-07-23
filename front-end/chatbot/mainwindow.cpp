@@ -399,3 +399,49 @@ void MainWindow::handleSendButtonClicked()
     ui->inputLineEdit->clear();
 }
 
+double MainWindow::calculateSimilarity(const QString &str1, const QString &str2)
+{
+    int len1 = str1.length();
+    int len2 = str2.length();
+    
+    if (len1 == 0) return len2 == 0 ? 1.0 : 0.0;
+    if (len2 == 0) return 0.0;
+    
+    // Simple similarity based on common characters
+    int commonChars = 0;
+    int maxLen = qMax(len1, len2);
+    
+    for (int i = 0; i < qMin(len1, len2); ++i) {
+        if (str1[i] == str2[i]) {
+            commonChars++;
+        }
+    }
+    
+    // Also check for common substrings
+    for (int i = 0; i < len1 - 1; ++i) {
+        QString substr = str1.mid(i, 2);
+        if (str2.contains(substr)) {
+            commonChars++;
+        }
+    }
+    
+    return (double)commonChars / maxLen;
+}
+
+QString MainWindow::generateContextualResponse(const QString &userInput, const Intent *intent)
+{
+    QString response = intent->response;
+    
+    // Add contextual information based on user input
+    if (intent->tag == "service_info") {
+        if (userInput.contains("urgent") || userInput.contains("tatkal") || userInput.contains("emergency")) {
+            response += "\n\n**Note:** For urgent processing, tatkal services may be available with additional fees.";
+        }
+        
+        if (userInput.contains("online") || userInput.contains("internet")) {
+            response += "\n\n**Tip:** Check if this service is available online for faster processing.";
+        }
+    }
+    
+    return response;
+}
