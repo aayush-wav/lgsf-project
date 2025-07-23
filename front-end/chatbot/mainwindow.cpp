@@ -35,12 +35,29 @@ MainWindow::MainWindow(QWidget *parent)
     ui->inputLineEdit->setPlaceholderText("Ask ई - BADAPATRA anything");
     ui->sendButton->setText("SEND");
     ui->sendButton->setText("SEND");
-    ui->sendButton->setStyleSheet("font-family: '0xNerdFont'; font-size: 14px;");
+    ui->sendButton->setStyleSheet(
+        "QPushButton {"
+        "   font-family: '0xNerdFont';"
+        "   font-size: 14px;"
+        "   color: #2196F3;"
+        "   background-color: white;"
+        "   border: 1px solid #2196F3;"
+        "   border-radius: 4px;"
+        "   padding: 5px 10px;"
+        "}"
+        "QPushButton:hover {"
+        "   background-color: #E3F2FD;"
+        "}"
+        "QPushButton:pressed {"
+        "   background-color: #BBDEFB;"
+        "}"
+        );
     ui->sendButton->setEnabled(true);
     typingTimer->setInterval(30);
     connect(typingTimer, &QTimer::timeout, this, &MainWindow::onTypingTimeout);
     connect(ui->inputLineEdit, &QLineEdit::returnPressed, this, &MainWindow::handleSendButtonClicked);
     connect(ui->sendButton, &QPushButton::clicked, this, &MainWindow::handleSendButtonClicked);
+
 
     QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
     if (!doc.isNull())
