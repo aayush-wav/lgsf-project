@@ -7,24 +7,27 @@
 #include <QScrollBar>
 #include <QSqlQuery>
 #include <QSqlError>
-#include <QLabel>
+#include <QDebug>
+#include <QHBoxLayout>
+#include <QSpacerItem>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow),
-    currentCharIndex(0), typingTimer(new QTimer(this)), animatingLabel(nullptr)
+    : QMainWindow(parent),
+    ui(new Ui::MainWindow),
+    currentCharIndex(0),
+    typingTimer(new QTimer(this)),
+    typingLabel(nullptr)
 {
     ui->setupUi(this);
-
     ui->inputLineEdit->setPlaceholderText("Ask ई - BADAPATRA anything");
+    ui->sendButton->setEnabled(true);
     typingTimer->setInterval(30);
     connect(typingTimer, &QTimer::timeout, this, &MainWindow::onTypingTimeout);
     connect(ui->inputLineEdit, &QLineEdit::returnPressed, this, &MainWindow::handleSendButtonClicked);
     connect(ui->sendButton, &QPushButton::clicked, this, &MainWindow::handleSendButtonClicked);
-
     QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
     if (!doc.isNull())
         intentList = parseIntents(doc.array());
-
     setupDatabase();
 }
 
@@ -90,66 +93,31 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
     return nullptr;
 }
 
-QString MainWindow::fetchServiceData(const QString &serviceKeyword, QString responseTemplate)
-{
-    if (!db.isOpen())
-        return "Database is not connected. Please check your settings.";
-
-    QSqlQuery query(db);
-    query.prepare("SELECT service_name, office_name, service_no, required_documents, charge FROM services WHERE LOWER(service_name) LIKE LOWER(:keyword) LIMIT 1");
-    query.bindValue(":keyword", "%" + serviceKeyword + "%");
-    if (!query.exec())
-        return "Failed to fetch data.";
-
-    if (query.next())
-    {
-        responseTemplate.replace("{service_name}", query.value("service_name").toString());
-        responseTemplate.replace("{office_name}", query.value("office_name").toString());
-        responseTemplate.replace("{service_no}", query.value("service_no").toString());
-        responseTemplate.replace("{required_documents}", query.value("required_documents").toString());
-        responseTemplate.replace("{charge}", query.value("charge").toString());
-        return responseTemplate;
-    }
-    return "Service information not found.";
-}
-
-void MainWindow::addUserMessage(const QString &text)
-{
-    QLabel *label = new QLabel(text);
-    label->setWordWrap(true);
-    label->setAlignment(Qt::AlignRight);
-    label->setStyleSheet("color: white; background-color: #2A8BD4; padding: 5px; border-radius: 8px; max-width: 60%;");
-    ui->chatLayout->addWidget(label);
-    QScrollBar *bar = ui->chatScrollArea->verticalScrollBar();
-    bar->setValue(bar->maximum());
-}
-
-void MainWindow::addBotMessage(const QString &text)
-{
-    QLabel *label = new QLabel(text);
-    label->setWordWrap(true);
-    label->setAlignment(Qt::AlignLeft);
-    label->setStyleSheet("color: white; background-color: #444444; padding: 5px; border-radius: 8px; max-width: 60%;");
-    ui->chatLayout->addWidget(label);
-    QScrollBar *bar = ui->chatScrollArea->verticalScrollBar();
-    bar->setValue(bar->maximum());
-}
-
 void MainWindow::startTypingAnimation(const QString &text)
 {
+    if (typingLabel)
+    {
+        ui->chatLayout->removeWidget(typingLabel);
+        typingLabel->deleteLater();
+        typingLabel = nullptr;
+    }
     pendingText = text;
     typedText.clear();
     currentCharIndex = 0;
     ui->sendButton->setEnabled(false);
-
-    animatingLabel = new QLabel();
-    animatingLabel->setWordWrap(true);
-    animatingLabel->setAlignment(Qt::AlignLeft);
-    animatingLabel->setStyleSheet("color: white; background-color: #444444; padding: 5px; border-radius: 8px; max-width: 60%;");
-    ui->chatLayout->addWidget(animatingLabel);
+    typingLabel = new QLabel("");
+    typingLabel->setStyleSheet("background: transparent; color: rgb(180, 180, 180);");
+    typingLabel->setAlignment(Qt::AlignLeft);
+    typingLabel->setWordWrap(true);
+    typingLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    QHBoxLayout *layout = new QHBoxLayout();
+    layout->addWidget(typingLabel);
+    layout->addStretch();
+    QWidget *container = new QWidget();
+    container->setLayout(layout);
+    ui->chatLayout->addWidget(container);
     QScrollBar *bar = ui->chatScrollArea->verticalScrollBar();
     bar->setValue(bar->maximum());
-
     typingTimer->start();
 }
 
@@ -158,16 +126,76 @@ void MainWindow::onTypingTimeout()
     if (currentCharIndex < pendingText.length())
     {
         typedText += pendingText[currentCharIndex++];
-        animatingLabel->setText(typedText.toHtmlEscaped());
+        typingLabel->setText(typedText.toHtmlEscaped());
         QScrollBar *bar = ui->chatScrollArea->verticalScrollBar();
         bar->setValue(bar->maximum());
     }
     else
     {
         typingTimer->stop();
-        animatingLabel = nullptr;
         ui->sendButton->setEnabled(true);
+        typingLabel = nullptr;
     }
+}
+
+QString MainWindow::fetchServiceData(const QString &serviceKeyword, QString responseTemplate)
+{
+    if (!db.isOpen())
+        return "Database is not connected. Please check your settings.";
+    QSqlQuery query(db);
+    query.prepare("SELECT service_name, office_name, service_no, required_documents, charge FROM services WHERE LOWER(service_name) LIKE LOWER(:keyword) LIMIT 1");
+    query.bindValue(":keyword", "%" + serviceKeyword + "%");
+    if (!query.exec())
+        return "Failed to fetch data.";
+    if (query.next())
+    {
+        QString service_name = query.value("service_name").toString();
+        QString office_name = query.value("office_name").toString();
+        QString service_no = query.value("service_no").toString();
+        QString required_documents = query.value("required_documents").toString();
+        QString charge = query.value("charge").toString();
+        responseTemplate.replace("{service_name}", service_name);
+        responseTemplate.replace("{office_name}", office_name);
+        responseTemplate.replace("{service_no}", service_no);
+        responseTemplate.replace("{required_documents}", required_documents);
+        responseTemplate.replace("{charge}", charge);
+        return responseTemplate;
+    }
+    return "Service information not found.";
+}
+
+void MainWindow::addUserMessage(const QString &text)
+{
+    QLabel *label = new QLabel(text);
+    label->setStyleSheet("background: transparent; color: rgb(220, 220, 220);");
+    label->setAlignment(Qt::AlignRight);
+    label->setWordWrap(true);
+    label->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    QHBoxLayout *layout = new QHBoxLayout();
+    layout->addStretch();
+    layout->addWidget(label);
+    QWidget *container = new QWidget();
+    container->setLayout(layout);
+    ui->chatLayout->addWidget(container);
+    QScrollBar *bar = ui->chatScrollArea->verticalScrollBar();
+    bar->setValue(bar->maximum());
+}
+
+void MainWindow::addBotMessage(const QString &text)
+{
+    QLabel *label = new QLabel(text);
+    label->setStyleSheet("background: transparent; color: rgb(180, 180, 180);");
+    label->setAlignment(Qt::AlignLeft);
+    label->setWordWrap(true);
+    label->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    QHBoxLayout *layout = new QHBoxLayout();
+    layout->addWidget(label);
+    layout->addStretch();
+    QWidget *container = new QWidget();
+    container->setLayout(layout);
+    ui->chatLayout->addWidget(container);
+    QScrollBar *bar = ui->chatScrollArea->verticalScrollBar();
+    bar->setValue(bar->maximum());
 }
 
 void MainWindow::handleUserInput(const QString &userText)
@@ -182,7 +210,9 @@ void MainWindow::handleUserInput(const QString &userText)
             response = fetchServiceData(userText, response);
     }
     else
+    {
         response = "Sorry, I couldn't understand that.";
+    }
     startTypingAnimation(response);
 }
 
