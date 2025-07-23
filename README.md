@@ -1,4 +1,4 @@
-# LGSF — Local Government Service Finder
+# LGSF : Local Government Service Finder
 
 **A Qt-based virtual assistant designed to facilitate easy access to local government services**
 
