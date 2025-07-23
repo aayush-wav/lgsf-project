@@ -22,8 +22,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->inputLineEdit, &QLineEdit::returnPressed, this, &MainWindow::handleSendButtonClicked);
     connect(ui->sendButton, &QPushButton::clicked, this, &MainWindow::handleSendButtonClicked);
 
+<<<<<<< HEAD
     QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
     if (!doc.isNull())
+=======
+    QJsonDocument doc = loadIntents("C:/LGSF/lgsf-project/back-end/json/responses.json");
+    if (!doc.isNull()) {
+>>>>>>> parent of 96faf73 (changes to chatbot)
         intentList = parseIntents(doc.array());
 
     setupDatabase();
