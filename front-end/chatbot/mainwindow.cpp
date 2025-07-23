@@ -9,7 +9,9 @@
 #include <QSqlError>
 #include <QDebug>
 #include <QHBoxLayout>
-#include <QSpacerItem>
+#include <QVBoxLayout>
+#include <QDateTime>
+#include <QCoreApplication>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -19,12 +21,24 @@ MainWindow::MainWindow(QWidget *parent)
     typingLabel(nullptr)
 {
     ui->setupUi(this);
+
+    QWidget* scrollWidget = new QWidget();
+    ui->chatLayout = new QVBoxLayout(scrollWidget);
+    ui->chatLayout->setAlignment(Qt::AlignTop);
+    ui->chatLayout->setSpacing(10);
+    ui->chatLayout->setContentsMargins(10, 10, 10, 10);
+
+    ui->chatScrollArea->setWidget(scrollWidget);
+    ui->chatScrollArea->setWidgetResizable(true);
+    ui->chatScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
     ui->inputLineEdit->setPlaceholderText("Ask ई - BADAPATRA anything");
     ui->sendButton->setEnabled(true);
     typingTimer->setInterval(30);
     connect(typingTimer, &QTimer::timeout, this, &MainWindow::onTypingTimeout);
     connect(ui->inputLineEdit, &QLineEdit::returnPressed, this, &MainWindow::handleSendButtonClicked);
     connect(ui->sendButton, &QPushButton::clicked, this, &MainWindow::handleSendButtonClicked);
+
     QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
     if (!doc.isNull())
         intentList = parseIntents(doc.array());
@@ -95,30 +109,74 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
 
 void MainWindow::startTypingAnimation(const QString &text)
 {
-    if (typingLabel)
-    {
-        ui->chatLayout->removeWidget(typingLabel);
-        typingLabel->deleteLater();
-        typingLabel = nullptr;
+    if (typingTimer->isActive()) {
+        typingTimer->stop();
+        if (typingLabel) {
+            typingLabel->setText(pendingText);
+            addTimeLabelToTypingMessage();
+            typingLabel = nullptr;
+        }
     }
+
     pendingText = text;
     typedText.clear();
     currentCharIndex = 0;
     ui->sendButton->setEnabled(false);
+
     typingLabel = new QLabel("");
-    typingLabel->setStyleSheet("background: transparent; color: rgb(180, 180, 180);");
+    typingLabel->setStyleSheet("font-family: '0xNerdFont'; font-size: 18px; color: rgb(180, 180, 180); background: transparent; padding: 8px;");
     typingLabel->setAlignment(Qt::AlignLeft);
     typingLabel->setWordWrap(true);
     typingLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
-    QHBoxLayout *layout = new QHBoxLayout();
-    layout->addWidget(typingLabel);
-    layout->addStretch();
-    QWidget *container = new QWidget();
-    container->setLayout(layout);
-    ui->chatLayout->addWidget(container);
-    QScrollBar *bar = ui->chatScrollArea->verticalScrollBar();
-    bar->setValue(bar->maximum());
+    typingLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
+    QVBoxLayout* vLayout = new QVBoxLayout();
+    vLayout->addWidget(typingLabel);
+    vLayout->setSpacing(2);
+    vLayout->setContentsMargins(0,0,0,0);
+
+    QWidget* messageContainer = new QWidget();
+    messageContainer->setLayout(vLayout);
+
+    QHBoxLayout *hLayout = new QHBoxLayout();
+    hLayout->addWidget(messageContainer);
+    hLayout->addStretch();
+
+    QWidget *wrapper = new QWidget();
+    wrapper->setLayout(hLayout);
+    wrapper->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    ui->chatLayout->addWidget(wrapper);
+    QCoreApplication::processEvents();
+    ui->chatScrollArea->verticalScrollBar()->setValue(ui->chatScrollArea->verticalScrollBar()->maximum());
     typingTimer->start();
+}
+
+void MainWindow::addTimeLabelToTypingMessage()
+{
+    if (typingLabel) {
+        QWidget* messageContainer = typingLabel->parentWidget();
+        if (messageContainer) {
+            QVBoxLayout* vLayout = qobject_cast<QVBoxLayout*>(messageContainer->layout());
+            if (vLayout) {
+                bool timeLabelExists = false;
+                for (int i = 0; i < vLayout->count(); ++i) {
+                    if (qobject_cast<QLabel*>(vLayout->itemAt(i)->widget()) &&
+                        vLayout->itemAt(i)->widget() != typingLabel) {
+                        timeLabelExists = true;
+                        break;
+                    }
+                }
+
+                if (!timeLabelExists) {
+                    QLabel *timeLabel = new QLabel(QDateTime::currentDateTime().toString("HH:mm"));
+                    timeLabel->setStyleSheet("font-family: '0xNerdFont'; font-size: 10px; color: rgb(150, 150, 150); background: transparent;");
+                    timeLabel->setAlignment(Qt::AlignLeft);
+                    vLayout->addWidget(timeLabel);
+                }
+            }
+        }
+    }
 }
 
 void MainWindow::onTypingTimeout()
@@ -126,14 +184,14 @@ void MainWindow::onTypingTimeout()
     if (currentCharIndex < pendingText.length())
     {
         typedText += pendingText[currentCharIndex++];
-        typingLabel->setText(typedText.toHtmlEscaped());
-        QScrollBar *bar = ui->chatScrollArea->verticalScrollBar();
-        bar->setValue(bar->maximum());
+        typingLabel->setText(typedText);
+        ui->chatScrollArea->verticalScrollBar()->setValue(ui->chatScrollArea->verticalScrollBar()->maximum());
     }
     else
     {
         typingTimer->stop();
         ui->sendButton->setEnabled(true);
+        addTimeLabelToTypingMessage();
         typingLabel = nullptr;
     }
 }
@@ -166,36 +224,42 @@ QString MainWindow::fetchServiceData(const QString &serviceKeyword, QString resp
 
 void MainWindow::addUserMessage(const QString &text)
 {
-    QLabel *label = new QLabel(text);
-    label->setStyleSheet("background: transparent; color: rgb(220, 220, 220);");
-    label->setAlignment(Qt::AlignRight);
-    label->setWordWrap(true);
-    label->setTextInteractionFlags(Qt::TextSelectableByMouse);
-    QHBoxLayout *layout = new QHBoxLayout();
-    layout->addStretch();
-    layout->addWidget(label);
+    QLabel *messageLabel = new QLabel(text);
+    messageLabel->setWordWrap(true);
+    messageLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    messageLabel->setAlignment(Qt::AlignLeft);
+    messageLabel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    messageLabel->setMaximumWidth(ui->chatScrollArea->width() * 0.7);
+    messageLabel->setStyleSheet("font-family: '0xNerdFont'; font-size: 18px; color: rgb(220, 220, 220); background: transparent; padding: 8px;");
+
+    QLabel *timeLabel = new QLabel(QDateTime::currentDateTime().toString("HH:mm"));
+    timeLabel->setStyleSheet("font-family: '0xNerdFont'; font-size: 10px; color: rgb(150, 150, 150); background: transparent;");
+    timeLabel->setAlignment(Qt::AlignRight);
+
+    QVBoxLayout *vLayout = new QVBoxLayout();
+    vLayout->addWidget(messageLabel);
+    vLayout->addWidget(timeLabel);
+    vLayout->setSpacing(2);
+    vLayout->setContentsMargins(0, 0, 0, 0);
+
     QWidget *container = new QWidget();
-    container->setLayout(layout);
-    ui->chatLayout->addWidget(container);
-    QScrollBar *bar = ui->chatScrollArea->verticalScrollBar();
-    bar->setValue(bar->maximum());
+    container->setLayout(vLayout);
+
+    QHBoxLayout *hLayout = new QHBoxLayout();
+    hLayout->addStretch();
+    hLayout->addWidget(container);
+    hLayout->setContentsMargins(10, 5, 10, 5);
+
+    QWidget *wrapper = new QWidget();
+    wrapper->setLayout(hLayout);
+    wrapper->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    ui->chatLayout->addWidget(wrapper);
+    ui->chatScrollArea->verticalScrollBar()->setValue(ui->chatScrollArea->verticalScrollBar()->maximum());
 }
 
 void MainWindow::addBotMessage(const QString &text)
 {
-    QLabel *label = new QLabel(text);
-    label->setStyleSheet("background: transparent; color: rgb(180, 180, 180);");
-    label->setAlignment(Qt::AlignLeft);
-    label->setWordWrap(true);
-    label->setTextInteractionFlags(Qt::TextSelectableByMouse);
-    QHBoxLayout *layout = new QHBoxLayout();
-    layout->addWidget(label);
-    layout->addStretch();
-    QWidget *container = new QWidget();
-    container->setLayout(layout);
-    ui->chatLayout->addWidget(container);
-    QScrollBar *bar = ui->chatScrollArea->verticalScrollBar();
-    bar->setValue(bar->maximum());
 }
 
 void MainWindow::handleUserInput(const QString &userText)
@@ -221,8 +285,20 @@ void MainWindow::handleSendButtonClicked()
     QString userText = ui->inputLineEdit->text().trimmed();
     if (userText.isEmpty())
         return;
+
+    if (typingTimer->isActive()) {
+        typingTimer->stop();
+        if (typingLabel) {
+            typingLabel->setText(pendingText);
+            addTimeLabelToTypingMessage();
+            typingLabel = nullptr;
+        }
+        ui->sendButton->setEnabled(true);
+    }
+
     if (ui->badapatraLabel)
         ui->badapatraLabel->hide();
+
     handleUserInput(userText);
     ui->inputLineEdit->clear();
 }

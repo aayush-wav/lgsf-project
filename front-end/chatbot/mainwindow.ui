@@ -110,11 +110,32 @@ border-radius: 6;</string>
       <height>550</height>
      </rect>
     </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
     <property name="minimumSize">
      <size>
       <width>1280</width>
       <height>550</height>
      </size>
+    </property>
+    <property name="font">
+     <font>
+      <family>0xProto Nerd Font</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::NoFrame</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Plain</enum>
+    </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
     </property>
     <property name="widgetResizable">
      <bool>true</bool>
@@ -124,7 +145,7 @@ border-radius: 6;</string>
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>1261</width>
+       <width>1280</width>
        <height>550</height>
       </rect>
      </property>
@@ -133,6 +154,12 @@ border-radius: 6;</string>
        <width>0</width>
        <height>550</height>
       </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>0xProto Nerd Font</family>
+       <pointsize>14</pointsize>
+      </font>
      </property>
      <widget class="QWidget" name="verticalLayoutWidget">
       <property name="geometry">
