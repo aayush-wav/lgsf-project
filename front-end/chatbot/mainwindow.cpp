@@ -125,13 +125,16 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
     // Direct exact match first (highest priority)
     for (const Intent &intent : intentList)
         for (const QString &pattern : intent.patterns)
-            if (input == pattern.toLower())
+            if (input == pattern.toLower()){
+            qDebug() << "Matched exact:" << pattern << "→ intent:" << intent.tag;
                 return &intent;
+            }
     
     // Partial match - check if input contains any pattern
     for (const Intent &intent : intentList) {
         for (const QString &pattern : intent.patterns) {
             if (input.contains(pattern.toLower()) || pattern.toLower().contains(input)) {
+                 qDebug() << "Matched partial:" << pattern << "→ intent:" << intent.tag;
                 return &intent;
             }
         }
@@ -149,7 +152,8 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
                     if (inputWord == patternWord || 
                         inputWord.contains(patternWord) || 
                         patternWord.contains(inputWord)) {
-                        return &intent;
+                            qDebug() << "Matched word:" << inputWord << "↔" << patternWord << "→ intent:" << intent.tag;
+                            return &intent;
                     }
                 }
             }
@@ -160,6 +164,7 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
     for (const Intent &intent : intentList) {
         for (const QString &pattern : intent.patterns) {
             if (calculateSimilarity(input, pattern.toLower()) > 0.7) {
+                qDebug() << "Matched fuzzy:" << input << "≈" << pattern << "→ intent:" << intent.tag;
                 return &intent;
             }
         }
@@ -167,9 +172,10 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
     
     // Return unknown intent if no match found
     for (const Intent &intent : intentList)
-        if (intent.tag == "unknown")
+        if (intent.tag == "unknown"){
+            qDebug() << "No match found. Returning 'unknown' intent.";
             return &intent;
-    
+        }
     return nullptr;
 }
 
