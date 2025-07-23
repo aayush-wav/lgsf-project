@@ -60,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->sendButton, &QPushButton::clicked, this, &MainWindow::handleSendButtonClicked);
 
 
-    QJsonDocument doc = loadIntents("D:/LGSF/lgsf-project/back-end/json/responses.json");
+    QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
     if (!doc.isNull())
         intentList = parseIntents(doc.array());
     setupDatabase();
@@ -118,17 +118,14 @@ QVector<Intent> MainWindow::parseIntents(const QJsonArray &intentsArray)
 const Intent *MainWindow::matchIntent(const QString &userInput)
 {
     QString input = userInput.trimmed().toLower();
-    
-    // Remove common punctuation and extra spaces
+
     input = input.remove(QRegularExpression("[.,!?;:]")).simplified();
-    
-    // Direct exact match first (highest priority)
+
     for (const Intent &intent : intentList)
         for (const QString &pattern : intent.patterns)
             if (input == pattern.toLower())
                 return &intent;
-    
-    // Partial match - check if input contains any pattern
+
     for (const Intent &intent : intentList) {
         for (const QString &pattern : intent.patterns) {
             if (input.contains(pattern.toLower()) || pattern.toLower().contains(input)) {
@@ -136,14 +133,12 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
             }
         }
     }
-    
-    // Word-based matching - split input into words and check
+
     QStringList inputWords = input.split(' ', Qt::SkipEmptyParts);
     for (const Intent &intent : intentList) {
         for (const QString &pattern : intent.patterns) {
             QStringList patternWords = pattern.toLower().split(' ', Qt::SkipEmptyParts);
-            
-            // Check if any input word matches any pattern word
+
             for (const QString &inputWord : inputWords) {
                 for (const QString &patternWord : patternWords) {
                     if (inputWord == patternWord || 
@@ -155,8 +150,7 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
             }
         }
     }
-    
-    // Fuzzy matching for typos (simple Levenshtein distance)
+
     for (const Intent &intent : intentList) {
         for (const QString &pattern : intent.patterns) {
             if (calculateSimilarity(input, pattern.toLower()) > 0.7) {
@@ -164,8 +158,7 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
             }
         }
     }
-    
-    // Return unknown intent if no match found
+
     for (const Intent &intent : intentList)
         if (intent.tag == "unknown")
             return &intent;
@@ -408,7 +401,7 @@ double MainWindow::calculateSimilarity(const QString &str1, const QString &str2)
     if (len1 == 0) return len2 == 0 ? 1.0 : 0.0;
     if (len2 == 0) return 0.0;
     
-    // Simple similarity based on common characters
+
     int commonChars = 0;
     int maxLen = qMax(len1, len2);
     
@@ -417,8 +410,7 @@ double MainWindow::calculateSimilarity(const QString &str1, const QString &str2)
             commonChars++;
         }
     }
-    
-    // Also check for common substrings
+
     for (int i = 0; i < len1 - 1; ++i) {
         QString substr = str1.mid(i, 2);
         if (str2.contains(substr)) {
@@ -432,8 +424,7 @@ double MainWindow::calculateSimilarity(const QString &str1, const QString &str2)
 QString MainWindow::generateContextualResponse(const QString &userInput, const Intent *intent)
 {
     QString response = intent->response;
-    
-    // Add contextual information based on user input
+
     if (intent->tag == "service_info") {
         if (userInput.contains("urgent") || userInput.contains("tatkal") || userInput.contains("emergency")) {
             response += "\n\n**Note:** For urgent processing, tatkal services may be available with additional fees.";
