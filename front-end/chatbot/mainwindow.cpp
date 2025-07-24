@@ -13,6 +13,7 @@
 #include <QDateTime>
 #include <QCoreApplication>
 #include <QRegularExpression>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -77,11 +78,32 @@ void MainWindow::setupDatabase()
 {
     db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName("localhost");
+    db.setPort(5432);
     db.setDatabaseName("LgsfInfo");
     db.setUserName("postgres");
     db.setPassword("00618");
-    if (!db.open())
+    
+    if (!db.open()) {
         qWarning() << "Database connection failed:" << db.lastError().text();
+        qWarning() << "Driver error:" << db.lastError().driverText();
+        qWarning() << "Database error:" << db.lastError().databaseText();
+        
+        QMessageBox::critical(this, "Database Error", 
+                            QString("Failed to connect to database:\n%1\n\nPlease ensure:\n"
+                                   "1. PostgreSQL service is running\n"
+                                   "2. Database 'LgsfInfo' exists\n"
+                                   "3. Username/password are correct")
+                                   .arg(db.lastError().text()));
+    } else {
+        qDebug() << "Database connected successfully!";
+        
+        QSqlQuery testQuery(db);
+        if (testQuery.exec("SELECT 1")) {
+            qDebug() << "Database test query successful";
+        } else {
+            qWarning() << "Database test query failed:" << testQuery.lastError().text();
+        }
+    }
 }
 
 QJsonDocument MainWindow::loadIntents(const QString &fileName)
@@ -300,28 +322,90 @@ void MainWindow::onTypingTimeout()
 
 QString MainWindow::fetchServiceData(const QString &serviceKeyword, QString responseTemplate)
 {
-    if (!db.isOpen())
-        return "Database is not connected. Please check your settings.";
+    if (!db.isOpen()) {
+        return "Database is not connected. Please check your database connection settings.";
+    }
+    
     QSqlQuery query(db);
-    query.prepare("SELECT service_name, office_name, service_no, required_documents, charge FROM services WHERE LOWER(service_name) LIKE LOWER(:keyword) LIMIT 1");
+    
+    query.prepare(R"(
+        SELECT 
+            s.service_name,
+            o.office_name,
+            s.service_no,
+            rd.document_text as required_documents,
+            s.charge,
+            s.time_taken,
+            s.contact_section,
+            s.responsible_officer
+        FROM services s
+        JOIN offices o ON s.office_id = o.office_id
+        LEFT JOIN required_documents rd ON s.service_id = rd.service_id
+        WHERE LOWER(s.service_name) LIKE LOWER(:keyword)
+        LIMIT 1
+    )");
+    
     query.bindValue(":keyword", "%" + serviceKeyword + "%");
-    if (!query.exec())
-        return "Failed to fetch data.";
-    if (query.next())
-    {
+    
+    if (!query.exec()) {
+        qWarning() << "Query execution failed:" << query.lastError().text();
+        return "Failed to fetch data from database: " + query.lastError().text();
+    }
+    
+    if (query.next()) {
         QString service_name = query.value("service_name").toString();
         QString office_name = query.value("office_name").toString();
         QString service_no = query.value("service_no").toString();
         QString required_documents = query.value("required_documents").toString();
         QString charge = query.value("charge").toString();
+        QString time_taken = query.value("time_taken").toString();
+        QString contact_section = query.value("contact_section").toString();
+        QString responsible_officer = query.value("responsible_officer").toString();
+        
         responseTemplate.replace("{service_name}", service_name);
         responseTemplate.replace("{office_name}", office_name);
         responseTemplate.replace("{service_no}", service_no);
-        responseTemplate.replace("{required_documents}", required_documents);
-        responseTemplate.replace("{charge}", charge);
+        responseTemplate.replace("{required_documents}", required_documents.isEmpty() ? "Please contact the office for document requirements." : required_documents);
+        responseTemplate.replace("{charge}", charge.isEmpty() ? "Please contact the office for fee information." : charge);
+        responseTemplate.replace("{time_taken}", time_taken);
+        responseTemplate.replace("{contact_section}", contact_section);
+        responseTemplate.replace("{responsible_officer}", responsible_officer);
+        
         return responseTemplate;
     }
-    return "Service information not found.";
+    
+    query.prepare(R"(
+        SELECT 
+            s.service_name,
+            o.office_name,
+            s.service_no,
+            rd.document_text as required_documents,
+            s.charge
+        FROM services s
+        JOIN offices o ON s.office_id = o.office_id
+        LEFT JOIN required_documents rd ON s.service_id = rd.service_id
+        WHERE LOWER(s.service_name) LIKE LOWER(:keyword1)
+           OR LOWER(o.office_name) LIKE LOWER(:keyword2)
+        LIMIT 3
+    )");
+    
+    query.bindValue(":keyword1", "%" + serviceKeyword + "%");
+    query.bindValue(":keyword2", "%" + serviceKeyword + "%");
+    
+    if (query.exec() && query.next()) {
+        QString results = "Here are some related services I found:\n\n";
+        do {
+            results += QString("• **%1** at %2\n").arg(
+                query.value("service_name").toString(),
+                query.value("office_name").toString()
+            );
+        } while (query.next());
+        
+        results += "\nPlease specify which service you need more information about.";
+        return results;
+    }
+    
+    return "I couldn't find information about that service. Please check the service name or try asking about a different service.";
 }
 
 void MainWindow::addUserMessage(const QString &text)
@@ -476,4 +560,103 @@ QString MainWindow::generateContextualResponse(const QString &userInput, const I
     }
     
     return response;
+}
+void MainWindow::testDatabaseConnection()
+{
+    qDebug() << "=== Testing Database Connection ===";
+    
+    if (!db.isOpen()) {
+        qDebug() << "Database is not open";
+        return;
+    }
+    
+    qDebug() << "Database is open";
+    
+    // Test basic connectivity
+    QSqlQuery query(db);
+    
+    // Test ministries table
+    if (query.exec("SELECT COUNT(*) FROM ministries")) {
+        query.next();
+        qDebug() << "Ministries table has" << query.value(0).toInt() << "records";
+    } else {
+        qDebug() << "Failed to query ministries table:" << query.lastError().text();
+    }
+    
+    // Test offices table
+    if (query.exec("SELECT COUNT(*) FROM offices")) {
+        query.next();
+        qDebug() << "Offices table has" << query.value(0).toInt() << "records";
+    } else {
+        qDebug() << "Failed to query offices table:" << query.lastError().text();
+    }
+    
+    // Test services table
+    if (query.exec("SELECT COUNT(*) FROM services")) {
+        query.next();
+        qDebug() << "Services table has" << query.value(0).toInt() << "records";
+    } else {
+        qDebug() << "Failed to query services table:" << query.lastError().text();
+    }
+    
+    // Test required_documents table
+    if (query.exec("SELECT COUNT(*) FROM required_documents")) {
+        query.next();
+        qDebug() << "Required_documents table has" << query.value(0).toInt() << "records";
+    } else {
+        qDebug() << "Failed to query required_documents table:" << query.lastError().text();
+    }
+    
+    // Test a sample service search (this tests the JOIN query)
+    qDebug() << "\n=== Testing Sample Services ===";
+    query.prepare(R"(
+        SELECT 
+            s.service_name,
+            o.office_name,
+            s.service_no
+        FROM services s
+        JOIN offices o ON s.office_id = o.office_id
+        LIMIT 5
+    )");
+    
+    if (query.exec()) {
+        qDebug() << "JOIN query successful. Sample services:";
+        while (query.next()) {
+            qDebug() << "  •" << query.value("service_name").toString() 
+                    << "at" << query.value("office_name").toString()
+                    << "(Service #" << query.value("service_no").toString() << ")";
+        }
+    } else {
+        qDebug() << "JOIN query failed:" << query.lastError().text();
+    }
+    
+    qDebug() << "\n=== Testing Citizenship Search ===";
+    query.prepare(R"(
+        SELECT 
+            s.service_name,
+            o.office_name,
+            s.service_no,
+            rd.document_text,
+            s.charge
+        FROM services s
+        JOIN offices o ON s.office_id = o.office_id
+        LEFT JOIN required_documents rd ON s.service_id = rd.service_id
+        WHERE LOWER(s.service_name) LIKE LOWER('%citizenship%')
+        LIMIT 3
+    )");
+    
+    if (query.exec()) {
+        qDebug() << "Citizenship search successful:";
+        while (query.next()) {
+            qDebug() << "  • Service:" << query.value("service_name").toString();
+            qDebug() << "    Office:" << query.value("office_name").toString();
+            qDebug() << "    Fee:" << query.value("charge").toString();
+            qDebug() << "    Documents:" << query.value("document_text").toString().left(100) + "...";
+            qDebug() << "";
+        }
+    } else {
+        qDebug() << "Citizenship search failed:" << query.lastError().text();
+    }
+    
+    qDebug() << "=== Database Test Complete ===\n";
 }
