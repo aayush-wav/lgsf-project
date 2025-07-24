@@ -379,7 +379,7 @@ QString MainWindow::fetchServiceData(const QString &userInput, QString responseT
         responseTemplate.replace("{contact_section}", contact_section);
         responseTemplate.replace("{responsible_officer}", responsible_officer);
         
-        lastIntentTag = ""; 
+        lastIntentTag = "";
         return responseTemplate;
     }
 
@@ -452,6 +452,29 @@ void MainWindow::addBotMessage(const QString &text)
     startTypingAnimation(text);
 }
 
+QString MainWindow::getOfficeHoursResponse()
+{
+    QDateTime currentDateTime = QDateTime::currentDateTime();
+    QString dayOfWeek = currentDateTime.toString("dddd");
+    int hour = currentDateTime.time().hour();
+
+    if (dayOfWeek == "Saturday") {
+        return "The office is closed on Saturdays (holiday). Please visit on a weekday between 10 AM and 4 PM, or on Friday between 10 AM and 1 PM.";
+    } else if (dayOfWeek == "Friday") {
+        if (hour >= 10 && hour < 13) {
+            return "You are good to go! The office is open on Fridays from 10 AM to 1 PM.";
+        } else {
+            return "The office is closed. On Fridays, the office is open from 10 AM to 1 PM only.";
+        }
+    } else {
+        if (hour >= 10 && hour < 16) {
+            return "You are good to go! The office is open on weekdays from 10 AM to 4 PM.";
+        } else {
+            return "The office is closed. Please visit on a weekday between 10 AM and 4 PM.";
+        }
+    }
+}
+
 void MainWindow::handleUserInput(const QString &userText)
 {
     QString input = userText.trimmed().toLower();
@@ -470,8 +493,13 @@ void MainWindow::handleUserInput(const QString &userText)
     QString response;
     if (matched)
     {
-        lastIntentTag = matched->tag; // Store the matched intent tag
+        lastIntentTag = matched->tag;
         response = matched->response;
+        if (matched->tag == "day_query") {
+            QString currentDay = QDateTime::currentDateTime().toString("dddd");
+            response.replace("{current_day}", currentDay);
+            response.replace("{office_hours_response}", getOfficeHoursResponse());
+        }
         if (response.contains("{") && response.contains("}"))
             response = fetchServiceData(userText, response);
     }

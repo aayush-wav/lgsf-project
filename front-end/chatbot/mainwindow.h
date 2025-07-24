@@ -54,6 +54,7 @@ private:
     double calculateSimilarity(const QString &str1, const QString &str2);
     QString generateContextualResponse(const QString &userInput, const Intent *intent);
     void testDatabaseConnection();
+    QString getOfficeHoursResponse();
 };
 
 #endif
