@@ -38,6 +38,7 @@ private:
     QString typedText;
     QVector<Intent> intentList;
     QSqlDatabase db;
+    QString lastIntentTag;
 
     void setupDatabase();
     QJsonDocument loadIntents(const QString &fileName);
