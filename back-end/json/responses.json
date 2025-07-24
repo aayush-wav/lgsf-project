@@ -7,17 +7,17 @@
       "greetings", "howdy", "yo", "sup", "what's up", "whatsup", "kya hal",
       "ke cha", "kasto cha", "sanchai", "start", "begin"
     ],
-    "response": "Namaste! I'm ई-BADAPATRA, your government services assistant. How can I help you today? I can provide information about documents, fees, office locations, and application procedures."
+    "response": "Namaste! I'm ई-BADAPATRA, your government services assistant. How can I assist you today? Try asking about citizenship, passports, or other services!"
   },
   {
-    "intent": "farewell", 
+    "intent": "farewell",
     "patterns": [
       "bye", "goodbye", "see you", "later", "thank you", "thanks", "dhanyabad",
       "byee", "good bye", "see ya", "catch you later", "ttyl", "talk to you later",
       "thik cha", "bas", "enough", "done", "finish", "end", "exit", "quit",
       "dhanyabaad", "thank u", "thanku", "thnx", "appreciate"
     ],
-    "response": "Dhanyabaad for using ई-BADAPATRA! Have a great day. Feel free to ask anytime if you need help with government services. Take care!"
+    "response": "Dhanyabaad for using ई-BADAPATRA! Have a great day. Come back anytime for help with government services!"
   },
   {
     "intent": "citizenship_services",
@@ -25,36 +25,40 @@
       "citizenship", "nagarikta", "citizenship certificate", "citizenship by descent",
       "naturalized citizenship", "citizenship replacement", "citizenship correction",
       "citizenship lost", "single parent citizenship", "citizenship name correction",
-      "citizenship dob correction", "nagarikta praman patra"
+      "citizenship dob correction", "nagarikta praman patra", "apply for citizenship",
+      "how to get citizenship", "citizenship process", "citizenship application"
     ],
-    "response": "For **Citizenship Certificate** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Types Available:** By Descent, Naturalized, Replacement for Lost/Damaged, Corrections (Name/DOB)"
+    "response": "For {service_name} services, please visit {office_name}, Office No. {service_no}.\n\nRequired Documents:\n{required_documents}\n\nFee: {charge}\n\nProcessing Time: {time_taken}\n\nContact: {contact_section}, {responsible_officer}"
   },
   {
     "intent": "passport_services",
     "patterns": [
       "passport", "passport application", "passport documents", "passport fee",
       "diplomatic passport", "special passport", "rapid passport", "passport collection",
-      "missed passport", "passport correction", "passport replacement", "passport lost"
+      "missed passport", "passport correction", "passport replacement", "passport lost",
+      "apply for passport", "how to get passport", "passport process"
     ],
-    "response": "For **Passport** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Services:** Regular, Rapid, Diplomatic, Special, Collection assistance, Corrections"
+    "response": "For {service_name} services, please visit {office_name}, Office No. {service_no}.\n\nRequired Documents:\n{required_documents}\n\nFee: {charge}\n\nProcessing Time: {time_taken}\n\nContact: {contact_section}, {responsible_officer}"
   },
   {
     "intent": "national_id_services",
     "patterns": [
       "national id", "national id card", "id card", "national id registration",
       "national id replacement", "national id correction", "national id lost",
-      "national id damaged", "first time national id", "nid card", "national identity"
+      "national id damaged", "first time national id", "nid card", "national identity",
+      "apply for national id", "how to get national id", "national id process"
     ],
-    "response": "For **National ID Card** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Services:** First-time registration, Replacement (lost/damaged), Corrections, NRN services"
+    "response": "For {service_name} services, please visit {office_name}, Office No. {service_no}.\n\nRequired Documents:\n{required_documents}\n\nFee: {charge}\n\nProcessing Time: {time_taken}\n\nContact: {contact_section}, {responsible_officer}"
   },
   {
     "intent": "visa_services",
     "patterns": [
       "visa", "tourist visa", "business visa", "study visa", "residential visa",
       "visa extension", "visa transfer", "nrn visa", "non residential visa",
-      "non tourist visa", "visa application", "visa fee"
+      "non tourist visa", "visa application", "visa fee", "apply for visa",
+      "how to get visa", "visa process"
     ],
-    "response": "For **Visa** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Types:** Tourist, Business, Study, Residential, NRN, Extensions, Transfers"
+    "response": "For {service_name} services, please visit {office_name}, Office No. {service_no}.\n\nRequired Documents:\n{required_documents}\n\nFee: {charge}\n\nProcessing Time: {time_taken}\n\nContact: {contact_section}, {responsible_officer}"
   },
   {
     "intent": "certificate_services",
@@ -62,9 +66,10 @@
       "birth certificate", "death certificate", "marriage certificate", "janma praman patra",
       "mrityu praman patra", "bibaha praman patra", "late birth registration",
       "late death registration", "late marriage registration", "certificate correction",
-      "birth record", "death record", "marriage record"
+      "birth record", "death record", "marriage record", "apply for certificate",
+      "how to get birth certificate", "marriage certificate process"
     ],
-    "response": "For **Certificate** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Services:** Birth, Death, Marriage certificates, Late registrations, Corrections"
+    "response": "For {service_name} services, please visit {office_name}, Office No. {service_no}.\n\nRequired Documents:\n{required_documents}\n\nFee: {charge}\n\nProcessing Time: {time_taken}\n\nContact: {contact_section}, {responsible_officer}"
   },
   {
     "intent": "land_services",
@@ -72,45 +77,50 @@
       "land registration", "raikar land", "birta land", "land partition",
       "land ceiling", "tenant eviction", "tenant name transfer", "tenant record",
       "tenant establishment", "crop deposit", "crop payment", "name transfer",
-      "share transfer", "lien", "rokka"
+      "share transfer", "lien", "rokka", "apply for land registration",
+      "how to transfer land", "land services process"
     ],
-    "response": "For **Land** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Services:** Registration, Partition, Tenant services, Name transfers, Birta land"
+    "response": "For {service_name} services, please visit {office_name}, Office No. {service_no}.\n\nRequired Documents:\n{required_documents}\n\nFee: {charge}\n\nProcessing Time: {time_taken}\n\nContact: {contact_section}, {responsible_officer}"
   },
   {
     "intent": "vehicle_services",
     "patterns": [
       "vehicle registration", "gadi darta", "driving license", "road worthiness",
       "vehicle fare", "public vehicle", "transport", "vehicle statistics",
-      "pollution standards", "new vehicles", "vehicle approval"
+      "pollution standards", "new vehicles", "vehicle approval", "apply for driving license",
+      "how to register vehicle", "vehicle registration process"
     ],
-    "response": "For **Vehicle** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Services:** Registration, Road worthiness, Fare determination, Pollution compliance"
+    "response": "For {service_name} services, please visit {office_name}, Office No. {service_no}.\n\nRequired Documents:\n{required_documents}\n\nFee: {charge}\n\nProcessing Time: {time_taken}\n\nContact: {contact_section}, {responsible_officer}"
   },
   {
     "intent": "business_services",
     "patterns": [
       "business license", "factory registration", "workshop registration",
       "factory inspection", "business registration", "trade license",
-      "industrial business", "business permit", "commercial license"
+      "industrial business", "business permit", "commercial license",
+      "apply for business license", "how to register business", "business registration process"
     ],
-    "response": "For **Business/Factory** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Services:** Registration, Inspection, Licensing, Renewals"
+    "response": "For {service_name} services, please visit {office_name}, Office No. {service_no}.\n\nRequired Documents:\n{required_documents}\n\nFee: {charge}\n\nProcessing Time: {time_taken}\n\nContact: {contact_section}, {responsible_officer}"
   },
   {
     "intent": "trekking_permits",
     "patterns": [
       "trekking", "trekking permit", "travel permit", "upper mustang", "upper dolpa",
       "manaslu", "restricted area", "dolakha", "gorkha", "special area",
-      "conservation area", "national park permit"
+      "conservation area", "national park permit", "apply for trekking permit",
+      "how to get trekking permit", "trekking permit process"
     ],
-    "response": "For **Trekking Permits**, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Areas:** Upper Mustang, Manaslu, Upper Dolpa, Restricted conservation areas"
+    "response": "For {service_name} services, please visit {office_name}, Office No. {service_no}.\n\nRequired Documents:\n{required_documents}\n\nFee: {charge}\n\nProcessing Time: {time_taken}\n\nContact: {contact_section}, {responsible_officer}"
   },
   {
     "intent": "labor_services",
     "patterns": [
       "labor", "labour", "trade union", "factory inspection", "child labour",
       "labour act", "complaints", "claims", "labor supplier", "employment",
-      "worker rights", "union registration"
+      "worker rights", "union registration", "apply for labor permit",
+      "how to get work permit", "labor services process"
     ],
-    "response": "For **Labor** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Services:** Trade union registration, Labor disputes, Factory inspections, Worker rights"
+    "response": "For {service_name} services, please visit {office_name}, Office No. {service_no}.\n\nRequired Documents:\n{required_documents}\n\nFee: {charge}\n\nProcessing Time: {time_taken}\n\nContact: {contact_section}, {responsible_officer}"
   },
   {
     "intent": "general_service_info",
@@ -120,17 +130,17 @@
       "registration", "form", "paper", "kagaj", "kharcha", "paisa", "rupiya",
       "lagcha", "chahiye", "what documents", "ke document"
     ],
-    "response": "To apply for the service **{service_name}**, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\nWould you like more information about the application process or office hours?"
+    "response": "For {service_name} services, please visit {office_name}, Office No. {service_no}.\n\nRequired Documents:\n{required_documents}\n\nFee: {charge}\n\nProcessing Time: {time_taken}\n\nContact: {contact_section}, {responsible_officer}\n\nWould you like more details about the application process?"
   },
   {
     "intent": "office_info",
     "patterns": [
       "office", "where", "location", "address", "ward", "municipality", "kaha cha",
       "department", "branch", "counter", "desk", "room", "building", "karyalaya",
-      "kaha", "kata", "location", "thegana", "jagga", "place", "office kaha",
+      "kaha", "kata", "thegana", "jagga", "place", "office kaha",
       "shakha", "bivag", "mantralaya", "office location", "kaha paincha"
     ],
-    "response": "The **{office_name}** is under the **{ministry_name}**. You can find it at: {office_location}.\n\nPlease let me know the specific service if you'd like detailed room or section information. Do you need directions or contact details?"
+    "response": "The {office_name} is under the {ministry_name}. You can find it at: {office_location}.\n\nPlease specify the service if you need detailed room or section information."
   },
   {
     "intent": "ministry_info",
@@ -139,7 +149,7 @@
       "contact", "phone", "email", "headquarters", "phone number", "telephone",
       "sarkar", "mantri", "secretary", "sachib", "government office"
     ],
-    "response": "The **{ministry_name}** oversees this service. You can reach them through their central office.\n\nFor specific contact details like phone numbers or email addresses, please let me know the exact ministry or department name you're interested in."
+    "response": "The {ministry_name} oversees this service. For contact details, please specify the ministry or service for more information."
   },
   {
     "intent": "help",
@@ -149,7 +159,7 @@
       "guide gara", "batau", "sikhau", "bhannu", "what services", "ke service",
       "menu", "options", "features", "capabilities", "about you", "introduce"
     ],
-    "response": "I'm ई-BADAPATRA, your digital assistant for government services in Nepal! I can help you with:\n\n✓ Citizenship & National ID services\n✓ Passport applications & corrections\n✓ Visa services (Tourist, Business, Study)\n✓ Birth, Death, Marriage certificates\n✓ Land registration & tenant services\n✓ Vehicle registration & driving licenses\n✓ Business licenses & factory registration\n✓ Trekking permits for restricted areas\n✓ Labor services & trade unions\n✓ Office locations & contact details\n\nJust ask me about any specific service! What would you like to know?"
+    "response": "I'm ई-BADAPATRA, your digital assistant for government services in Nepal! I can help with:\n\n✓ Citizenship Certificates\n✓ National ID Cards\n✓ Passports\n✓ Visas\n✓ Birth, Death, Marriage Certificates\n✓ Land Registration\n✓ Vehicle Registration & Licenses\n✓ Business Licenses\n✓ Trekking Permits\n✓ Labor Services\n\nAsk about a specific service, like 'how to get a passport' or 'citizenship documents'!"
   },
   {
     "intent": "office_hours",
@@ -158,7 +168,7 @@
       "kati baje", "khulla", "banda", "office time", "working time", "office timing",
       "open time", "close time", "holiday", "working days", "kaam garne din"
     ],
-    "response": "Most government offices are open:\n\n⏰ **Working Hours:** 10:00 AM to 5:00 PM\n📅 **Working Days:** Sunday to Thursday\n🔴 **Holidays:** Fridays (partial holiday), Saturdays (full holiday)\n\n**Note:** Timings may vary by office and some services may have different schedules. Would you like information about a specific office?"
+    "response": "Government offices are typically open:\n\n 10:00 AM to 5:00 PM\n Sunday to Thursday\n Closed on Saturdays, partial holiday on Fridays\n\nSpecify a service or office for exact timings."
   },
   {
     "intent": "contact",
@@ -167,7 +177,7 @@
       "phone number", "contact number", "email address", "kura garna",
       "call garna", "sambandha", "phone gara", "contact details"
     ],
-    "response": "For contact details, please provide the name of the specific office or service you're interested in, and I'll fetch the relevant phone number or email address.\n\nYou can also mention the ministry or department name for general contact information."
+    "response": "Please specify the service or office (e.g., 'passport office contact') for the relevant phone number or email address."
   },
   {
     "intent": "about_system",
@@ -176,7 +186,7 @@
       "ke ho", "ko ho", "name ke ho", "badapatra", "system", "chatbot", "AI",
       "robot", "computer", "digital assistant", "virtual assistant"
     ],
-    "response": "I'm ई-BADAPATRA (E-BADAPATRA), your intelligent digital assistant for government services in Nepal! 🇳🇵\n\nI'm designed to help citizens easily access information about government services, documents, fees, and procedures. Think of me as your personal guide to navigate government services efficiently.\n\nHow can I assist you with your government service needs today?"
+    "response": "I'm ई-BADAPATRA, your digital assistant for government services in Nepal! 🇳🇵 I provide information on services like citizenship, passports, and more. Ask me anything about government procedures!"
   },
   {
     "intent": "language_support",
@@ -184,7 +194,7 @@
       "nepali", "english", "language", "bhasha", "nepali ma", "english ma",
       "translate", "meaning", "matlab", "artha", "hindi", "understand"
     ],
-    "response": "I can understand and respond in both Nepali and English! Feel free to ask your questions in either language or mix both languages - I'll do my best to help you.\n\nYou can ask about government services in the language you're most comfortable with. What would you like to know?"
+    "response": "I support Nepali and English! Ask in either language about government services, and I’ll respond clearly. What’s your question?"
   },
   {
     "intent": "complaints",
@@ -193,7 +203,7 @@
       "not working", "error", "wrong", "galat", "kaam gardaina", "issue cha",
       "problem cha", "help gardaina", "slow", "dhilo", "bekar"
     ],
-    "response": "I'm sorry you're experiencing issues! Could you please tell me more specifically what problem you're facing?\n\nIf it's about:\n• A specific government service - I can help find the right information\n• Office procedures - I can clarify the process\n• Document requirements - I can list what's needed\n• Technical issues with my responses - Please describe what's not working\n\nHow can I better assist you?"
+    "response": "Sorry for the trouble! Please specify the issue (e.g., service, office, or technical problem), and I’ll help resolve it or guide you to the right information."
   },
   {
     "intent": "appreciation",
@@ -202,7 +212,7 @@
       "ramro", "thik", "mitho", "helpful cha", "good job", "well done",
       "impressed", "satisfied", "happy", "khushi", "thanks", "dhanyabad"
     ],
-    "response": "Thank you for the kind words! I'm glad I could help you with your government service inquiry. 😊\n\nIf you need any other information about documents, fees, office locations, or procedures, feel free to ask anytime. I'm here to make government services more accessible for everyone!"
+    "response": "Thank you! I’m glad I could help. Ask me about any government service, like citizenship or vehicle registration, anytime!"
   },
   {
     "intent": "clarification",
@@ -211,7 +221,7 @@
       "kasari", "kati", "kun", "explain", "bujhau", "clear", "details",
       "more info", "tell me more", "elaborate", "specific", "exactly"
     ],
-    "response": "I'd be happy to provide more specific information! Could you please tell me:\n\n• Which government service are you asking about?\n• What specific aspect do you need help with? (documents, fees, location, process)\n• Any particular office or ministry you're interested in?\n\nFor example: 'passport documents', 'citizenship fee', 'national id office location'\n\nThe more specific you are, the better I can assist you!"
+    "response": "Please clarify which service or topic you need details on (e.g., 'passport fee' or 'citizenship process'), and I’ll provide specific information!"
   },
   {
     "intent": "emergency_services",
@@ -219,7 +229,7 @@
       "emergency", "urgent", "immediate", "fast", "quick", "jhatpat", "chito",
       "apatkal", "emergency service", "urgent chahiye", "tatkal", "express"
     ],
-    "response": "For urgent government services, here are some options:\n\n🚨 **Emergency Services:**\n• Tatkal/Express processing (additional fees apply)\n• Walk-in services at some offices\n• Online applications where available\n\nPlease specify which service you need urgently, and I can provide information about expedited processing options and requirements."
+    "response": "For urgent services like tatkal processing, please specify the service (e.g., 'tatkal passport'). I’ll provide details on expedited options and requirements."
   },
   {
     "intent": "online_services",
@@ -228,12 +238,12 @@
       "online apply", "internet bata", "ghar bata", "website ma", "digital service",
       "e-governance", "portal", "online form"
     ],
-    "response": "Many government services are now available online! 💻\n\nFor online services, you can visit:\n• Official government portals\n• Ministry websites\n• E-governance platforms\n\nWhich specific service are you looking to apply for online? I can guide you to the right digital platform and tell you what documents you'll need to upload."
+    "response": "For online services, specify the service (e.g., 'online passport application'), and I’ll guide you to the right portal and document requirements."
   },
   {
     "intent": "unknown",
     "patterns": [],
-    "response": "I didn't quite understand that, but I'm here to help! 🤔\n\nI specialize in government services information. You can ask me about:\n• Citizenship & National ID services\n• Passport & Visa services\n• Birth, Death, Marriage certificates\n• Land registration services\n• Vehicle & driving licenses\n• Business licenses\n• Trekking permits\n\nCould you please rephrase your question? For example: 'passport documents chahiye' or 'citizenship fee kati ho?'"
+    "response": "I didn’t understand that. Try asking about services like 'citizenship', 'passport', or 'vehicle registration'. What’s your question?"
   },
   {
     "intent": "casual_chat",
@@ -242,6 +252,6 @@
       "fine", "ok", "alright", "sanchai", "thik chu", "ramro", "maja ma",
       "weather", "mausam", "today", "aja", "news", "khabar"
     ],
-    "response": "I'm doing well, thank you for asking! I'm here and ready to help you with any government service information you need. 😊\n\nIs there any particular government service, document, or procedure you'd like to know about today? I'm here to make your government service experience easier!"
+    "response": "I’m doing great, thanks! Let’s talk about government services—try asking about citizenship, passports, or office locations!"
   }
 ]
