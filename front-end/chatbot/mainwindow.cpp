@@ -60,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->sendButton, &QPushButton::clicked, this, &MainWindow::handleSendButtonClicked);
 
 
-    QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
+    QJsonDocument doc = loadIntents("D:/LGSF/lgsf-project/back-end/json/responses.json");
     if (!doc.isNull())
         intentList = parseIntents(doc.array());
     setupDatabase();
@@ -118,59 +118,94 @@ QVector<Intent> MainWindow::parseIntents(const QJsonArray &intentsArray)
 const Intent *MainWindow::matchIntent(const QString &userInput)
 {
     QString input = userInput.trimmed().toLower();
-
+    
     input = input.remove(QRegularExpression("[.,!?;:]")).simplified();
-
-    for (const Intent &intent : intentList)
-        for (const QString &pattern : intent.patterns)
-            if (input == pattern.toLower()){
-            qDebug() << "Matched exact:" << pattern << "→ intent:" << intent.tag;
-                return &intent;
-
+    
     for (const Intent &intent : intentList) {
         for (const QString &pattern : intent.patterns) {
-            if (input.contains(pattern.toLower()) || pattern.toLower().contains(input)) {
-                 qDebug() << "Matched partial:" << pattern << "→ intent:" << intent.tag;
+            if (input == pattern.toLower()) {
+                qDebug() << "Exact match:" << pattern << "-> intent:" << intent.tag;
                 return &intent;
             }
         }
     }
-
+    
     QStringList inputWords = input.split(' ', Qt::SkipEmptyParts);
+    
+    const Intent *bestMatch = nullptr;
+    int maxMatches = 0;
+    
     for (const Intent &intent : intentList) {
+        if (intent.tag == "unknown") continue; 
+        
         for (const QString &pattern : intent.patterns) {
             QStringList patternWords = pattern.toLower().split(' ', Qt::SkipEmptyParts);
-
+            int matchCount = 0;
+            
             for (const QString &inputWord : inputWords) {
                 for (const QString &patternWord : patternWords) {
-                    if (inputWord == patternWord || 
-                        inputWord.contains(patternWord) || 
-                        patternWord.contains(inputWord)) {
-                            qDebug() << "Matched word:" << inputWord << "↔" << patternWord << "→ intent:" << intent.tag;
-                            return &intent;
+                    if (inputWord.length() > 2 && patternWord.length() > 2) {
+                        if (inputWord == patternWord) {
+                            matchCount++;
+                            break; 
+                        }
                     }
+                }
+            }
+            
+            if (matchCount > 0 && matchCount > maxMatches) {
+                maxMatches = matchCount;
+                bestMatch = &intent;
+                qDebug() << "Better word match:" << pattern << "matches:" << matchCount << "-> intent:" << intent.tag;
+            }
+        }
+    }
+    
+    if (bestMatch && maxMatches >= 1) {
+        return bestMatch;
+    }
+    
+    for (const Intent &intent : intentList) {
+        if (intent.tag == "unknown") continue;
+        
+        for (const QString &pattern : intent.patterns) {
+            QString lowerPattern = pattern.toLower();
+            
+            if (lowerPattern.length() > 3) {
+                if (input.contains(lowerPattern)) {
+                    qDebug() << "Partial match (input contains pattern):" << lowerPattern << "-> intent:" << intent.tag;
+                    return &intent;
+                }
+                if (lowerPattern.contains(input) && input.length() > 3) {
+                    qDebug() << "Partial match (pattern contains input):" << lowerPattern << "-> intent:" << intent.tag;
+                    return &intent;
                 }
             }
         }
     }
-
-    for (const Intent &intent : intentList) {
-        for (const QString &pattern : intent.patterns) {
-            if (calculateSimilarity(input, pattern.toLower()) > 0.7) {
-                qDebug() << "Matched fuzzy:" << input << "≈" << pattern << "→ intent:" << intent.tag;
-                return &intent;
+    
+    if (input.length() > 3) {
+        for (const Intent &intent : intentList) {
+            if (intent.tag == "unknown") continue;
+            
+            for (const QString &pattern : intent.patterns) {
+                if (pattern.length() > 3 && calculateSimilarity(input, pattern.toLower()) > 0.8) {
+                    qDebug() << "Fuzzy match:" << pattern << "-> intent:" << intent.tag;
+                    return &intent;
+                }
             }
         }
     }
-
-    for (const Intent &intent : intentList)
-        if (intent.tag == "unknown"){
-            qDebug() << "No match found. Returning 'unknown' intent.";
+    
+    for (const Intent &intent : intentList) {
+        if (intent.tag == "unknown") {
+            qDebug() << "No match found, returning unknown intent";
             return &intent;
         }
+    }
+    
     return nullptr;
 }
-
 void MainWindow::startTypingAnimation(const QString &text)
 {
     if (typingTimer->isActive()) {
