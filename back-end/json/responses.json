@@ -20,16 +20,105 @@
     "response": "Dhanyabaad for using ई-BADAPATRA! Have a great day. Feel free to ask anytime if you need help with government services. Take care!"
   },
   {
-    "intent": "service_info",
+    "intent": "citizenship_services",
+    "patterns": [
+      "citizenship", "nagarikta", "citizenship certificate", "citizenship by descent",
+      "naturalized citizenship", "citizenship replacement", "citizenship correction",
+      "citizenship lost", "single parent citizenship", "citizenship name correction",
+      "citizenship dob correction", "nagarikta praman patra"
+    ],
+    "response": "For **Citizenship Certificate** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Types Available:** By Descent, Naturalized, Replacement for Lost/Damaged, Corrections (Name/DOB)"
+  },
+  {
+    "intent": "passport_services",
+    "patterns": [
+      "passport", "passport application", "passport documents", "passport fee",
+      "diplomatic passport", "special passport", "rapid passport", "passport collection",
+      "missed passport", "passport correction", "passport replacement", "passport lost"
+    ],
+    "response": "For **Passport** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Services:** Regular, Rapid, Diplomatic, Special, Collection assistance, Corrections"
+  },
+  {
+    "intent": "national_id_services",
+    "patterns": [
+      "national id", "national id card", "id card", "national id registration",
+      "national id replacement", "national id correction", "national id lost",
+      "national id damaged", "first time national id", "nid card", "national identity"
+    ],
+    "response": "For **National ID Card** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Services:** First-time registration, Replacement (lost/damaged), Corrections, NRN services"
+  },
+  {
+    "intent": "visa_services",
+    "patterns": [
+      "visa", "tourist visa", "business visa", "study visa", "residential visa",
+      "visa extension", "visa transfer", "nrn visa", "non residential visa",
+      "non tourist visa", "visa application", "visa fee"
+    ],
+    "response": "For **Visa** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Types:** Tourist, Business, Study, Residential, NRN, Extensions, Transfers"
+  },
+  {
+    "intent": "certificate_services",
+    "patterns": [
+      "birth certificate", "death certificate", "marriage certificate", "janma praman patra",
+      "mrityu praman patra", "bibaha praman patra", "late birth registration",
+      "late death registration", "late marriage registration", "certificate correction",
+      "birth record", "death record", "marriage record"
+    ],
+    "response": "For **Certificate** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Services:** Birth, Death, Marriage certificates, Late registrations, Corrections"
+  },
+  {
+    "intent": "land_services",
+    "patterns": [
+      "land registration", "raikar land", "birta land", "land partition",
+      "land ceiling", "tenant eviction", "tenant name transfer", "tenant record",
+      "tenant establishment", "crop deposit", "crop payment", "name transfer",
+      "share transfer", "lien", "rokka"
+    ],
+    "response": "For **Land** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Services:** Registration, Partition, Tenant services, Name transfers, Birta land"
+  },
+  {
+    "intent": "vehicle_services",
+    "patterns": [
+      "vehicle registration", "gadi darta", "driving license", "road worthiness",
+      "vehicle fare", "public vehicle", "transport", "vehicle statistics",
+      "pollution standards", "new vehicles", "vehicle approval"
+    ],
+    "response": "For **Vehicle** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Services:** Registration, Road worthiness, Fare determination, Pollution compliance"
+  },
+  {
+    "intent": "business_services",
+    "patterns": [
+      "business license", "factory registration", "workshop registration",
+      "factory inspection", "business registration", "trade license",
+      "industrial business", "business permit", "commercial license"
+    ],
+    "response": "For **Business/Factory** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Services:** Registration, Inspection, Licensing, Renewals"
+  },
+  {
+    "intent": "trekking_permits",
+    "patterns": [
+      "trekking", "trekking permit", "travel permit", "upper mustang", "upper dolpa",
+      "manaslu", "restricted area", "dolakha", "gorkha", "special area",
+      "conservation area", "national park permit"
+    ],
+    "response": "For **Trekking Permits**, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Areas:** Upper Mustang, Manaslu, Upper Dolpa, Restricted conservation areas"
+  },
+  {
+    "intent": "labor_services",
+    "patterns": [
+      "labor", "labour", "trade union", "factory inspection", "child labour",
+      "labour act", "complaints", "claims", "labor supplier", "employment",
+      "worker rights", "union registration"
+    ],
+    "response": "For **Labor** services, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\n**Services:** Trade union registration, Labor disputes, Factory inspections, Worker rights"
+  },
+  {
+    "intent": "general_service_info",
     "patterns": [
       "documents", "document", "charge", "cost", "fee", "how much", "price", "rate",
       "apply", "application", "service", "process", "procedure", "steps", "how to apply",
-      "passport", "citizenship", "license", "permit", "certificate", "nagarikta",
-      "registration", "tax", "birth certificate", "death certificate", "janma praman patra",
-      "marriage certificate", "driving license", "voter id", "pan card", "voter card",
-      "aadhar", "ration card", "business license", "vehicle registration", "gadi darta",
-      "kharcha", "paisa", "rupiya", "lagcha", "chahiye", "what documents", "ke document",
-      "form", "paper", "kagaj", "certificate", "praman patra", "license", "anumati patra"
+      "registration", "form", "paper", "kagaj", "kharcha", "paisa", "rupiya",
+      "lagcha", "chahiye", "what documents", "ke document"
     ],
     "response": "To apply for the service **{service_name}**, please visit **{office_name}**, Office No. **{service_no}**.\n\n**Required Documents:**\n{required_documents}\n\n**Fee:** {charge}\n\nWould you like more information about the application process or office hours?"
   },
@@ -60,7 +149,7 @@
       "guide gara", "batau", "sikhau", "bhannu", "what services", "ke service",
       "menu", "options", "features", "capabilities", "about you", "introduce"
     ],
-    "response": "I'm ई-BADAPATRA, your digital assistant for government services in Nepal! I can help you with:\n\n✓ Required documents for any service\n✓ Application fees and charges\n✓ Office locations and addresses\n✓ Processing times and procedures\n✓ Ministry and department information\n✓ Contact details\n\nJust ask me about any specific government service like passport, citizenship, licenses, certificates, etc. What would you like to know?"
+    "response": "I'm ई-BADAPATRA, your digital assistant for government services in Nepal! I can help you with:\n\n✓ Citizenship & National ID services\n✓ Passport applications & corrections\n✓ Visa services (Tourist, Business, Study)\n✓ Birth, Death, Marriage certificates\n✓ Land registration & tenant services\n✓ Vehicle registration & driving licenses\n✓ Business licenses & factory registration\n✓ Trekking permits for restricted areas\n✓ Labor services & trade unions\n✓ Office locations & contact details\n\nJust ask me about any specific service! What would you like to know?"
   },
   {
     "intent": "office_hours",
@@ -122,7 +211,7 @@
       "kasari", "kati", "kun", "explain", "bujhau", "clear", "details",
       "more info", "tell me more", "elaborate", "specific", "exactly"
     ],
-    "response": "I'd be happy to provide more specific information! Could you please tell me:\n\n• Which government service are you asking about?\n• What specific aspect do you need help with? (documents, fees, location, process)\n• Any particular office or ministry you're interested in?\n\nThe more specific you are, the better I can assist you!"
+    "response": "I'd be happy to provide more specific information! Could you please tell me:\n\n• Which government service are you asking about?\n• What specific aspect do you need help with? (documents, fees, location, process)\n• Any particular office or ministry you're interested in?\n\nFor example: 'passport documents', 'citizenship fee', 'national id office location'\n\nThe more specific you are, the better I can assist you!"
   },
   {
     "intent": "emergency_services",
@@ -144,7 +233,7 @@
   {
     "intent": "unknown",
     "patterns": [],
-    "response": "I didn't quite understand that, but I'm here to help! 🤔\n\nI specialize in government services information. You can ask me about:\n• Document requirements for any service\n• Fees and charges\n• Office locations and contact details\n• Application procedures\n• Ministry information\n\nCould you please rephrase your question or let me know which government service you need help with? For example, you could ask: 'passport documents chahiye' or 'citizenship fee kati ho?'"
+    "response": "I didn't quite understand that, but I'm here to help! 🤔\n\nI specialize in government services information. You can ask me about:\n• Citizenship & National ID services\n• Passport & Visa services\n• Birth, Death, Marriage certificates\n• Land registration services\n• Vehicle & driving licenses\n• Business licenses\n• Trekking permits\n\nCould you please rephrase your question? For example: 'passport documents chahiye' or 'citizenship fee kati ho?'"
   },
   {
     "intent": "casual_chat",
