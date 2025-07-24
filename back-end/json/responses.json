@@ -7,7 +7,7 @@
       "greetings", "howdy", "yo", "sup", "what's up", "whatsup", "kya hal",
       "ke cha", "kasto cha", "sanchai", "start", "begin"
     ],
-    "response": "Namaste! I'm ई-BADAPATRA, your government services assistant. How can I assist you today? Try asking about citizenship, passports, or other services!"
+    "response": "Namaste! I'm ई-BADAPATRA, your government services assistant. How can I assist you today? Try asking about citizenship, passports, or today's day!"
   },
   {
     "intent": "farewell",
@@ -159,16 +159,17 @@
       "guide gara", "batau", "sikhau", "bhannu", "what services", "ke service",
       "menu", "options", "features", "capabilities", "about you", "introduce"
     ],
-    "response": "I'm ई-BADAPATRA, your digital assistant for government services in Nepal! I can help with:\n\n✓ Citizenship Certificates\n✓ National ID Cards\n✓ Passports\n✓ Visas\n✓ Birth, Death, Marriage Certificates\n✓ Land Registration\n✓ Vehicle Registration & Licenses\n✓ Business Licenses\n✓ Trekking Permits\n✓ Labor Services\n\nAsk about a specific service, like 'how to get a passport' or 'citizenship documents'!"
+    "response": "I'm ई-BADAPATRA, your digital assistant for government services in Nepal! I can help with:\n\n✓ Citizenship Certificates\n✓ National ID Cards\n✓ Passports\n✓ Visas\n✓ Birth, Death, Marriage Certificates\n✓ Land Registration\n✓ Vehicle Registration & Licenses\n✓ Business Licenses\n✓ Trekking Permits\n✓ Labor Services\n\nAsk about a specific service or today's day!"
   },
   {
     "intent": "office_hours",
     "patterns": [
       "office hours", "timing", "when open", "working hours", "schedule", "samaya",
-      "kati baje", "khulla", "banda", "office time", "working time", "office timing",
-      "open time", "close time", "holiday", "working days", "kaam garne din"
+      "kati baje", "khulla", "banda", "office time", "working time", "office timing", "time",
+      "open", "close", "open time", "close time", "holiday", "working days",
+      "open time", "close time", "holiday", "working days","when should i visit", "kaam garne din"
     ],
-    "response": "Government offices are typically open:\n\n 10:00 AM to 5:00 PM\n Sunday to Thursday\n Closed on Saturdays, partial holiday on Fridays\n\nSpecify a service or office for exact timings."
+    "response": "{office_hours_response}"
   },
   {
     "intent": "contact",
@@ -186,7 +187,7 @@
       "ke ho", "ko ho", "name ke ho", "badapatra", "system", "chatbot", "AI",
       "robot", "computer", "digital assistant", "virtual assistant"
     ],
-    "response": "I'm ई-BADAPATRA, your digital assistant for government services in Nepal! 🇳🇵 I provide information on services like citizenship, passports, and more. Ask me anything about government procedures!"
+    "response": "I'm ई-BADAPATRA, your digital assistant for government services in Nepal! 🇳🇵 I provide information on services like citizenship, passports, and more. Ask me anything about government procedures or today's day!"
   },
   {
     "intent": "language_support",
@@ -194,7 +195,7 @@
       "nepali", "english", "language", "bhasha", "nepali ma", "english ma",
       "translate", "meaning", "matlab", "artha", "hindi", "understand"
     ],
-    "response": "I support Nepali and English! Ask in either language about government services, and I’ll respond clearly. What’s your question?"
+    "response": "I support Nepali and English! Ask in either language about government services or today's day, and I’ll respond clearly. What’s your question?"
   },
   {
     "intent": "complaints",
@@ -212,7 +213,7 @@
       "ramro", "thik", "mitho", "helpful cha", "good job", "well done",
       "impressed", "satisfied", "happy", "khushi", "thanks", "dhanyabad"
     ],
-    "response": "Thank you! I’m glad I could help. Ask me about any government service, like citizenship or vehicle registration, anytime!"
+    "response": "Thank you! I’m glad I could help. Ask me about any government service or today's day, anytime!"
   },
   {
     "intent": "clarification",
@@ -221,7 +222,7 @@
       "kasari", "kati", "kun", "explain", "bujhau", "clear", "details",
       "more info", "tell me more", "elaborate", "specific", "exactly"
     ],
-    "response": "Please clarify which service or topic you need details on (e.g., 'passport fee' or 'citizenship process'), and I’ll provide specific information!"
+    "response": "Please clarify which service or topic you need details on (e.g., 'passport fee' or 'today’s day'), and I’ll provide specific information!"
   },
   {
     "intent": "emergency_services",
@@ -241,9 +242,19 @@
     "response": "For online services, specify the service (e.g., 'online passport application'), and I’ll guide you to the right portal and document requirements."
   },
   {
+    "intent": "day_query",
+    "patterns": [
+      "what day is today", "today is what day", "which day is today", "day today",
+      "aaja ke bar", "aaj ko din", "ke bar", "today’s day", "what is today",
+      "today is which day", "current day", "what day is it", "what’s today’s day",
+      "today day", "what day today", "aaj kati bar", "din ke ho"
+    ],
+    "response": "It’s {current_day}! {office_hours_response}"
+  },
+  {
     "intent": "unknown",
     "patterns": [],
-    "response": "I didn’t understand that. Try asking about services like 'citizenship', 'passport', or 'vehicle registration'. What’s your question?"
+    "response": "I didn’t understand that. Try asking about services like 'citizenship', 'passport', or 'what day is today'. What’s your question?"
   },
   {
     "intent": "casual_chat",
@@ -252,6 +263,6 @@
       "fine", "ok", "alright", "sanchai", "thik chu", "ramro", "maja ma",
       "weather", "mausam", "today", "aja", "news", "khabar"
     ],
-    "response": "I’m doing great, thanks! Let’s talk about government services—try asking about citizenship, passports, or office locations!"
+    "response": "I’m doing great, thanks! Let’s talk about government services or try asking 'what day is today' to check the current day and office hours!"
   }
 ]
