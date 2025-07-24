@@ -20,7 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui(new Ui::MainWindow),
     currentCharIndex(0),
     typingTimer(new QTimer(this)),
-    typingLabel(nullptr)
+    typingLabel(nullptr),
+    lastIntentTag("")
 {
     ui->setupUi(this);
 
@@ -35,7 +36,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->chatScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     ui->inputLineEdit->setPlaceholderText("Ask ई - BADAPATRA anything");
-    ui->sendButton->setText("SEND");
     ui->sendButton->setText("SEND");
     ui->sendButton->setStyleSheet(
         "QPushButton {"
@@ -59,7 +59,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(typingTimer, &QTimer::timeout, this, &MainWindow::onTypingTimeout);
     connect(ui->inputLineEdit, &QLineEdit::returnPressed, this, &MainWindow::handleSendButtonClicked);
     connect(ui->sendButton, &QPushButton::clicked, this, &MainWindow::handleSendButtonClicked);
-
 
     QJsonDocument doc = loadIntents("D:/LGSF/lgsf-project/back-end/json/responses.json");
     if (!doc.isNull())
@@ -228,6 +227,7 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
     
     return nullptr;
 }
+
 void MainWindow::startTypingAnimation(const QString &text)
 {
     if (typingTimer->isActive()) {
@@ -313,14 +313,13 @@ void MainWindow::onTypingTimeout()
     {
         typingTimer->stop();
         ui->sendButton->setText("SEND");
-        ui->sendButton->setText("SEND");
         ui->sendButton->setEnabled(true);
         addTimeLabelToTypingMessage();
         typingLabel = nullptr;
     }
 }
 
-QString MainWindow::fetchServiceData(const QString &serviceKeyword, QString responseTemplate)
+QString MainWindow::fetchServiceData(const QString &userInput, QString responseTemplate)
 {
     if (!db.isOpen()) {
         return "Database is not connected. Please check your database connection settings.";
@@ -328,6 +327,20 @@ QString MainWindow::fetchServiceData(const QString &serviceKeyword, QString resp
     
     QSqlQuery query(db);
     
+    QMap<QString, QString> intentToKeyword;
+    intentToKeyword["citizenship_services"] = "Citizenship Certificate";
+    intentToKeyword["national_id_services"] = "National ID Card";
+    intentToKeyword["passport_services"] = "Passport";
+    intentToKeyword["visa_services"] = "Visa";
+    intentToKeyword["certificate_services"] = "Certificate";
+    intentToKeyword["land_services"] = "Land";
+    intentToKeyword["vehicle_services"] = "Vehicle";
+    intentToKeyword["business_services"] = "Business";
+    intentToKeyword["trekking_permits"] = "Trekking";
+    intentToKeyword["labor_services"] = "Labor";
+
+    QString serviceKeyword = intentToKeyword.value(lastIntentTag, userInput);
+
     query.prepare(R"(
         SELECT 
             s.service_name,
@@ -341,18 +354,13 @@ QString MainWindow::fetchServiceData(const QString &serviceKeyword, QString resp
         FROM services s
         JOIN offices o ON s.office_id = o.office_id
         LEFT JOIN required_documents rd ON s.service_id = rd.service_id
-        WHERE LOWER(s.service_name) LIKE LOWER(:keyword)
+        WHERE LOWER(s.service_name) = LOWER(:service_name)
         LIMIT 1
     )");
     
-    query.bindValue(":keyword", "%" + serviceKeyword + "%");
+    query.bindValue(":service_name", userInput.trimmed());
     
-    if (!query.exec()) {
-        qWarning() << "Query execution failed:" << query.lastError().text();
-        return "Failed to fetch data from database: " + query.lastError().text();
-    }
-    
-    if (query.next()) {
+    if (query.exec() && query.next()) {
         QString service_name = query.value("service_name").toString();
         QString office_name = query.value("office_name").toString();
         QString service_no = query.value("service_no").toString();
@@ -371,37 +379,32 @@ QString MainWindow::fetchServiceData(const QString &serviceKeyword, QString resp
         responseTemplate.replace("{contact_section}", contact_section);
         responseTemplate.replace("{responsible_officer}", responsible_officer);
         
+        lastIntentTag = ""; 
         return responseTemplate;
     }
-    
+
     query.prepare(R"(
         SELECT 
             s.service_name,
             o.office_name,
-            s.service_no,
-            rd.document_text as required_documents,
-            s.charge
+            s.service_no
         FROM services s
         JOIN offices o ON s.office_id = o.office_id
-        LEFT JOIN required_documents rd ON s.service_id = rd.service_id
-        WHERE LOWER(s.service_name) LIKE LOWER(:keyword1)
-           OR LOWER(o.office_name) LIKE LOWER(:keyword2)
-        LIMIT 3
+        WHERE LOWER(s.service_name) LIKE LOWER(:keyword)
+        ORDER BY s.service_name
     )");
     
-    query.bindValue(":keyword1", "%" + serviceKeyword + "%");
-    query.bindValue(":keyword2", "%" + serviceKeyword + "%");
+    query.bindValue(":keyword", "%" + serviceKeyword + "%");
     
     if (query.exec() && query.next()) {
-        QString results = "Here are some related services I found:\n\n";
+        QStringList serviceNames;
+        int index = 1;
         do {
-            results += QString("• **%1** at %2\n").arg(
-                query.value("service_name").toString(),
-                query.value("office_name").toString()
-            );
+            QString service_name = query.value("service_name").toString();
+            serviceNames << QString("%1. %2").arg(index++).arg(service_name);
         } while (query.next());
         
-        results += "\nPlease specify which service you need more information about.";
+        QString results = QString("We have the following services related to your need:\n\n%1\n\nPlease type the exact service name to get detailed information.").arg(serviceNames.join("\n"));
         return results;
     }
     
@@ -446,6 +449,7 @@ void MainWindow::addUserMessage(const QString &text)
 
 void MainWindow::addBotMessage(const QString &text)
 {
+    startTypingAnimation(text);
 }
 
 void MainWindow::handleUserInput(const QString &userText)
@@ -453,6 +457,7 @@ void MainWindow::handleUserInput(const QString &userText)
     QString input = userText.trimmed().toLower();
     if (input == "clear" || input == "cls") {
         clearChat();
+        lastIntentTag = "";
         return;
     }
 
@@ -465,6 +470,7 @@ void MainWindow::handleUserInput(const QString &userText)
     QString response;
     if (matched)
     {
+        lastIntentTag = matched->tag; // Store the matched intent tag
         response = matched->response;
         if (response.contains("{") && response.contains("}"))
             response = fetchServiceData(userText, response);
@@ -472,8 +478,9 @@ void MainWindow::handleUserInput(const QString &userText)
     else
     {
         response = "Sorry, I couldn't understand that.";
+        lastIntentTag = "";
     }
-    startTypingAnimation(response);
+    addBotMessage(response);
 }
 
 void MainWindow::clearChat()
@@ -502,7 +509,6 @@ void MainWindow::handleSendButtonClicked()
             typingLabel = nullptr;
         }
         ui->sendButton->setText("SEND");
-        ui->sendButton->setText("SEND");
         ui->sendButton->setEnabled(true);
         return;
     }
@@ -525,7 +531,6 @@ double MainWindow::calculateSimilarity(const QString &str1, const QString &str2)
     if (len1 == 0) return len2 == 0 ? 1.0 : 0.0;
     if (len2 == 0) return 0.0;
     
-
     int commonChars = 0;
     int maxLen = qMax(len1, len2);
     
@@ -561,6 +566,7 @@ QString MainWindow::generateContextualResponse(const QString &userInput, const I
     
     return response;
 }
+
 void MainWindow::testDatabaseConnection()
 {
     qDebug() << "=== Testing Database Connection ===";
@@ -572,10 +578,8 @@ void MainWindow::testDatabaseConnection()
     
     qDebug() << "Database is open";
     
-    // Test basic connectivity
     QSqlQuery query(db);
     
-    // Test ministries table
     if (query.exec("SELECT COUNT(*) FROM ministries")) {
         query.next();
         qDebug() << "Ministries table has" << query.value(0).toInt() << "records";
@@ -583,7 +587,6 @@ void MainWindow::testDatabaseConnection()
         qDebug() << "Failed to query ministries table:" << query.lastError().text();
     }
     
-    // Test offices table
     if (query.exec("SELECT COUNT(*) FROM offices")) {
         query.next();
         qDebug() << "Offices table has" << query.value(0).toInt() << "records";
@@ -591,7 +594,6 @@ void MainWindow::testDatabaseConnection()
         qDebug() << "Failed to query offices table:" << query.lastError().text();
     }
     
-    // Test services table
     if (query.exec("SELECT COUNT(*) FROM services")) {
         query.next();
         qDebug() << "Services table has" << query.value(0).toInt() << "records";
@@ -599,7 +601,6 @@ void MainWindow::testDatabaseConnection()
         qDebug() << "Failed to query services table:" << query.lastError().text();
     }
     
-    // Test required_documents table
     if (query.exec("SELECT COUNT(*) FROM required_documents")) {
         query.next();
         qDebug() << "Required_documents table has" << query.value(0).toInt() << "records";
@@ -607,7 +608,6 @@ void MainWindow::testDatabaseConnection()
         qDebug() << "Failed to query required_documents table:" << query.lastError().text();
     }
     
-    // Test a sample service search (this tests the JOIN query)
     qDebug() << "\n=== Testing Sample Services ===";
     query.prepare(R"(
         SELECT 
