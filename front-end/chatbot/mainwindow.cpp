@@ -60,12 +60,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->inputLineEdit, &QLineEdit::returnPressed, this, &MainWindow::handleSendButtonClicked);
     connect(ui->sendButton, &QPushButton::clicked, this, &MainWindow::handleSendButtonClicked);
 
-<<<<<<< HEAD
 
     QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
-=======
     QJsonDocument doc = loadIntents("D:/LGSF/lgsf-project/back-end/json/responses.json");
->>>>>>> 5b301f9e5acc18e7c4fa8300daf21cab3a345afe
     if (!doc.isNull())
         intentList = parseIntents(doc.array());
     setupDatabase();
@@ -159,7 +156,7 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
     
     QStringList inputWords = input.split(' ', Qt::SkipEmptyParts);
     
-    // Step 2: Enhanced word matching with scoring
+
     const Intent *bestMatch = nullptr;
     double bestScore = 0.0;
     
@@ -452,7 +449,7 @@ QString MainWindow::fetchServiceData(const QString &userInput, QString responseT
         }
     }
     
-    // If still no match, provide helpful guidance
+
     return QString("I couldn't find specific information about \"%1\".\n\nTry asking about:\n• Citizenship Certificate\n• Passport services\n• National ID Card\n• Birth/Death/Marriage certificates\n• Land registration\n• Business licenses\n• Trekking permits\n\nOr ask me \"what services are available?\" to see all options!")
            .arg(userInput);
 }
@@ -472,7 +469,7 @@ QString MainWindow::formatServiceResponse(QSqlQuery &query, QString responseTemp
     QString monitoring_officer = query.value("monitoring_officer").toString();
     QString remarks = query.value("remarks").toString();
     
-    // Enhanced response formatting
+
     QString formattedResponse = QString(" **%1**\n\n").arg(service_name);
     
     formattedResponse += QString(" **Office:** %1\n").arg(office_name);
@@ -516,7 +513,7 @@ QString MainWindow::formatServiceResponse(QSqlQuery &query, QString responseTemp
     
     formattedResponse += "\nNeed more help? Ask me about office hours or other services!";
     
-    lastIntentTag = ""; // Reset intent tag
+    lastIntentTag = "";
     return formattedResponse;
 }
 
