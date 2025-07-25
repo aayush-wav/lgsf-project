@@ -14,7 +14,12 @@
 #include <QCoreApplication>
 #include <QRegularExpression>
 #include <QMessageBox>
-#include <QRandomGenerator>
+#include <QSplitter>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QFrame>
+#include <QPropertyAnimation>
+#include <QEasingCurve>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -23,52 +28,19 @@ MainWindow::MainWindow(QWidget *parent)
     typingTimer(new QTimer(this)),
     typingLabel(nullptr),
     lastIntentTag(""),
-    waitingForNumberSelection(false)
+    waitingForNumberSelection(false),
+    hasStartedChatting(false),
+    sidebarVisible(false)
 {
     ui->setupUi(this);
-
-    QWidget* scrollWidget = new QWidget();
-    ui->chatLayout = new QVBoxLayout(scrollWidget);
-    ui->chatLayout->setAlignment(Qt::AlignTop);
-    ui->chatLayout->setSpacing(10);
-    ui->chatLayout->setContentsMargins(10, 10, 10, 10);
-
-    ui->chatScrollArea->setWidget(scrollWidget);
-    ui->chatScrollArea->setWidgetResizable(true);
-    ui->chatScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-
-    ui->inputLineEdit->setPlaceholderText("Ask ई - BADAPATRA anything");
-    ui->sendButton->setText("SEND");
-    ui->sendButton->setStyleSheet(
-        "QPushButton {"
-        "   font-family: '0xNerdFont';"
-        "   font-size: 14px;"
-        "   color: #2196F3;"
-        "   background-color: white;"
-        "   border: 1px solid #2196F3;"
-        "   border-radius: 4px;"
-        "   padding: 5px 10px;"
-        "}"
-        "QPushButton:hover {"
-        "   background-color: #E3F2FD;"
-        "}"
-        "QPushButton:pressed {"
-        "   background-color: #BBDEFB;"
-        "}"
-        );
-    ui->sendButton->setEnabled(true);
+    setupUI();
+    
     typingTimer->setInterval(30);
     connect(typingTimer, &QTimer::timeout, this, &MainWindow::onTypingTimeout);
-    connect(ui->inputLineEdit, &QLineEdit::returnPressed, this, &MainWindow::handleSendButtonClicked);
-    connect(ui->sendButton, &QPushButton::clicked, this, &MainWindow::handleSendButtonClicked);
 
-    QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
-    if (!doc.isNull()) {
+    QJsonDocument doc = loadIntents("D:/LGSF/lgsf-project/back-end/json/responses.json");
+    if (!doc.isNull())
         intentList = parseIntents(doc.array());
-        qDebug() << "Loaded" << intentList.size() << "intents";
-    } else {
-        qDebug() << "Failed to load intents";
-    }
     setupDatabase();
 }
 
@@ -79,6 +51,335 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::setupUI()
+{
+    setWindowTitle("ई-BADAPATRA - Government Services Assistant");
+    setMinimumSize(1000, 700);
+    resize(1200, 800);
+    
+    // Set modern dark theme
+    setStyleSheet(R"(
+        QMainWindow {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+    )");
+    
+    centralWidget = new QWidget();
+    setCentralWidget(centralWidget);
+    
+    mainLayout = new QHBoxLayout(centralWidget);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setSpacing(0);
+    
+    setupSidebar();
+    setupChatArea();
+}
+
+void MainWindow::setupSidebar()
+{
+    sidebar = new QFrame();
+    sidebar->setFixedWidth(0); // Initially hidden
+    sidebar->setStyleSheet(R"(
+        QFrame {
+            background-color: #2d2d2d;
+            border-right: 1px solid #444444;
+        }
+    )");
+    
+    QVBoxLayout *sidebarLayout = new QVBoxLayout(sidebar);
+    sidebarLayout->setContentsMargins(15, 20, 15, 20);
+    sidebarLayout->setSpacing(15);
+    
+    // Sidebar header
+    QLabel *sidebarTitle = new QLabel("Conversations");
+    sidebarTitle->setStyleSheet(R"(
+        QLabel {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+            padding: 10px 0px;
+        }
+    )");
+    sidebarLayout->addWidget(sidebarTitle);
+    
+    // History scroll area
+    historyScrollArea = new QScrollArea();
+    historyScrollArea->setStyleSheet(R"(
+        QScrollArea {
+            border: none;
+            background-color: transparent;
+        }
+        QScrollBar:vertical {
+            background-color: #404040;
+            width: 6px;
+            border-radius: 3px;
+        }
+        QScrollBar::handle:vertical {
+            background-color: #606060;
+            border-radius: 3px;
+        }
+    )");
+    historyScrollArea->setWidgetResizable(true);
+    historyScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    
+    historyWidget = new QWidget();
+    historyLayout = new QVBoxLayout(historyWidget);
+    historyLayout->setAlignment(Qt::AlignTop);
+    historyLayout->setSpacing(8);
+    
+    // Placeholder for conversation history
+    for (int i = 0; i < 5; i++) {
+        QLabel *placeholder = new QLabel(QString("Conversation %1").arg(i + 1));
+        placeholder->setStyleSheet(R"(
+            QLabel {
+                background-color: #404040;
+                border-radius: 8px;
+                padding: 12px;
+                font-size: 13px;
+                color: #cccccc;
+            }
+            QLabel:hover {
+                background-color: #4a4a4a;
+            }
+        )");
+        placeholder->setMinimumHeight(45);
+        historyLayout->addWidget(placeholder);
+    }
+    
+    historyScrollArea->setWidget(historyWidget);
+    sidebarLayout->addWidget(historyScrollArea);
+    
+    mainLayout->addWidget(sidebar);
+    
+    // Animation for sidebar
+    sidebarAnimation = new QPropertyAnimation(sidebar, "maximumWidth");
+    sidebarAnimation->setDuration(300);
+    sidebarAnimation->setEasingCurve(QEasingCurve::OutCubic);
+}
+
+void MainWindow::setupChatArea()
+{
+    chatArea = new QWidget();
+    chatArea->setStyleSheet("background-color: #1a1a1a;");
+    
+    chatAreaLayout = new QVBoxLayout(chatArea);
+    chatAreaLayout->setContentsMargins(0, 0, 0, 0);
+    chatAreaLayout->setSpacing(0);
+    
+    // Header with menu button and title
+    headerFrame = new QFrame();
+    headerFrame->setFixedHeight(60);
+    headerFrame->setStyleSheet(R"(
+        QFrame {
+            background-color: #2d2d2d;
+            border-bottom: 1px solid #444444;
+        }
+    )");
+    
+    headerLayout = new QHBoxLayout(headerFrame);
+    headerLayout->setContentsMargins(20, 0, 20, 0);
+    
+    // Menu button (hamburger)
+    menuButton = new QPushButton("☰");
+    menuButton->setFixedSize(40, 40);
+    menuButton->setStyleSheet(R"(
+        QPushButton {
+            background-color: transparent;
+            border: none;
+            font-size: 18px;
+            color: #ffffff;
+            border-radius: 8px;
+        }
+        QPushButton:hover {
+            background-color: #404040;
+        }
+        QPushButton:pressed {
+            background-color: #505050;
+        }
+    )");
+    connect(menuButton, &QPushButton::clicked, this, &MainWindow::toggleSidebar);
+    headerLayout->addWidget(menuButton);
+    
+    // Header title
+    headerLabel = new QLabel("ई - BADAPATRA");
+    headerLabel->setStyleSheet(R"(
+        QLabel {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 20px;
+            font-weight: bold;
+            color: #4a9eff;
+            margin-left: 15px;
+        }
+    )");
+    headerLayout->addWidget(headerLabel);
+    headerLayout->addStretch();
+    
+    chatAreaLayout->addWidget(headerFrame);
+    
+    // Chat content area
+    QWidget *chatContent = new QWidget();
+    QVBoxLayout *chatContentLayout = new QVBoxLayout(chatContent);
+    chatContentLayout->setContentsMargins(0, 0, 0, 0);
+    chatContentLayout->setSpacing(0);
+    
+    // Welcome label (center of screen initially)
+    welcomeLabel = new QLabel("ई - BADAPATRA");
+    welcomeLabel->setAlignment(Qt::AlignCenter);
+    welcomeLabel->setStyleSheet(R"(
+        QLabel {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 48px;
+            font-weight: bold;
+            color: #4a9eff;
+            background-color: transparent;
+            margin: 50px;
+        }
+    )");
+    
+    // Chat scroll area
+    ui->chatScrollArea = new QScrollArea();
+    ui->chatScrollArea->setStyleSheet(R"(
+        QScrollArea {
+            border: none;
+            background-color: #1a1a1a;
+        }
+        QScrollBar:vertical {
+            background-color: #404040;
+            width: 8px;
+            border-radius: 4px;
+        }
+        QScrollBar::handle:vertical {
+            background-color: #606060;
+            border-radius: 4px;
+        }
+        QScrollBar::handle:vertical:hover {
+            background-color: #707070;
+        }
+    )");
+    
+    QWidget* scrollWidget = new QWidget();
+    ui->chatLayout = new QVBoxLayout(scrollWidget);
+    ui->chatLayout->setAlignment(Qt::AlignTop);
+    ui->chatLayout->setSpacing(15);
+    ui->chatLayout->setContentsMargins(20, 20, 20, 20);
+    
+    // Add welcome label to chat layout initially
+    ui->chatLayout->addStretch();
+    ui->chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
+    ui->chatLayout->addStretch();
+
+    ui->chatScrollArea->setWidget(scrollWidget);
+    ui->chatScrollArea->setWidgetResizable(true);
+    ui->chatScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->chatScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    
+    chatContentLayout->addWidget(ui->chatScrollArea);
+    
+    // Input area
+    QFrame *inputFrame = new QFrame();
+    inputFrame->setFixedHeight(80);
+    inputFrame->setStyleSheet(R"(
+        QFrame {
+            background-color: #2d2d2d;
+            border-top: 1px solid #444444;
+        }
+    )");
+    
+    QHBoxLayout *inputLayout = new QHBoxLayout(inputFrame);
+    inputLayout->setContentsMargins(20, 15, 20, 15);
+    inputLayout->setSpacing(15);
+    
+    ui->inputLineEdit = new QLineEdit();
+    ui->inputLineEdit->setPlaceholderText("Ask ई - BADAPATRA anything about government services...");
+    ui->inputLineEdit->setStyleSheet(R"(
+        QLineEdit {
+            background-color: #404040;
+            border: 2px solid #555555;
+            border-radius: 25px;
+            padding: 12px 20px;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+            color: #ffffff;
+        }
+        QLineEdit:focus {
+            border-color: #4a9eff;
+            outline: none;
+        }
+        QLineEdit::placeholder {
+            color: #888888;
+        }
+    )");
+    
+    ui->sendButton = new QPushButton("Send");
+    ui->sendButton->setFixedSize(80, 50);
+    ui->sendButton->setStyleSheet(R"(
+        QPushButton {
+            background-color: #4a9eff;
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        QPushButton:hover {
+            background-color: #3d8ce6;
+        }
+        QPushButton:pressed {
+            background-color: #3579cc;
+        }
+        QPushButton:disabled {
+            background-color: #666666;
+            color: #999999;
+        }
+    )");
+    
+    connect(ui->inputLineEdit, &QLineEdit::returnPressed, this, &MainWindow::handleSendButtonClicked);
+    connect(ui->sendButton, &QPushButton::clicked, this, &MainWindow::handleSendButtonClicked);
+    
+    inputLayout->addWidget(ui->inputLineEdit);
+    inputLayout->addWidget(ui->sendButton);
+    
+    chatContentLayout->addWidget(inputFrame);
+    chatAreaLayout->addWidget(chatContent);
+    
+    mainLayout->addWidget(chatArea);
+}
+
+void MainWindow::toggleSidebar()
+{
+    if (sidebarVisible) {
+        sidebarAnimation->setStartValue(280);
+        sidebarAnimation->setEndValue(0);
+    } else {
+        sidebarAnimation->setStartValue(0);
+        sidebarAnimation->setEndValue(280);
+    }
+    
+    sidebarAnimation->start();
+    sidebarVisible = !sidebarVisible;
+}
+
+void MainWindow::updateWelcomeLabelVisibility()
+{
+    if (hasStartedChatting && welcomeLabel->isVisible()) {
+        // Remove welcome label from layout and hide it
+        ui->chatLayout->removeWidget(welcomeLabel);
+        welcomeLabel->hide();
+        
+        // Remove the stretches that were centering the welcome label
+        QLayoutItem* item;
+        while ((item = ui->chatLayout->takeAt(0))) {
+            delete item;
+        }
+        
+        // Reset layout alignment for chat messages
+        ui->chatLayout->setAlignment(Qt::AlignTop);
+    }
+}
+
 void MainWindow::setupDatabase()
 {
     db = QSqlDatabase::addDatabase("QPSQL");
@@ -87,9 +388,27 @@ void MainWindow::setupDatabase()
     db.setDatabaseName("LgsfInfo");
     db.setUserName("postgres");
     db.setPassword("00618");
-
+    
     if (!db.open()) {
-        QMessageBox::critical(this, "Database Error", QString("Failed to connect to database:\n%1").arg(db.lastError().text()));
+        qWarning() << "Database connection failed:" << db.lastError().text();
+        qWarning() << "Driver error:" << db.lastError().driverText();
+        qWarning() << "Database error:" << db.lastError().databaseText();
+        
+        QMessageBox::critical(this, "Database Error", 
+                            QString("Failed to connect to database:\n%1\n\nPlease ensure:\n"
+                                   "1. PostgreSQL service is running\n"
+                                   "2. Database 'LgsfInfo' exists\n"
+                                   "3. Username/password are correct")
+                                   .arg(db.lastError().text()));
+    } else {
+        qDebug() << "Database connected successfully!";
+        
+        QSqlQuery testQuery(db);
+        if (testQuery.exec("SELECT 1")) {
+            qDebug() << "Database test query successful";
+        } else {
+            qWarning() << "Database test query failed:" << testQuery.lastError().text();
+        }
     }
 }
 
@@ -118,21 +437,10 @@ QVector<Intent> MainWindow::parseIntents(const QJsonArray &intentsArray)
         if (obj["patterns"].isArray())
             for (const QJsonValue &p : obj["patterns"].toArray())
                 intent.patterns << p.toString();
-        if (obj["responses"].isArray()) {
-            for (const QJsonValue &r : obj["responses"].toArray())
-                intent.responses << r.toString();
-        } else {
-            intent.responses << obj["response"].toString();
-        }
+        intent.response = obj["response"].toString();
         intents.append(intent);
     }
     return intents;
-}
-
-QString MainWindow::getRandomResponse(const Intent &intent) {
-    if (intent.responses.isEmpty()) return "";
-    int index = QRandomGenerator::global()->bounded(intent.responses.size());
-    return intent.responses.at(index);
 }
 
 bool MainWindow::isNumericInput(const QString &input)
@@ -146,8 +454,7 @@ bool MainWindow::isNumericInput(const QString &input)
 const Intent *MainWindow::matchIntent(const QString &userInput)
 {
     QString input = userInput.trimmed().toLower();
-    qDebug() << "Matching intent for:" << input;
-
+    
     if (waitingForNumberSelection && isNumericInput(input)) {
         for (const Intent &intent : intentList) {
             if (intent.tag == "number_selection") {
@@ -155,92 +462,119 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
             }
         }
     }
-
+    
     input = input.remove(QRegularExpression("[.,!?;:]")).simplified();
 
+    // Enhanced matching for specific services
+    // Marriage certificate specific matching
+    if (input.contains("marriage") || input.contains("bibaha") || input.contains("विवाह")) {
+        for (const Intent &intent : intentList) {
+            if (intent.tag == "certificate_services") {
+                // Check if any pattern specifically mentions marriage
+                for (const QString &pattern : intent.patterns) {
+                    if (pattern.toLower().contains("marriage") || 
+                        pattern.toLower().contains("bibaha") || 
+                        pattern.toLower().contains("विवाह")) {
+                        return &intent;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Divorce specific handling
+    if (input.contains("divorce") || input.contains("talak") || input.contains("तलाक")) {
+        for (const Intent &intent : intentList) {
+            if (intent.tag == "certificate_services") {
+                return &intent;
+            }
+        }
+    }
+
+    // Exact match first
     for (const Intent &intent : intentList) {
         for (const QString &pattern : intent.patterns) {
             if (input == pattern.toLower()) {
-                qDebug() << "Exact match found:" << intent.tag;
+                qDebug() << "Exact match found:" << pattern << "-> intent:" << intent.tag;
                 return &intent;
             }
         }
     }
-
+    
     QStringList inputWords = input.split(' ', Qt::SkipEmptyParts);
+    
     const Intent *bestMatch = nullptr;
     double bestScore = 0.0;
-
+    
     for (const Intent &intent : intentList) {
         if (intent.tag == "unknown") continue;
-
+        
         for (const QString &pattern : intent.patterns) {
             QStringList patternWords = pattern.toLower().split(' ', Qt::SkipEmptyParts);
             double score = calculateMatchScore(inputWords, patternWords);
-
-            if (score > bestScore && score >= 0.6) {
+            
+            if (score > bestScore && score >= 0.6) {  
                 bestScore = score;
                 bestMatch = &intent;
+                qDebug() << "Better word match:" << pattern << "score:" << score << "-> intent:" << intent.tag;
             }
         }
     }
-
+    
     if (bestMatch) {
-        qDebug() << "Best match found:" << bestMatch->tag << "with score" << bestScore;
         return bestMatch;
     }
-
+    
     for (const Intent &intent : intentList) {
         if (intent.tag == "unknown") continue;
-
+        
         for (const QString &pattern : intent.patterns) {
             QString lowerPattern = pattern.toLower();
-            if (lowerPattern.length() > 3 && (input.contains(lowerPattern) || lowerPattern.contains(input))) {
-                qDebug() << "Partial match found:" << intent.tag;
+            
+            if (lowerPattern.length() > 3) {
+                if (input.contains(lowerPattern) || lowerPattern.contains(input)) {
+                    qDebug() << "Partial match found:" << lowerPattern << "-> intent:" << intent.tag;
+                    return &intent;
+                }
+            }
+            
+            if (isServiceRelated(input, intent.tag)) {
+                qDebug() << "Service-related match:" << intent.tag;
                 return &intent;
             }
         }
     }
-
-    for (const Intent &intent : intentList) {
-        if (intent.tag == "unknown") continue;
-
-        if (isServiceRelated(input, intent.tag)) {
-            qDebug() << "Service related match found:" << intent.tag;
-            return &intent;
-        }
-    }
-
+    
     if (input.length() > 3) {
         for (const Intent &intent : intentList) {
             if (intent.tag == "unknown") continue;
-
+            
             for (const QString &pattern : intent.patterns) {
                 if (pattern.length() > 3 && calculateSimilarity(input, pattern.toLower()) > 0.75) {
-                    qDebug() << "Similarity match found:" << intent.tag;
+                    qDebug() << "Fuzzy match found:" << pattern << "-> intent:" << intent.tag;
                     return &intent;
                 }
             }
         }
     }
-
+    
     for (const Intent &intent : intentList) {
         if (intent.tag == "unknown") {
             qDebug() << "No match found, returning unknown intent";
             return &intent;
         }
     }
-
+    
     return nullptr;
 }
 
 double MainWindow::calculateMatchScore(const QStringList &inputWords, const QStringList &patternWords)
 {
     if (inputWords.isEmpty() || patternWords.isEmpty()) return 0.0;
-
+    
     int matches = 0;
     int totalWords = qMax(inputWords.size(), patternWords.size());
-
+    
     for (const QString &inputWord : inputWords) {
         for (const QString &patternWord : patternWords) {
             if (inputWord.length() > 2 && patternWord.length() > 2) {
@@ -248,13 +582,13 @@ double MainWindow::calculateMatchScore(const QStringList &inputWords, const QStr
                     matches++;
                     break;
                 } else if (inputWord.contains(patternWord) || patternWord.contains(inputWord)) {
-                    matches += 0.5;
+                    matches += 0.5; 
                     break;
                 }
             }
         }
     }
-
+    
     return (double)matches / totalWords;
 }
 
@@ -268,7 +602,7 @@ bool MainWindow::isServiceRelated(const QString &input, const QString &intentTag
     serviceKeywords["land_services"] = {"land", "registration", "birta", "raikar", "jagga"};
     serviceKeywords["vehicle_services"] = {"vehicle", "driving", "license", "gadi", "chalak"};
     serviceKeywords["business_services"] = {"business", "factory", "workshop", "vyavasaya"};
-
+    
     if (serviceKeywords.contains(intentTag)) {
         for (const QString &keyword : serviceKeywords[intentTag]) {
             if (input.contains(keyword)) {
@@ -276,7 +610,7 @@ bool MainWindow::isServiceRelated(const QString &input, const QString &intentTag
             }
         }
     }
-
+    
     return false;
 }
 
@@ -294,11 +628,21 @@ void MainWindow::startTypingAnimation(const QString &text)
     pendingText = text;
     typedText.clear();
     currentCharIndex = 0;
-    ui->sendButton->setText("STOP");
+    ui->sendButton->setText("Stop");
     ui->sendButton->setEnabled(true);
 
     typingLabel = new QLabel("");
-    typingLabel->setStyleSheet("font-family: '0xNerdFont'; font-size: 18px; color: rgb(180, 180, 180); background: transparent; padding: 8px;");
+    typingLabel->setStyleSheet(R"(
+        QLabel {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 15px;
+            color: #e0e0e0;
+            background-color: #2d2d2d;
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin: 5px 50px 5px 5px;
+        }
+    )");
     typingLabel->setAlignment(Qt::AlignLeft);
     typingLabel->setWordWrap(true);
     typingLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
@@ -344,7 +688,15 @@ void MainWindow::addTimeLabelToTypingMessage()
 
                 if (!timeLabelExists) {
                     QLabel *timeLabel = new QLabel(QDateTime::currentDateTime().toString("HH:mm"));
-                    timeLabel->setStyleSheet("font-family: '0xNerdFont'; font-size: 10px; color: rgb(150, 150, 150); background: transparent;");
+                    timeLabel->setStyleSheet(R"(
+                        QLabel {
+                            font-family: 'Segoe UI', sans-serif;
+                            font-size: 11px;
+                            color: #888888;
+                            background: transparent;
+                            margin-left: 5px;
+                        }
+                    )");
                     timeLabel->setAlignment(Qt::AlignLeft);
                     vLayout->addWidget(timeLabel);
                 }
@@ -364,7 +716,7 @@ void MainWindow::onTypingTimeout()
     else
     {
         typingTimer->stop();
-        ui->sendButton->setText("SEND");
+        ui->sendButton->setText("Send");
         ui->sendButton->setEnabled(true);
         addTimeLabelToTypingMessage();
         typingLabel = nullptr;
@@ -376,51 +728,85 @@ QString MainWindow::generateNumberedServiceList(const QString &keyword, const QS
     if (!db.isOpen()) {
         return "I'm sorry, but I can't access the database right now. Please try again later or contact the office directly.";
     }
-
+    
     currentOptions.clear();
     QSqlQuery query(db);
-
-    query.prepare(R"(
-        SELECT
-            s.service_id,
-            s.service_name,
-            o.office_name
-        FROM services s
-        JOIN offices o ON s.office_id = o.office_id
-        WHERE LOWER(s.service_name) LIKE LOWER(:keyword)
-        ORDER BY s.service_name
-        LIMIT 10
-    )");
-
-    query.bindValue(":keyword", "%" + keyword + "%");
-
+    
+    // More specific search for marriage certificates
+    QString searchQuery;
+    if (keyword.toLower().contains("marriage") || keyword.toLower().contains("bibaha")) {
+        searchQuery = R"(
+            SELECT 
+                s.service_id,
+                s.service_name,
+                o.office_name
+            FROM services s
+            JOIN offices o ON s.office_id = o.office_id
+            WHERE LOWER(s.service_name) LIKE LOWER('%marriage%') 
+               OR LOWER(s.service_name) LIKE LOWER('%bibaha%')
+            ORDER BY s.service_name
+            LIMIT 5
+        )";
+        query.prepare(searchQuery);
+    } 
+    else if (keyword.toLower().contains("divorce") || keyword.toLower().contains("talak")) {
+        searchQuery = R"(
+            SELECT 
+                s.service_id,
+                s.service_name,
+                o.office_name
+            FROM services s
+            JOIN offices o ON s.office_id = o.office_id
+            WHERE LOWER(s.service_name) LIKE LOWER('%divorce%') 
+               OR LOWER(s.service_name) LIKE LOWER('%talak%')
+            ORDER BY s.service_name
+            LIMIT 5
+        )";
+        query.prepare(searchQuery);
+    }
+    else {
+        query.prepare(R"(
+            SELECT 
+                s.service_id,
+                s.service_name,
+                o.office_name
+            FROM services s
+            JOIN offices o ON s.office_id = o.office_id
+            WHERE LOWER(s.service_name) LIKE LOWER(:keyword)
+            ORDER BY s.service_name
+            LIMIT 10
+        )");
+        query.bindValue(":keyword", "%" + keyword + "%");
+    }
+    
     if (query.exec() && query.next()) {
         QString response = QString("I found these services related to \"%1\":\n\n").arg(keyword);
         int index = 1;
-
+        
         do {
             NumberedOption option;
             option.serviceId = query.value("service_id").toInt();
             option.serviceName = query.value("service_name").toString();
             option.displayText = query.value("service_name").toString();
             option.intentTag = intentTag;
-
+            
             currentOptions.append(option);
-
+            
             response += QString("%1. %2\n   Available at: %3\n\n")
-                            .arg(index++)
-                            .arg(option.serviceName)
-                            .arg(query.value("office_name").toString());
-
+                       .arg(index++)
+                       .arg(option.serviceName)
+                       .arg(query.value("office_name").toString());
+                       
         } while (query.next() && index <= 10);
-
+        
         response += "Please type the number (1-" + QString::number(currentOptions.size()) + ") of the service you want detailed information about.";
-
+        
         waitingForNumberSelection = true;
         return response;
     }
-
-    return QString("I couldn't find any services related to \"%1\".").arg(keyword);
+    
+    return QString("I couldn't find any services related to \"%1\".\n\nTry asking about:\n• Citizenship Certificate\n• Passport services\n• National ID Card\n• Birth/Death/Marriage certificates\n• Land registration\n• Business licenses\n• Trekking permits\n\nOr ask me \"what services are available?\" to see all options!")
+           .arg(keyword);
 }
 
 QString MainWindow::handleNumberSelection(int number, const QString &userInput)
@@ -428,12 +814,12 @@ QString MainWindow::handleNumberSelection(int number, const QString &userInput)
     if (number < 1 || number > currentOptions.size()) {
         return QString("Please select a number between 1 and %1, or ask me a new question.").arg(currentOptions.size());
     }
-
+    
     NumberedOption selectedOption = currentOptions[number - 1];
-
+    
     QSqlQuery query(db);
     query.prepare(R"(
-        SELECT
+        SELECT 
             s.service_name,
             o.office_name,
             m.ministry_name,
@@ -452,15 +838,15 @@ QString MainWindow::handleNumberSelection(int number, const QString &userInput)
         LEFT JOIN required_documents rd ON s.service_id = rd.service_id
         WHERE s.service_id = :service_id
     )");
-
+    
     query.bindValue(":service_id", selectedOption.serviceId);
-
+    
     if (query.exec() && query.next()) {
         waitingForNumberSelection = false;
         currentOptions.clear();
         return formatServiceResponse(query, "");
     }
-
+    
     waitingForNumberSelection = false;
     currentOptions.clear();
     return "Sorry, I couldn't retrieve the details for that service. Please try again or ask me directly about the service.";
@@ -471,11 +857,11 @@ QString MainWindow::fetchServiceData(const QString &userInput, QString responseT
     if (!db.isOpen()) {
         return "I'm sorry, but I can't access the database right now. Please try again later or contact the office directly.";
     }
-
+    
     QSqlQuery query(db);
-
+    
     query.prepare(R"(
-        SELECT
+        SELECT 
             s.service_name,
             o.office_name,
             m.ministry_name,
@@ -495,9 +881,9 @@ QString MainWindow::fetchServiceData(const QString &userInput, QString responseT
         WHERE LOWER(s.service_name) = LOWER(:service_name)
         LIMIT 1
     )");
-
+    
     query.bindValue(":service_name", userInput.trimmed());
-
+    
     if (query.exec() && query.next()) {
         return formatServiceResponse(query, responseTemplate);
     }
@@ -515,15 +901,16 @@ QString MainWindow::fetchServiceData(const QString &userInput, QString responseT
     intentToKeywords["labor_services"] = {"Labor", "labour", "employment"};
 
     QStringList searchKeywords = intentToKeywords.value(lastIntentTag, QStringList() << userInput);
-
+    
     for (const QString &keyword : searchKeywords) {
         QString numberedList = generateNumberedServiceList(keyword, lastIntentTag);
         if (numberedList.contains("I found these services")) {
             return numberedList;
         }
     }
-
-    return QString("I couldn't find specific information about \"%1\".").arg(userInput);
+    
+    return QString("I couldn't find specific information about \"%1\".\n\nTry asking about:\n• Citizenship Certificate\n• Passport services\n• National ID Card\n• Birth/Death/Marriage certificates\n• Land registration\n• Business licenses\n• Trekking permits\n\nOr ask me \"what services are available?\" to see all options!")
+           .arg(userInput);
 }
 
 QString MainWindow::formatServiceResponse(QSqlQuery &query, QString responseTemplate)
@@ -540,15 +927,15 @@ QString MainWindow::formatServiceResponse(QSqlQuery &query, QString responseTemp
     QString grievance_section = query.value("grievance_section").toString();
     QString monitoring_officer = query.value("monitoring_officer").toString();
     QString remarks = query.value("remarks").toString();
-
-    QString formattedResponse = QString("%1\n\n").arg(service_name);
-
-    formattedResponse += QString("Office: %1\n").arg(office_name);
-    formattedResponse += QString("Ministry: %1\n").arg(ministry_name);
+    
+    QString formattedResponse = QString("📋 %1\n\n").arg(service_name);
+    
+    formattedResponse += QString("🏢 Office: %1\n").arg(office_name);
+    formattedResponse += QString("🏛️ Ministry: %1\n").arg(ministry_name);
     if (!service_no.isEmpty())
-        formattedResponse += QString("Service No: %1\n").arg(service_no);
-
-    formattedResponse += "\nRequired Documents:\n";
+        formattedResponse += QString("🔢 Service No: %1\n").arg(service_no);
+    
+    formattedResponse += "\n📄 Required Documents:\n";
     if (!required_documents.isEmpty() && required_documents != "-" && required_documents != "—") {
         QStringList docs = required_documents.split(",");
         for (const QString &doc : docs) {
@@ -560,30 +947,30 @@ QString MainWindow::formatServiceResponse(QSqlQuery &query, QString responseTemp
     } else {
         formattedResponse += "   • Please contact the office for document requirements\n";
     }
-
-    formattedResponse += "\nFee: ";
+    
+    formattedResponse += "\n💰 Fee: ";
     if (!charge.isEmpty() && charge != "No charge" && charge != "Free" && charge != "-" && charge != "—") {
         formattedResponse += QString("%1\n").arg(charge);
     } else {
         formattedResponse += "Free of charge\n";
     }
-
-    formattedResponse += QString("Processing Time: %1\n").arg(time_taken.isEmpty() ? "Please contact office" : time_taken);
-
+    
+    formattedResponse += QString("⏱️ Processing Time: %1\n").arg(time_taken.isEmpty() ? "Please contact office" : time_taken);
+    
     if (!contact_section.isEmpty() && contact_section != "-" && contact_section != "—") {
-        formattedResponse += QString("\nContact: %1\n").arg(contact_section);
+        formattedResponse += QString("\n📞 Contact: %1\n").arg(contact_section);
     }
-
+    
     if (!responsible_officer.isEmpty() && responsible_officer != "-" && responsible_officer != "—") {
-        formattedResponse += QString("Responsible Officer: %1\n").arg(responsible_officer);
+        formattedResponse += QString("👤 Responsible Officer: %1\n").arg(responsible_officer);
     }
-
+    
     if (!remarks.isEmpty() && remarks != "-" && remarks != "—") {
-        formattedResponse += QString("\nAdditional Notes: %1\n").arg(remarks);
+        formattedResponse += QString("\n📝 Additional Notes: %1\n").arg(remarks);
     }
-
-    formattedResponse += "\nNeed more help? Ask me about office hours or other services!";
-
+    
+    formattedResponse += "\n💡 Need more help? Ask me about office hours or other services!";
+    
     lastIntentTag = "";
     return formattedResponse;
 }
@@ -595,11 +982,28 @@ void MainWindow::addUserMessage(const QString &text)
     messageLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
     messageLabel->setAlignment(Qt::AlignLeft);
     messageLabel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    messageLabel->setMaximumWidth(ui->chatScrollArea->width() * 0.7);
-    messageLabel->setStyleSheet("font-family: '0xNerdFont'; font-size: 18px; color: rgb(220, 220, 220); background: transparent; padding: 8px;");
+    messageLabel->setStyleSheet(R"(
+        QLabel {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 15px;
+            color: #ffffff;
+            background-color: #4a9eff;
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin: 5px 5px 5px 50px;
+        }
+    )");
 
     QLabel *timeLabel = new QLabel(QDateTime::currentDateTime().toString("HH:mm"));
-    timeLabel->setStyleSheet("font-family: '0xNerdFont'; font-size: 10px; color: rgb(150, 150, 150); background: transparent;");
+    timeLabel->setStyleSheet(R"(
+        QLabel {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 11px;
+            color: #888888;
+            background: transparent;
+            margin-right: 5px;
+        }
+    )");
     timeLabel->setAlignment(Qt::AlignRight);
 
     QVBoxLayout *vLayout = new QVBoxLayout();
@@ -614,7 +1018,6 @@ void MainWindow::addUserMessage(const QString &text)
     QHBoxLayout *hLayout = new QHBoxLayout();
     hLayout->addStretch();
     hLayout->addWidget(container);
-    hLayout->setContentsMargins(10, 5, 10, 5);
 
     QWidget *wrapper = new QWidget();
     wrapper->setLayout(hLayout);
@@ -636,24 +1039,32 @@ QString MainWindow::getOfficeHoursResponse()
     int hour = currentDateTime.time().hour();
 
     if (dayOfWeek == "Saturday") {
-        return "The office is closed today (Saturday - holiday).";
+        return "🏢 The office is closed today (Saturday - holiday).\n\n⏰ Office Hours:\n• Monday-Thursday: 10:00 AM - 4:00 PM\n• Friday: 10:00 AM - 1:00 PM\n• Saturday: Closed (Holiday)\n\n📅 Plan your visit accordingly!";
     } else if (dayOfWeek == "Friday") {
         if (hour >= 10 && hour < 13) {
-            return "Perfect! The office is currently open!";
+            return "✅ Perfect! The office is currently open!\n\n📅 Today (Friday): 10:00 AM - 1:00 PM\n🕐 Current time: Office is open\n\n⚠️ Remember: Friday has shorter hours than weekdays.";
         } else {
-            return "The office is currently closed.";
+            return "❌ The office is currently closed.\n\n📅 Friday Hours: 10:00 AM - 1:00 PM only\n\n💡 Alternative:\n• Visit Monday-Thursday: 10:00 AM - 4:00 PM\n• Or come back next Friday during operating hours";
         }
     } else {
         if (hour >= 10 && hour < 16) {
-            return "Excellent! The office is currently open!";
+            return "✅ Excellent! The office is currently open!\n\n📅 Today's Hours: 10:00 AM - 4:00 PM\n🟢 Status: Open and ready to serve you\n\n⭐ Weekdays offer the longest service hours.";
         } else {
-            return "The office is currently closed.";
+            return "❌ The office is currently closed.\n\n⏰ Regular Hours:\n• Monday-Thursday: 10:00 AM - 4:00 PM\n• Friday: 10:00 AM - 1:00 PM\n• Saturday: Closed\n\n🚪 Please visit during operating hours for service.";
         }
     }
 }
 
 void MainWindow::handleUserInput(const QString &userText)
 {
+    QString input = userText.trimmed().toLower();
+    if (input == "clear" || input == "cls") {
+        clearChat();
+        lastIntentTag = "";
+        waitingForNumberSelection = false;
+        currentOptions.clear();
+        return;
+    }
 }
 
 void MainWindow::handleSendButtonClicked()
@@ -667,7 +1078,7 @@ void MainWindow::handleSendButtonClicked()
             addTimeLabelToTypingMessage();
             typingLabel = nullptr;
         }
-        ui->sendButton->setText("SEND");
+        ui->sendButton->setText("Send");
         ui->sendButton->setEnabled(true);
         return;
     }
@@ -675,22 +1086,17 @@ void MainWindow::handleSendButtonClicked()
     if (userText.isEmpty())
         return;
 
-    if (ui->badapatraLabel && ui->badapatraLabel->isVisible()) {
-        ui->badapatraLabel->hide();
+    // Mark that user has started chatting and update UI
+    if (!hasStartedChatting) {
+        hasStartedChatting = true;
+        updateWelcomeLabelVisibility();
     }
 
-    if (userText.toLower() == "clear" || userText.toLower() == "cls") {
-        clearChat();
-        ui->inputLineEdit->clear();
-        lastIntentTag = "";
-        waitingForNumberSelection = false;
-        currentOptions.clear();
-        return;
-    }
-
-    addUserMessage(userText);
+    handleUserInput(userText);
     ui->inputLineEdit->clear();
 
+    addUserMessage(userText);
+    
     if (waitingForNumberSelection && isNumericInput(userText)) {
         bool ok;
         int number = userText.trimmed().toInt(&ok);
@@ -700,7 +1106,7 @@ void MainWindow::handleSendButtonClicked()
             return;
         }
     }
-
+    
     const Intent *matched = matchIntent(userText);
     QString response;
     if (matched)
@@ -716,10 +1122,30 @@ void MainWindow::handleSendButtonClicked()
         } else {
             waitingForNumberSelection = false;
             currentOptions.clear();
+            
             lastIntentTag = matched->tag;
-            response = getRandomResponse(*matched);
-
-            if (matched->tag == "day_query") {
+            response = matched->response;
+            
+            // Shorten casual responses
+            if (matched->tag == "greeting") {
+                response = "Namaste! 🙏 I'm ई-BADAPATRA, your government services assistant!\n\nI can help you with citizenship, passport, certificates, business licenses, and more.\n\nWhat do you need help with today?";
+            }
+            else if (matched->tag == "farewell") {
+                response = "धन्यवाद for using ई-BADAPATRA! 🙏\n\nHave a great day! Come back anytime you need help with government services.\n\nJai Nepal! 🇳🇵";
+            }
+            else if (matched->tag == "help") {
+                response = "I'm ई-BADAPATRA! 🤖 I can help you with:\n\n• Citizenship & National ID 🆔\n• Passport & Visa services ✈️\n• Birth/Death/Marriage certificates 📋\n• Business licenses & Land services 🏢\n• Office hours & locations 🏛️\n\nJust ask me anything like \"How to get citizenship?\" or \"What day is today?\"";
+            }
+            else if (matched->tag == "about_system") {
+                response = "I'm ई-BADAPATRA! 🤖\n\nYour digital government services assistant, here to make bureaucracy easier! I help with Nepal's government procedures in both Nepali and English.\n\nWhat government service do you need help with?";
+            }
+            else if (matched->tag == "casual_chat") {
+                response = "I'm doing great, thanks! 😊\n\nReady to help you with any government services you need. Try asking \"what day is today?\" or about any document you need!\n\nWhat brings you here today?";
+            }
+            else if (matched->tag == "appreciation") {
+                response = "Thank you so much! 😊 I'm glad I could help!\n\nRemember, I'm always here when you need government service info. Need anything else?";
+            }
+            else if (matched->tag == "day_query") {
                 QString currentDay = QDateTime::currentDateTime().toString("dddd");
                 response.replace("{current_day}", currentDay);
                 response.replace("{office_hours_response}", getOfficeHoursResponse());
@@ -727,11 +1153,11 @@ void MainWindow::handleSendButtonClicked()
             else if (matched->tag == "office_hours") {
                 response = getOfficeHoursResponse();
             }
-
+            
             if (response.contains("{") && response.contains("}")) {
                 response = fetchServiceData(userText, response);
             }
-
+            
             response = generateContextualResponse(userText, matched, response);
         }
     }
@@ -739,12 +1165,7 @@ void MainWindow::handleSendButtonClicked()
     {
         waitingForNumberSelection = false;
         currentOptions.clear();
-        const Intent *unknownIntent = findIntentByTag("unknown");
-        if (unknownIntent) {
-            response = getRandomResponse(*unknownIntent);
-        } else {
-            response = "I didn't quite understand that.";
-        }
+        response = "I didn't quite understand that. 🤔\n\nTry asking about:\n• \"Citizenship certificate\"\n• \"Passport services\"\n• \"What day is today?\"\n• \"Office hours\"\n\nWhat would you like to know?";
         lastIntentTag = "";
     }
     addBotMessage(response);
@@ -754,13 +1175,13 @@ double MainWindow::calculateSimilarity(const QString &str1, const QString &str2)
 {
     int len1 = str1.length();
     int len2 = str2.length();
-
+    
     if (len1 == 0) return len2 == 0 ? 1.0 : 0.0;
     if (len2 == 0) return 0.0;
-
+    
     int commonChars = 0;
     int maxLen = qMax(len1, len2);
-
+    
     for (int i = 0; i < qMin(len1, len2); ++i) {
         if (str1[i] == str2[i]) {
             commonChars++;
@@ -773,17 +1194,8 @@ double MainWindow::calculateSimilarity(const QString &str1, const QString &str2)
             commonChars++;
         }
     }
-
+    
     return (double)commonChars / maxLen;
-}
-
-const Intent* MainWindow::findIntentByTag(const QString &tag) {
-    for (const Intent &intent : intentList) {
-        if (intent.tag == tag) {
-            return &intent;
-        }
-    }
-    return nullptr;
 }
 
 QString MainWindow::generateContextualResponse(const QString &userInput, const Intent *intent, const QString &baseResponse)
@@ -793,15 +1205,127 @@ QString MainWindow::generateContextualResponse(const QString &userInput, const I
 
     if (intent->tag.contains("service") || intent->tag.contains("_services")) {
         if (lowerInput.contains("urgent") || lowerInput.contains("tatkal") || lowerInput.contains("emergency") || lowerInput.contains("fast")) {
-            response += "\n\nExpress Service available.";
+            response += "\n\n⚡ Express Service: Some services offer tatkal/express processing with additional fees. Please ask the office about expedited options.";
         }
-
+        
         if (lowerInput.contains("online") || lowerInput.contains("internet") || lowerInput.contains("digital")) {
-            response += "\n\nOnline Services available.";
+            response += "\n\n💻 Online Services: Many services now have online application options. Check the official government portal for digital services.";
+        }
+        
+        if (lowerInput.contains("document") || lowerInput.contains("paper") || lowerInput.contains("kagaj")) {
+            response += "\n\n📄 Document Tip: Always bring original documents along with photocopies. Some services may require notarized copies.";
+        }
+        
+        if (lowerInput.contains("fee") || lowerInput.contains("cost") || lowerInput.contains("charge") || lowerInput.contains("paisa")) {
+            response += "\n\n💰 Payment Tip: Fees may vary by district. Some services are free for certain categories (students, senior citizens).";
         }
     }
-
+    
+    if (intent->tag == "citizenship_services") {
+        response += "\n\n💡 Pro Tip: Citizenship services are usually handled at District Administration Offices (DAO). Bring your parents' citizenship certificates.";
+    }
+    else if (intent->tag == "passport_services") {
+        response += "\n\n✈️ Travel Tip: Apply for passport well in advance of your travel date. Check visa requirements for your destination country.";
+    }
+    else if (intent->tag == "national_id_services") {
+        response += "\n\n🆔 ID Tip: National ID is mandatory for many services. Keep both physical and digital copies safe.";
+    }
+    
     return response;
+}
+
+void MainWindow::testDatabaseConnection()
+{
+    qDebug() << "=== Testing Database Connection ===";
+    
+    if (!db.isOpen()) {
+        qDebug() << "Database is not open";
+        return;
+    }
+    
+    qDebug() << "Database is open";
+    
+    QSqlQuery query(db);
+    
+    if (query.exec("SELECT COUNT(*) FROM ministries")) {
+        query.next();
+        qDebug() << "Ministries table has" << query.value(0).toInt() << "records";
+    } else {
+        qDebug() << "Failed to query ministries table:" << query.lastError().text();
+    }
+    
+    if (query.exec("SELECT COUNT(*) FROM offices")) {
+        query.next();
+        qDebug() << "Offices table has" << query.value(0).toInt() << "records";
+    } else {
+        qDebug() << "Failed to query offices table:" << query.lastError().text();
+    }
+    
+    if (query.exec("SELECT COUNT(*) FROM services")) {
+        query.next();
+        qDebug() << "Services table has" << query.value(0).toInt() << "records";
+    } else {
+        qDebug() << "Failed to query services table:" << query.lastError().text();
+    }
+    
+    if (query.exec("SELECT COUNT(*) FROM required_documents")) {
+        query.next();
+        qDebug() << "Required_documents table has" << query.value(0).toInt() << "records";
+    } else {
+        qDebug() << "Failed to query required_documents table:" << query.lastError().text();
+    }
+    
+    qDebug() << "\n=== Testing Sample Services ===";
+    query.prepare(R"(
+        SELECT 
+            s.service_name,
+            o.office_name,
+            s.service_no
+        FROM services s
+        JOIN offices o ON s.office_id = o.office_id
+        LIMIT 5
+    )");
+    
+    if (query.exec()) {
+        qDebug() << "JOIN query successful. Sample services:";
+        while (query.next()) {
+            qDebug() << "  •" << query.value("service_name").toString() 
+                    << "at" << query.value("office_name").toString()
+                    << "(Service #" << query.value("service_no").toString() << ")";
+        }
+    } else {
+        qDebug() << "JOIN query failed:" << query.lastError().text();
+    }
+    
+    qDebug() << "\n=== Testing Citizenship Search ===";
+    query.prepare(R"(
+        SELECT 
+            s.service_name,
+            o.office_name,
+            s.service_no,
+            rd.document_text,
+            s.charge
+        FROM services s
+        JOIN offices o ON s.office_id = o.office_id
+        LEFT JOIN required_documents rd ON s.service_id = rd.service_id
+        WHERE LOWER(s.service_name) LIKE LOWER('%citizenship%')
+        LIMIT 3
+    )");
+    
+    if (query.exec()) {
+        qDebug() << "Citizenship search successful:";
+        while (query.next()) {
+            qDebug() << "  • Service:" << query.value("service_name").toString();
+            qDebug() << "    Office:" << query.value("office_name").toString();
+            qDebug() << "    Fee:" << query.value("charge").toString();
+            qDebug() << "    Documents:" << query.value("document_text").toString().left(100) + "...";
+            qDebug() << "";
+        }
+    } else {
+        qDebug() << "Citizenship search failed:" << query.lastError().text();
+    }
+    
+    qDebug() << "=== Database Test Complete ===\n";
 }
 
 void MainWindow::clearChat()
@@ -813,7 +1337,11 @@ void MainWindow::clearChat()
         }
         delete item;
     }
-    if (ui->badapatraLabel && !ui->badapatraLabel->isVisible()) {
-        ui->badapatraLabel->show();
-    }
+    
+    // Reset to welcome state
+    hasStartedChatting = false;
+    welcomeLabel->show();
+    ui->chatLayout->addStretch();
+    ui->chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
+    ui->chatLayout->addStretch();
 }
