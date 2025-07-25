@@ -18,6 +18,13 @@ struct Intent {
     QString response;
 };
 
+struct NumberedOption {
+    QString displayText;
+    QString serviceName;
+    int serviceId;
+    QString intentTag;
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -40,6 +47,8 @@ private:
     QVector<Intent> intentList;
     QSqlDatabase db;
     QString lastIntentTag;
+    QVector<NumberedOption> currentOptions;
+    bool waitingForNumberSelection;
 
     void setupDatabase();
     QJsonDocument loadIntents(const QString &fileName);
@@ -49,6 +58,8 @@ private:
     void addTimeLabelToTypingMessage();
     QString fetchServiceData(const QString &serviceKeyword, QString responseTemplate);
     QString formatServiceResponse(QSqlQuery &query, QString responseTemplate);
+    QString generateNumberedServiceList(const QString &keyword, const QString &intentTag);
+    QString handleNumberSelection(int number, const QString &userInput);
     void addUserMessage(const QString &text);
     void addBotMessage(const QString &text);
     void handleUserInput(const QString &userText);
@@ -59,6 +70,7 @@ private:
     QString generateContextualResponse(const QString &userInput, const Intent *intent, const QString &baseResponse);
     void testDatabaseConnection();
     QString getOfficeHoursResponse();
+    bool isNumericInput(const QString &input);
 };
 
 #endif
