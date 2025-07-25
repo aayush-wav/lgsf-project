@@ -223,7 +223,7 @@ void MainWindow::setupChatArea()
             font-family: 'Segoe UI', sans-serif;
             font-size: 48px;
             font-weight: bold;
-            color: #4a9eff;
+            color: #FFFFFF;
             background-color: transparent;
             margin: 50px;
         }
@@ -300,7 +300,7 @@ void MainWindow::setupChatArea()
         }
     )");
 
-    ui->sendButton = new QPushButton("Send");
+    ui->sendButton = new QPushButton("SEND");
     ui->sendButton->setFixedSize(80, 50);
     ui->sendButton->setStyleSheet(R"(
         QPushButton {
@@ -651,7 +651,7 @@ void MainWindow::startTypingAnimation(const QString &text)
     pendingText = text;
     typedText.clear();
     currentCharIndex = 0;
-    ui->sendButton->setText("Stop");
+    ui->sendButton->setText("STOP");
     ui->sendButton->setEnabled(true);
 
     typingLabel = new QLabel("");
@@ -739,7 +739,7 @@ void MainWindow::onTypingTimeout()
     else
     {
         typingTimer->stop();
-        ui->sendButton->setText("Send");
+        ui->sendButton->setText("SEND");
         ui->sendButton->setEnabled(true);
         addTimeLabelToTypingMessage();
         typingLabel = nullptr;
@@ -1118,15 +1118,20 @@ void MainWindow::handleSendButtonClicked()
     if (userText.isEmpty())
         return;
 
+
+    handleUserInput(userText);
+    if (userText.trimmed().toLower() == "clear" || userText.trimmed().toLower() == "cls") {
+        ui->inputLineEdit->clear();
+        return;
+    }
+
     if (!hasStartedChatting) {
         hasStartedChatting = true;
         updateWelcomeLabelVisibility();
     }
 
-    handleUserInput(userText);
-    ui->inputLineEdit->clear();
-
     addUserMessage(userText);
+    ui->inputLineEdit->clear();
 
     if (waitingForNumberSelection && isNumericInput(userText)) {
         bool ok;
@@ -1155,7 +1160,6 @@ void MainWindow::handleSendButtonClicked()
             currentOptions.clear();
 
             lastIntentTag = matched->tag;
-
             response = selectRandomResponse(matched->responses);
 
             if (matched->tag == "day_query") {
@@ -1326,17 +1330,28 @@ void MainWindow::testDatabaseConnection()
 
 void MainWindow::clearChat()
 {
+
     QLayoutItem* item;
     while ((item = ui->chatLayout->takeAt(0))) {
         if (item->widget()) {
-            delete item->widget();
+            if (item->widget() != welcomeLabel) {
+                delete item->widget();
+            }
         }
         delete item;
     }
 
     hasStartedChatting = false;
+    lastIntentTag = "";
+    waitingForNumberSelection = false;
+    currentOptions.clear();
+
+
     welcomeLabel->show();
     ui->chatLayout->addStretch();
     ui->chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
     ui->chatLayout->addStretch();
+
+
+    ui->chatScrollArea->verticalScrollBar()->setValue(0);
 }
