@@ -21,7 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
     currentCharIndex(0),
     typingTimer(new QTimer(this)),
     typingLabel(nullptr),
-    lastIntentTag("")
+    lastIntentTag(""),
+    waitingForNumberSelection(false)
 {
     ui->setupUi(this);
 
@@ -136,12 +137,27 @@ QVector<Intent> MainWindow::parseIntents(const QJsonArray &intentsArray)
     return intents;
 }
 
+bool MainWindow::isNumericInput(const QString &input)
+{
+    QString trimmed = input.trimmed();
+    bool ok;
+    int num = trimmed.toInt(&ok);
+    return ok && num >= 1 && num <= 20;
+}
+
 const Intent *MainWindow::matchIntent(const QString &userInput)
 {
     QString input = userInput.trimmed().toLower();
     
-    input = input.remove(QRegularExpression("[.,!?;:]")).simplified();
+    if (waitingForNumberSelection && isNumericInput(input)) {
+        for (const Intent &intent : intentList) {
+            if (intent.tag == "number_selection") {
+                return &intent;
+            }
+        }
+    }
     
+    input = input.remove(QRegularExpression("[.,!?;:]")).simplified();
 
     for (const Intent &intent : intentList) {
         for (const QString &pattern : intent.patterns) {
@@ -154,7 +170,6 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
     
     QStringList inputWords = input.split(' ', Qt::SkipEmptyParts);
     
-    // Step 2: Enhanced word matching with scoring
     const Intent *bestMatch = nullptr;
     double bestScore = 0.0;
     
@@ -357,6 +372,102 @@ void MainWindow::onTypingTimeout()
     }
 }
 
+QString MainWindow::generateNumberedServiceList(const QString &keyword, const QString &intentTag)
+{
+    if (!db.isOpen()) {
+        return "I'm sorry, but I can't access the database right now. Please try again later or contact the office directly.";
+    }
+    
+    currentOptions.clear();
+    QSqlQuery query(db);
+    
+    query.prepare(R"(
+        SELECT 
+            s.service_id,
+            s.service_name,
+            o.office_name
+        FROM services s
+        JOIN offices o ON s.office_id = o.office_id
+        WHERE LOWER(s.service_name) LIKE LOWER(:keyword)
+        ORDER BY s.service_name
+        LIMIT 10
+    )");
+    
+    query.bindValue(":keyword", "%" + keyword + "%");
+    
+    if (query.exec() && query.next()) {
+        QString response = QString("I found these services related to \"%1\":\n\n").arg(keyword);
+        int index = 1;
+        
+        do {
+            NumberedOption option;
+            option.serviceId = query.value("service_id").toInt();
+            option.serviceName = query.value("service_name").toString();
+            option.displayText = query.value("service_name").toString();
+            option.intentTag = intentTag;
+            
+            currentOptions.append(option);
+            
+            response += QString("%1. %2\n   Available at: %3\n\n")
+                       .arg(index++)
+                       .arg(option.serviceName)
+                       .arg(query.value("office_name").toString());
+                       
+        } while (query.next() && index <= 10);
+        
+        response += "Please type the number (1-" + QString::number(currentOptions.size()) + ") of the service you want detailed information about.";
+        
+        waitingForNumberSelection = true;
+        return response;
+    }
+    
+    return QString("I couldn't find any services related to \"%1\".\n\nTry asking about:\n• Citizenship Certificate\n• Passport services\n• National ID Card\n• Birth/Death/Marriage certificates\n• Land registration\n• Business licenses\n• Trekking permits\n\nOr ask me \"what services are available?\" to see all options!")
+           .arg(keyword);
+}
+
+QString MainWindow::handleNumberSelection(int number, const QString &userInput)
+{
+    if (number < 1 || number > currentOptions.size()) {
+        return QString("Please select a number between 1 and %1, or ask me a new question.").arg(currentOptions.size());
+    }
+    
+    NumberedOption selectedOption = currentOptions[number - 1];
+    
+    QSqlQuery query(db);
+    query.prepare(R"(
+        SELECT 
+            s.service_name,
+            o.office_name,
+            m.ministry_name,
+            s.service_no,
+            rd.document_text as required_documents,
+            s.charge,
+            s.time_taken,
+            s.contact_section,
+            s.responsible_officer,
+            s.grievance_section,
+            s.monitoring_officer,
+            s.remarks
+        FROM services s
+        JOIN offices o ON s.office_id = o.office_id
+        JOIN ministries m ON o.ministry_id = m.ministry_id
+        LEFT JOIN required_documents rd ON s.service_id = rd.service_id
+        WHERE s.service_id = :service_id
+    )");
+    
+    query.bindValue(":service_id", selectedOption.serviceId);
+    
+    if (query.exec() && query.next()) {
+        waitingForNumberSelection = false;
+        currentOptions.clear();
+        return formatServiceResponse(query, "");
+    }
+    
+    waitingForNumberSelection = false;
+    currentOptions.clear();
+    return "Sorry, I couldn't retrieve the details for that service. Please try again or ask me directly about the service.";
+}
+
 QString MainWindow::fetchServiceData(const QString &userInput, QString responseTemplate)
 {
     if (!db.isOpen()) {
@@ -365,18 +476,6 @@ QString MainWindow::fetchServiceData(const QString &userInput, QString responseT
     
     QSqlQuery query(db);
     
-    QMap<QString, QStringList> intentToKeywords;
-    intentToKeywords["citizenship_services"] = {"Citizenship Certificate", "citizenship", "nagarikta"};
-    intentToKeywords["national_id_services"] = {"National ID Card", "national id", "id card"};
-    intentToKeywords["passport_services"] = {"passport", "travel document"};
-    intentToKeywords["visa_services"] = {"visa", "travel permit"};
-    intentToKeywords["certificate_services"] = {"Certificate", "birth certificate", "death certificate", "marriage certificate"};
-    intentToKeywords["land_services"] = {"Land", "land registration", "birta", "raikar"};
-    intentToKeywords["vehicle_services"] = {"Vehicle", "driving license", "vehicle registration"};
-    intentToKeywords["business_services"] = {"Business", "factory", "workshop"};
-    intentToKeywords["trekking_permits"] = {"Trekking", "permit", "mountain"};
-    intentToKeywords["labor_services"] = {"Labor", "labour", "employment"};
-
     query.prepare(R"(
         SELECT 
             s.service_name,
@@ -405,49 +504,27 @@ QString MainWindow::fetchServiceData(const QString &userInput, QString responseT
         return formatServiceResponse(query, responseTemplate);
     }
 
+    QMap<QString, QStringList> intentToKeywords;
+    intentToKeywords["citizenship_services"] = {"Citizenship Certificate", "citizenship", "nagarikta"};
+    intentToKeywords["national_id_services"] = {"National ID Card", "national id", "id card"};
+    intentToKeywords["passport_services"] = {"passport", "travel document"};
+    intentToKeywords["visa_services"] = {"visa", "travel permit"};
+    intentToKeywords["certificate_services"] = {"Certificate", "birth certificate", "death certificate", "marriage certificate"};
+    intentToKeywords["land_services"] = {"Land", "land registration", "birta", "raikar"};
+    intentToKeywords["vehicle_services"] = {"Vehicle", "driving license", "vehicle registration"};
+    intentToKeywords["business_services"] = {"Business", "factory", "workshop"};
+    intentToKeywords["trekking_permits"] = {"Trekking", "permit", "mountain"};
+    intentToKeywords["labor_services"] = {"Labor", "labour", "employment"};
+
     QStringList searchKeywords = intentToKeywords.value(lastIntentTag, QStringList() << userInput);
     
     for (const QString &keyword : searchKeywords) {
-        query.prepare(R"(
-            SELECT 
-                s.service_name,
-                o.office_name,
-                m.ministry_name,
-                s.service_no,
-                rd.document_text as required_documents,
-                s.charge,
-                s.time_taken,
-                s.contact_section,
-                s.responsible_officer,
-                s.grievance_section,
-                s.monitoring_officer,
-                s.remarks
-            FROM services s
-            JOIN offices o ON s.office_id = o.office_id
-            JOIN ministries m ON o.ministry_id = m.ministry_id
-            LEFT JOIN required_documents rd ON s.service_id = rd.service_id
-            WHERE LOWER(s.service_name) LIKE LOWER(:keyword)
-            ORDER BY s.service_name
-        )");
-        
-        query.bindValue(":keyword", "%" + keyword + "%");
-        
-        if (query.exec() && query.next()) {
-            QStringList serviceNames;
-            int index = 1;
-            do {
-                QString service_name = query.value("service_name").toString();
-                QString office_name = query.value("office_name").toString();
-                serviceNames << QString("   %1. %2\n      Available at: %3").arg(index++).arg(service_name).arg(office_name);
-            } while (query.next() && index <= 10); 
-            
-            QString results = QString("I found these services related to your request:\n\n%1\n\nPlease type the exact service name from above to get detailed information, or ask me something like:\n• \"How to get [service name]?\"\n• \"What documents needed for [service name]?\"\n• \"[service name] fee\"")
-                             .arg(serviceNames.join("\n\n"));
-            return results;
+        QString numberedList = generateNumberedServiceList(keyword, lastIntentTag);
+        if (numberedList.contains("I found these services")) {
+            return numberedList;
         }
     }
     
-    // If still no match, provide helpful guidance
     return QString("I couldn't find specific information about \"%1\".\n\nTry asking about:\n• Citizenship Certificate\n• Passport services\n• National ID Card\n• Birth/Death/Marriage certificates\n• Land registration\n• Business licenses\n• Trekking permits\n\nOr ask me \"what services are available?\" to see all options!")
            .arg(userInput);
 }
@@ -467,15 +544,14 @@ QString MainWindow::formatServiceResponse(QSqlQuery &query, QString responseTemp
     QString monitoring_officer = query.value("monitoring_officer").toString();
     QString remarks = query.value("remarks").toString();
     
-    // Enhanced response formatting
-    QString formattedResponse = QString(" **%1**\n\n").arg(service_name);
+    QString formattedResponse = QString("%1\n\n").arg(service_name);
     
-    formattedResponse += QString(" **Office:** %1\n").arg(office_name);
-    formattedResponse += QString(" **Ministry:** %1\n").arg(ministry_name);
+    formattedResponse += QString("Office: %1\n").arg(office_name);
+    formattedResponse += QString("Ministry: %1\n").arg(ministry_name);
     if (!service_no.isEmpty())
-        formattedResponse += QString("**Service No:** %1\n").arg(service_no);
+        formattedResponse += QString("Service No: %1\n").arg(service_no);
     
-    formattedResponse += "\n **Required Documents:**\n";
+    formattedResponse += "\nRequired Documents:\n";
     if (!required_documents.isEmpty() && required_documents != "-" && required_documents != "—") {
         QStringList docs = required_documents.split(",");
         for (const QString &doc : docs) {
@@ -488,30 +564,30 @@ QString MainWindow::formatServiceResponse(QSqlQuery &query, QString responseTemp
         formattedResponse += "   • Please contact the office for document requirements\n";
     }
     
-    formattedResponse += "\n**Fee:** ";
+    formattedResponse += "\nFee: ";
     if (!charge.isEmpty() && charge != "No charge" && charge != "Free" && charge != "-" && charge != "—") {
         formattedResponse += QString("%1\n").arg(charge);
     } else {
         formattedResponse += "Free of charge\n";
     }
     
-    formattedResponse += QString("**Processing Time:** %1\n").arg(time_taken.isEmpty() ? "Please contact office" : time_taken);
+    formattedResponse += QString("Processing Time: %1\n").arg(time_taken.isEmpty() ? "Please contact office" : time_taken);
     
     if (!contact_section.isEmpty() && contact_section != "-" && contact_section != "—") {
-        formattedResponse += QString("\n **Contact:** %1\n").arg(contact_section);
+        formattedResponse += QString("\nContact: %1\n").arg(contact_section);
     }
     
     if (!responsible_officer.isEmpty() && responsible_officer != "-" && responsible_officer != "—") {
-        formattedResponse += QString("**Responsible Officer:** %1\n").arg(responsible_officer);
+        formattedResponse += QString("Responsible Officer: %1\n").arg(responsible_officer);
     }
     
     if (!remarks.isEmpty() && remarks != "-" && remarks != "—") {
-        formattedResponse += QString("\n **Additional Notes:** %1\n").arg(remarks);
+        formattedResponse += QString("\nAdditional Notes: %1\n").arg(remarks);
     }
     
     formattedResponse += "\nNeed more help? Ask me about office hours or other services!";
     
-    lastIntentTag = ""; // Reset intent tag
+    lastIntentTag = "";
     return formattedResponse;
 }
 
@@ -563,18 +639,18 @@ QString MainWindow::getOfficeHoursResponse()
     int hour = currentDateTime.time().hour();
 
     if (dayOfWeek == "Saturday") {
-        return "The office is closed today (Saturday - holiday). \n\n **Office Hours:**\n• Monday-Thursday: 10:00 AM - 4:00 PM\n• Friday: 10:00 AM - 1:00 PM\n• Saturday: Closed (Holiday)\n\n Plan your visit accordingly!";
+        return "The office is closed today (Saturday - holiday). \n\nOffice Hours:\n• Monday-Thursday: 10:00 AM - 4:00 PM\n• Friday: 10:00 AM - 1:00 PM\n• Saturday: Closed (Holiday)\n\nPlan your visit accordingly!";
     } else if (dayOfWeek == "Friday") {
         if (hour >= 10 && hour < 13) {
-            return "Perfect! The office is currently open!\n\n **Today (Friday):** 10:00 AM - 1:00 PM\n **Current time:** Office is open\n\n Remember: Friday has shorter hours than weekdays.";
+            return "Perfect! The office is currently open!\n\nToday (Friday): 10:00 AM - 1:00 PM\nCurrent time: Office is open\n\nRemember: Friday has shorter hours than weekdays.";
         } else {
-            return "The office is currently closed.\n\n **Friday Hours:** 10:00 AM - 1:00 PM only\n\n**Alternative:**\n• Visit Monday-Thursday: 10:00 AM - 4:00 PM\n• Or come back next Friday during operating hours";
+            return "The office is currently closed.\n\nFriday Hours: 10:00 AM - 1:00 PM only\n\nAlternative:\n• Visit Monday-Thursday: 10:00 AM - 4:00 PM\n• Or come back next Friday during operating hours";
         }
     } else {
         if (hour >= 10 && hour < 16) {
-            return "Excellent! The office is currently open!\n\n **Today's Hours:** 10:00 AM - 4:00 PM\n **Status:** Open and ready to serve you\n\nWeekdays offer the longest service hours.";
+            return "Excellent! The office is currently open!\n\nToday's Hours: 10:00 AM - 4:00 PM\nStatus: Open and ready to serve you\n\nWeekdays offer the longest service hours.";
         } else {
-            return "The office is currently closed.\n\n **Regular Hours:**\n• Monday-Thursday: 10:00 AM - 4:00 PM\n• Friday: 10:00 AM - 1:00 PM\n• Saturday: Closed\n\n Please visit during operating hours for service.";
+            return "The office is currently closed.\n\nRegular Hours:\n• Monday-Thursday: 10:00 AM - 4:00 PM\n• Friday: 10:00 AM - 1:00 PM\n• Saturday: Closed\n\nPlease visit during operating hours for service.";
         }
     }
 }
@@ -585,53 +661,11 @@ void MainWindow::handleUserInput(const QString &userText)
     if (input == "clear" || input == "cls") {
         clearChat();
         lastIntentTag = "";
+        waitingForNumberSelection = false;
+        currentOptions.clear();
         return;
     }
 
-    if (ui->badapatraLabel) {
-        ui->badapatraLabel->hide();
-    }
-
-    addUserMessage(userText);
-    const Intent *matched = matchIntent(userText);
-    QString response;
-    if (matched)
-    {
-        lastIntentTag = matched->tag;
-        response = matched->response;
-        
-        if (matched->tag == "day_query") {
-            QString currentDay = QDateTime::currentDateTime().toString("dddd");
-            response.replace("{current_day}", currentDay);
-            response.replace("{office_hours_response}", getOfficeHoursResponse());
-        }
-        else if (matched->tag == "office_hours") {
-            response = getOfficeHoursResponse();
-        }
-        
-        if (response.contains("{") && response.contains("}")) {
-            response = fetchServiceData(userText, response);
-        }
-        
-        response = generateContextualResponse(userText, matched, response);
-    }
-    else
-    {
-        response = " I didn't quite understand that. Could you try asking about:\n\n• Government services (citizenship, passport, etc.)\n• Office hours (\"what day is today?\")\n• Specific service information\n\nWhat would you like to know?";
-        lastIntentTag = "";
-    }
-    addBotMessage(response);
-}
-
-void MainWindow::clearChat()
-{
-    QLayoutItem* item;
-    while ((item = ui->chatLayout->takeAt(0))) {
-        if (item->widget()) {
-            delete item->widget();
-        }
-        delete item;
-    }
     if (ui->badapatraLabel) {
         ui->badapatraLabel->show();
     }
@@ -656,11 +690,68 @@ void MainWindow::handleSendButtonClicked()
     if (userText.isEmpty())
         return;
 
-    if (ui->badapatraLabel)
+    if (ui->badapatraLabel) {
         ui->badapatraLabel->hide();
+    }
 
     handleUserInput(userText);
     ui->inputLineEdit->clear();
+
+    addUserMessage(userText);
+    
+    if (waitingForNumberSelection && isNumericInput(userText)) {
+        bool ok;
+        int number = userText.trimmed().toInt(&ok);
+        if (ok) {
+            QString response = handleNumberSelection(number, userText);
+            addBotMessage(response);
+            return;
+        }
+    }
+    
+    const Intent *matched = matchIntent(userText);
+    QString response;
+    if (matched)
+    {
+        if (matched->tag == "number_selection" && waitingForNumberSelection) {
+            bool ok;
+            int number = userText.trimmed().toInt(&ok);
+            if (ok) {
+                response = handleNumberSelection(number, userText);
+            } else {
+                response = "Please enter a valid number from the list above.";
+            }
+        } else {
+            waitingForNumberSelection = false;
+            currentOptions.clear();
+            
+            lastIntentTag = matched->tag;
+            response = matched->response;
+            
+            if (matched->tag == "day_query") {
+                QString currentDay = QDateTime::currentDateTime().toString("dddd");
+                response.replace("{current_day}", currentDay);
+                response.replace("{office_hours_response}", getOfficeHoursResponse());
+            }
+            else if (matched->tag == "office_hours") {
+                response = getOfficeHoursResponse();
+            }
+            
+            if (response.contains("{") && response.contains("}")) {
+                response = fetchServiceData(userText, response);
+            }
+            
+            response = generateContextualResponse(userText, matched, response);
+        }
+    }
+    else
+    {
+        waitingForNumberSelection = false;
+        currentOptions.clear();
+        response = "I didn't quite understand that. Could you try asking about:\n\n• Government services (citizenship, passport, etc.)\n• Office hours (\"what day is today?\")\n• Specific service information\n\nWhat would you like to know?";
+        lastIntentTag = "";
+    }
+    addBotMessage(response);
 }
 
 double MainWindow::calculateSimilarity(const QString &str1, const QString &str2)
@@ -697,30 +788,30 @@ QString MainWindow::generateContextualResponse(const QString &userInput, const I
 
     if (intent->tag.contains("service") || intent->tag.contains("_services")) {
         if (lowerInput.contains("urgent") || lowerInput.contains("tatkal") || lowerInput.contains("emergency") || lowerInput.contains("fast")) {
-            response += "\n\n **Express Service:** Some services offer tatkal/express processing with additional fees. Please ask the office about expedited options.";
+            response += "\n\nExpress Service: Some services offer tatkal/express processing with additional fees. Please ask the office about expedited options.";
         }
         
         if (lowerInput.contains("online") || lowerInput.contains("internet") || lowerInput.contains("digital")) {
-            response += "\n\n **Online Services:** Many services now have online application options. Check the official government portal for digital services.";
+            response += "\n\nOnline Services: Many services now have online application options. Check the official government portal for digital services.";
         }
         
         if (lowerInput.contains("document") || lowerInput.contains("paper") || lowerInput.contains("kagaj")) {
-            response += "\n\n**Document Tip:** Always bring original documents along with photocopies. Some services may require notarized copies.";
+            response += "\n\nDocument Tip: Always bring original documents along with photocopies. Some services may require notarized copies.";
         }
         
         if (lowerInput.contains("fee") || lowerInput.contains("cost") || lowerInput.contains("charge") || lowerInput.contains("paisa")) {
-            response += "\n\n **Payment Tip:** Fees may vary by district. Some services are free for certain categories (students, senior citizens).";
+            response += "\n\nPayment Tip: Fees may vary by district. Some services are free for certain categories (students, senior citizens).";
         }
     }
     
     if (intent->tag == "citizenship_services") {
-        response += "\n\n **Pro Tip:** Citizenship services are usually handled at District Administration Offices (DAO). Bring your parents' citizenship certificates.";
+        response += "\n\nPro Tip: Citizenship services are usually handled at District Administration Offices (DAO). Bring your parents' citizenship certificates.";
     }
     else if (intent->tag == "passport_services") {
-        response += "\n\n **Travel Tip:** Apply for passport well in advance of your travel date. Check visa requirements for your destination country.";
+        response += "\n\nTravel Tip: Apply for passport well in advance of your travel date. Check visa requirements for your destination country.";
     }
     else if (intent->tag == "national_id_services") {
-        response += "\n\n **ID Tip:** National ID is mandatory for many services. Keep both physical and digital copies safe.";
+        response += "\n\nID Tip: National ID is mandatory for many services. Keep both physical and digital copies safe.";
     }
     
     return response;
@@ -818,4 +909,18 @@ void MainWindow::testDatabaseConnection()
     }
     
     qDebug() << "=== Database Test Complete ===\n";
+}
+
+void MainWindow::clearChat()
+{
+    QLayoutItem* item;
+    while ((item = ui->chatLayout->takeAt(0))) {
+        if (item->widget()) {
+            delete item->widget();
+        }
+        delete item;
+    }
+    if (ui->badapatraLabel) {
+        ui->badapatraLabel->show();
+    }
 }
