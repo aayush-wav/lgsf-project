@@ -115,9 +115,11 @@ QVector<Intent> MainWindow::parseIntents(const QJsonArray &intentsArray)
         QJsonObject obj = val.toObject();
         Intent intent;
         intent.tag = obj["intent"].toString();
-        if (obj["patterns"].isArray())
-            for (const QJsonValue &p : obj["patterns"].toArray())
+        if (obj["patterns"].isArray()) {
+            for (const QJsonValue &p : obj["patterns"].toArray()) {
                 intent.patterns << p.toString();
+            }
+        }
         if (obj["responses"].isArray()) {
             for (const QJsonValue &r : obj["responses"].toArray())
                 intent.responses << r.toString();
@@ -148,6 +150,7 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
     QString input = userInput.trimmed().toLower();
     qDebug() << "Matching intent for:" << input;
 
+    // First check if we're waiting for number selection
     if (waitingForNumberSelection && isNumericInput(input)) {
         for (const Intent &intent : intentList) {
             if (intent.tag == "number_selection") {
@@ -156,74 +159,18 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
         }
     }
 
-    input = input.remove(QRegularExpression("[.,!?;:]")).simplified();
-
+    // Very simple pattern matching - just check if any pattern is contained in the input
     for (const Intent &intent : intentList) {
-        for (const QString &pattern : intent.patterns) {
-            if (input == pattern.toLower()) {
-                qDebug() << "Exact match found:" << intent.tag;
-                return &intent;
-            }
-        }
-    }
-
-    QStringList inputWords = input.split(' ', Qt::SkipEmptyParts);
-    const Intent *bestMatch = nullptr;
-    double bestScore = 0.0;
-
-    for (const Intent &intent : intentList) {
-        if (intent.tag == "unknown") continue;
-
-        for (const QString &pattern : intent.patterns) {
-            QStringList patternWords = pattern.toLower().split(' ', Qt::SkipEmptyParts);
-            double score = calculateMatchScore(inputWords, patternWords);
-
-            if (score > bestScore && score >= 0.6) {
-                bestScore = score;
-                bestMatch = &intent;
-            }
-        }
-    }
-
-    if (bestMatch) {
-        qDebug() << "Best match found:" << bestMatch->tag << "with score" << bestScore;
-        return bestMatch;
-    }
-
-    for (const Intent &intent : intentList) {
-        if (intent.tag == "unknown") continue;
-
         for (const QString &pattern : intent.patterns) {
             QString lowerPattern = pattern.toLower();
-            if (lowerPattern.length() > 3 && (input.contains(lowerPattern) || lowerPattern.contains(input))) {
-                qDebug() << "Partial match found:" << intent.tag;
+            if (input.contains(lowerPattern)) {
+                qDebug() << "Matched pattern:" << pattern << "for intent:" << intent.tag;
                 return &intent;
             }
         }
     }
 
-    for (const Intent &intent : intentList) {
-        if (intent.tag == "unknown") continue;
-
-        if (isServiceRelated(input, intent.tag)) {
-            qDebug() << "Service related match found:" << intent.tag;
-            return &intent;
-        }
-    }
-
-    if (input.length() > 3) {
-        for (const Intent &intent : intentList) {
-            if (intent.tag == "unknown") continue;
-
-            for (const QString &pattern : intent.patterns) {
-                if (pattern.length() > 3 && calculateSimilarity(input, pattern.toLower()) > 0.75) {
-                    qDebug() << "Similarity match found:" << intent.tag;
-                    return &intent;
-                }
-            }
-        }
-    }
-
+    // If no match found, return unknown intent
     for (const Intent &intent : intentList) {
         if (intent.tag == "unknown") {
             qDebug() << "No match found, returning unknown intent";
@@ -232,52 +179,6 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
     }
 
     return nullptr;
-}
-
-double MainWindow::calculateMatchScore(const QStringList &inputWords, const QStringList &patternWords)
-{
-    if (inputWords.isEmpty() || patternWords.isEmpty()) return 0.0;
-
-    int matches = 0;
-    int totalWords = qMax(inputWords.size(), patternWords.size());
-
-    for (const QString &inputWord : inputWords) {
-        for (const QString &patternWord : patternWords) {
-            if (inputWord.length() > 2 && patternWord.length() > 2) {
-                if (inputWord == patternWord) {
-                    matches++;
-                    break;
-                } else if (inputWord.contains(patternWord) || patternWord.contains(inputWord)) {
-                    matches += 0.5;
-                    break;
-                }
-            }
-        }
-    }
-
-    return (double)matches / totalWords;
-}
-
-bool MainWindow::isServiceRelated(const QString &input, const QString &intentTag)
-{
-    QMap<QString, QStringList> serviceKeywords;
-    serviceKeywords["citizenship_services"] = {"citizenship", "nagarikta", "citizen", "praman", "patra"};
-    serviceKeywords["passport_services"] = {"passport", "travel", "document", "visa"};
-    serviceKeywords["national_id_services"] = {"national", "id", "card", "identity"};
-    serviceKeywords["certificate_services"] = {"birth", "death", "marriage", "certificate", "janma", "mrityu", "bibaha"};
-    serviceKeywords["land_services"] = {"land", "registration", "birta", "raikar", "jagga"};
-    serviceKeywords["vehicle_services"] = {"vehicle", "driving", "license", "gadi", "chalak"};
-    serviceKeywords["business_services"] = {"business", "factory", "workshop", "vyavasaya"};
-
-    if (serviceKeywords.contains(intentTag)) {
-        for (const QString &keyword : serviceKeywords[intentTag]) {
-            if (input.contains(keyword)) {
-                return true;
-            }
-        }
-    }
-
-    return false;
 }
 
 void MainWindow::startTypingAnimation(const QString &text)
@@ -325,7 +226,6 @@ void MainWindow::startTypingAnimation(const QString &text)
     ui->chatScrollArea->verticalScrollBar()->setValue(ui->chatScrollArea->verticalScrollBar()->maximum());
     typingTimer->start();
 }
-
 void MainWindow::addTimeLabelToTypingMessage()
 {
     if (typingLabel) {
@@ -731,8 +631,6 @@ void MainWindow::handleSendButtonClicked()
             if (response.contains("{") && response.contains("}")) {
                 response = fetchServiceData(userText, response);
             }
-
-            response = generateContextualResponse(userText, matched, response);
         }
     }
     else
@@ -748,33 +646,6 @@ void MainWindow::handleSendButtonClicked()
         lastIntentTag = "";
     }
     addBotMessage(response);
-}
-
-double MainWindow::calculateSimilarity(const QString &str1, const QString &str2)
-{
-    int len1 = str1.length();
-    int len2 = str2.length();
-
-    if (len1 == 0) return len2 == 0 ? 1.0 : 0.0;
-    if (len2 == 0) return 0.0;
-
-    int commonChars = 0;
-    int maxLen = qMax(len1, len2);
-
-    for (int i = 0; i < qMin(len1, len2); ++i) {
-        if (str1[i] == str2[i]) {
-            commonChars++;
-        }
-    }
-
-    for (int i = 0; i < len1 - 1; ++i) {
-        QString substr = str1.mid(i, 2);
-        if (str2.contains(substr)) {
-            commonChars++;
-        }
-    }
-
-    return (double)commonChars / maxLen;
 }
 
 const Intent* MainWindow::findIntentByTag(const QString &tag) {

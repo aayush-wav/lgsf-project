@@ -1,144 +1,355 @@
 {
-  "intents": [
-    {
-      "intent": "greeting",
-      "patterns": ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "namaste", "namaskar", "helo", "hii", "heyyy", "morning", "evening", "greetings", "howdy", "yo", "sup", "what's up", "whatsup", "kya hal", "ke cha", "kasto cha", "sanchai", "start", "begin", "सुरु", "नमस्ते"],
-      "responses": [
-        "Namaste! I'm ई-BADAPATRA, your friendly government services guide. How may I assist you today?",
-        "Namaskar! Ready to help with citizenship, passports, and more. What do you need?",
-        "Hello there! I specialize in Nepal's government services. Where shall we start?",
-        "Good day! Whether it's nagarikta or passport queries, I'm here to help!",
-        "Namaste ji! Ask me anything about government documents and services!",
-        "Hi there! Let's make government paperwork easier. What's on your mind?",
-        "Greetings! I can explain processes, fees, and requirements. What service interests you?",
-        "Hello! I'm your digital guide to Nepal's government services. How can I help?",
-        "Namaste! Need help with certificates, licenses or permits? I've got you covered!",
-        "Warm greetings! Tell me - citizenship, passport, or other government service today?"
-      ]
-    },
-    {
-      "intent": "farewell",
-      "patterns": ["bye", "goodbye", "see you", "later", "thank you", "thanks", "dhanyabad", "byee", "good bye", "see ya", "catch you later", "ttyl", "talk to you later", "thik cha", "bas", "enough", "done", "finish", "end", "exit", "quit", "dhanyabaad", "thank u", "thanku", "thnx", "appreciate", "धन्यवाद"],
-      "responses": [
-        "Dhanyabaad! Remember, government offices are there to serve you. Jai Nepal!",
-        "Thank you for using ई-BADAPATRA! Come back anytime you need government service help!",
-        "Farewell! May your documents always be in order. Visit again soon!",
-        "Dhanyabaad! Pro tip: Always keep copies of important documents. See you next time!",
-        "Thanks for chatting! Remember - Mondays are busiest at government offices.",
-        "Goodbye! Need help again? I'm just a 'Namaste' away!",
-        "Dhanyabaad ji! For quick service, visit offices mid-week around 11 AM.",
-        "Thank you! Did you know many services now have online applications?",
-        "Farewell friend! Keep those documents safe and updated!",
-        "Dhanyabaad! Remember to check office hours before visiting. Until next time!"
-      ]
-    },
-    {
-      "intent": "citizenship_services",
-      "patterns": ["citizenship", "nagarikta", "citizenship certificate", "citizenship by descent", "naturalized citizenship", "citizenship replacement", "citizenship correction", "citizenship lost", "single parent citizenship", "citizenship name correction", "citizenship dob correction", "nagarikta praman patra", "apply for citizenship", "how to get citizenship", "citizenship process", "citizenship application", "citizen", "नागरिकता", "प्रमाणपत्र"],
-      "responses": [
-        "For {service_name}, head to {office_name} (Office {service_no}). Documents needed:\n{required_documents}\nFee: {charge}\nProcessing: {time_taken}\nContact: {contact_section}",
-        "Nagarikta services at {office_name}:\nRequired: {required_documents}\nCost: {charge}\nTime: {time_taken}\nOfficer: {responsible_officer}",
-        "Citizenship help:\nVisit {office_name}\nBring: {required_documents}\nFee: {charge}\nWait: {time_taken}\nQuestions? {contact_section}",
-        "{service_name} details:\nOffice: {office_name}\nDocuments: {required_documents}\nCharge: {charge}\nDuration: {time_taken}",
-        "Need {service_name}? Go to {office_name} with:\n{required_documents}\nPay {charge}\nReady in {time_taken}\nContact: {responsible_officer}"
-      ]
-    },
-    {
-      "intent": "passport_services",
-      "patterns": ["passport", "passport application", "passport documents", "passport fee", "diplomatic passport", "special passport", "rapid passport", "passport collection", "missed passport", "passport correction", "passport replacement", "passport lost", "apply for passport", "how to get passport", "passport process", "travel document", "पासपोर्ट", "यात्रा पत्र"],
-      "responses": [
-        "Passport services at {office_name}:\nDocuments: {required_documents}\nFee: {charge}\nProcessing: {time_taken}\nContact: {contact_section}",
-        "For {service_name}, visit {office_name} with:\n{required_documents}\nCost: {charge}\nTime: {time_taken}\nOfficer: {responsible_officer}",
-        "Need passport? {office_name} handles it!\nBring: {required_documents}\nPay: {charge}\nWait: {time_taken}",
-        "Passport details:\nOffice: {office_name}\nRequired: {required_documents}\nFee: {charge}\nProcessing: {time_taken}",
-        "Travel document help:\nVisit {office_name}\nDocuments: {required_documents}\nCost: {charge}\nTime: {time_taken}"
-      ]
-    },
-    {
-      "intent": "national_id_services",
-      "patterns": ["national id", "national id card", "id card", "national id registration", "national id replacement", "national id correction", "national id lost", "national id damaged", "first time national id", "nid card", "national identity", "apply for national id", "how to get national id", "national id process", "identity card", "राष्ट्रिय परिचयपत्र"],
-      "responses": [
-        "NID services at {office_name}:\nDocuments: {required_documents}\nFee: {charge}\nProcessing: {time_taken}\nContact: {contact_section}",
-        "For {service_name}, visit {office_name} with:\n{required_documents}\nCost: {charge}\nTime: {time_taken}",
-        "National ID help:\nOffice: {office_name}\nBring: {required_documents}\nPay: {charge}\nWait: {time_taken}",
-        "Rastriya Parichayapatra details:\n{office_name} handles it\nDocuments: {required_documents}\nFee: {charge}",
-        "Need national ID? Go to {office_name}\nWith: {required_documents}\nCost: {charge}\nTime: {time_taken}"
-      ]
-    },
-    {
-      "intent": "general_service_info",
-      "patterns": ["documents", "document", "charge", "cost", "fee", "how much", "price", "rate", "apply", "application", "service", "process", "procedure", "steps", "how to apply", "registration", "form", "paper", "kagaj", "kharcha", "paisa", "rupiya", "lagcha", "chahiye", "what documents", "ke document", "service list", "available services", "what services", "कागजात", "शुल्क"],
-      "responses": [
-        "Popular services I can explain:\n• Citizenship process & fees\n• Passport requirements\n• Certificate procedures\n• Business licenses\nAsk specifically like \"passport documents\" or \"citizenship fee\"!",
-        "I can detail requirements for:\n- Nagarikta applications\n- Passport renewals\n- Birth registrations\n- Land transfers\nWhat exactly do you need to know?",
-        "Government services made simple! Ask me about:\n✓ Required documents\n✓ Processing fees\n✓ Office locations\n✓ Application steps\nWhich service interests you?",
-        "Let me simplify bureaucracy for you! I know:\n• Document checklists\n• Fee structures\n• Processing times\n• Office contacts\nWhat shall we tackle today?",
-        "Need service info? I'm fluent in:\n- Citizenship procedures\n- Passport rules\n- Certificate processes\n- License requirements\nAsk me anything specific!",
-        "I specialize in explaining:\n• What papers you'll need\n• How much services cost\n• Where to apply\n• How long it takes\nWhich service shall we discuss?",
-        "Cut through red tape! I can explain:\n▸ Document requirements\n▸ Government fees\n▸ Application processes\n▸ Office locations\nWhat do you need help with?",
-        "Let's navigate government services together! I can detail:\n• Required paperwork\n• Service charges\n• Processing duration\n• Office contacts\nWhat's your query?",
-        "From nagarikta to passports, I know:\n• Essential documents\n• Fee structures\n• Processing steps\n• Office information\nWhat shall I explain?",
-        "Government services decoded! Ask me about:\n→ Application processes\n→ Required documents\n→ Service fees\n→ Processing times\nWhat's your need today?"
-      ]
-    },
-    {
-      "intent": "office_hours",
-      "patterns": ["office hours", "timing", "when open", "working hours", "schedule", "samaya", "kati baje", "khulla", "banda", "office time", "working time", "office timing", "time", "open", "close", "open time", "close time", "holiday", "working days", "when should i visit", "kaam garne din", "खुला", "बन्द", "समय"],
-      "responses": [
-        "Government offices operate:\nSun-Thu: 10AM-4PM\nFri: 10AM-1PM\nClosed Saturdays & holidays",
-        "Standard hours:\nWeekdays: 10:00-16:00\nFridays: 10:00-13:00\nBest visiting time: Mid-morning",
-        "Office schedule:\nM-Th: 10AM-4PM\nFriday: 10AM-1PM\nAvoid lunch hours (1-2PM)",
-        "Visit us between:\nRegular days: 10AM-4PM\nFridays: 10AM-1PM\nHolidays: Closed",
-        "Working hours:\nSunday-Thursday: 10AM-4PM\nFriday: 10AM-1PM\nCome early to avoid crowds!",
-        "Service available:\nWeekdays: 10:00-16:00\nFriday: 10:00-13:00\nClosed on public holidays",
-        "We're open:\nMost days: 10AM-4PM\nFridays: 10AM-1PM\nSaturday: Closed",
-        "Office timings:\nStandard: 10AM-4PM\nFriday: 10AM-1PM\nHolidays vary by district",
-        "Government hours:\nRegular: 10AM-4PM\nFriday: 10AM-1PM\nMornings are least busy",
-        "Visit during:\nSun-Thu: 10:00-16:00\nFri: 10:00-13:00\nPlan 30+ mins before closing"
-      ]
-    },
-    {
-      "intent": "day_query",
-      "patterns": ["what day is today", "today is what day", "which day is today", "day today", "aaja ke bar", "aaj ko din", "ke bar", "today's day", "what is today", "today is which day", "current day", "what day is it", "what's today's day", "today day", "what day today", "aaj kati bar", "din ke ho", "आज के बार", "आजको दिन"],
-      "responses": [
-        "Today is {current_day}! {office_hours_response}",
-        "It's {current_day} today. {office_hours_response}",
-        "The day is {current_day}. {office_hours_response}",
-        "Aaja {current_day} ho! {office_hours_response}",
-        "Today's calendar day: {current_day}. {office_hours_response}"
-      ]
-    },
-    {
-      "intent": "casual_chat",
-      "patterns": ["how are you", "kasto cha", "ke gari rahachu", "what's up", "how's it going", "fine", "ok", "alright", "sanchai", "thik chu", "ramro", "maja ma", "weather", "mausam", "today", "aja", "news", "khabar", "कस्तो छ", "के गरिरहेको", "ठिक छु"],
-      "responses": [
-        "I'm digital so always perfect! Ready to help with government services!",
-        "Doing great! Excited to help you navigate bureaucracy today!",
-        "100% operational! Ask me anything about government documents!",
-        "Maja ma chu! Kehi sarkari seva ko barema sodhnu huncha?",
-        "Always fine when helping citizens! What service can I explain?",
-        "Thik chu! Sarkari kagajat ko barema kehi prashna cha?",
-        "Wonderful! Let's tackle some government paperwork together!",
-        "Feeling helpful! Need passport, citizenship or other service info?",
-        "Sukhi chu! Kun sarkari seva barema jankari chahinchha?",
-        "All systems go! Ready to simplify government processes for you!"
-      ]
-    },
-    {
-      "intent": "unknown",
-      "patterns": [],
-      "responses": [
-        "I didn't catch that. Try asking about citizenship, passport or other services!",
-        "Hmm, not sure I understand. Could you ask about government services?",
-        "I'm trained for government service queries. Maybe try rephrasing?",
-        "Sorry, I only handle government service questions. Try something like 'passport requirements'?",
-        "My expertise is government documents. Ask me about nagarikta, passport etc!",
-        "Let's focus on government services. Need help with certificates, licenses or permits?",
-        "I specialize in bureaucracy! Try asking about citizenship process, office hours etc.",
-        "For government service help, try queries like 'birth certificate' or 'passport fee'",
-        "I'm your government services assistant. Ask me about documents, fees or processes!",
-        "Need help with official paperwork? Ask me about passports, citizenship or certificates!"
-      ]
-    }
-  ]
+	"intents": [
+		{
+			"intent": "greeting",
+			"patterns": [
+				"hello",
+				"hi",
+				"hey",
+				"good morning",
+				"good afternoon",
+				"good evening",
+				"namaste",
+				"namaskar",
+				"helo",
+				"hii",
+				"heyyy",
+				"morning",
+				"evening",
+				"greetings",
+				"howdy",
+				"yo",
+				"sup",
+				"what's up",
+				"whatsup",
+				"kya hal",
+				"ke cha",
+				"kasto cha",
+				"sanchai",
+				"start",
+				"begin",
+				"सुरु",
+				"नमस्ते"
+			],
+			"responses": [
+				"Namaste! I'm ई-BADAPATRA, your friendly government services guide. How may I assist you today?",
+				"Namaskar! Ready to help with citizenship, passports, and more. What do you need?",
+				"Hello there! I specialize in Nepal's government services. Where shall we start?",
+				"Good day! Whether it's nagarikta or passport queries, I'm here to help!",
+				"Namaste ji! Ask me anything about government documents and services!",
+				"Hi there! Let's make government paperwork easier. What's on your mind?",
+				"Greetings! I can explain processes, fees, and requirements. What service interests you?",
+				"Hello! I'm your digital guide to Nepal's government services. How can I help?",
+				"Namaste! Need help with certificates, licenses or permits? I've got you covered!",
+				"Warm greetings! Tell me - citizenship, passport, or other government service today?"
+			]
+		},
+		{
+			"intent": "farewell",
+			"patterns": [
+				"bye",
+				"goodbye",
+				"see you",
+				"later",
+				"thank you",
+				"thanks",
+				"dhanyabad",
+				"byee",
+				"good bye",
+				"see ya",
+				"catch you later",
+				"ttyl",
+				"talk to you later",
+				"thik cha",
+				"bas",
+				"enough",
+				"done",
+				"finish",
+				"end",
+				"exit",
+				"quit",
+				"dhanyabaad",
+				"thank u",
+				"thanku",
+				"thnx",
+				"appreciate",
+				"धन्यवाद"
+			],
+			"responses": [
+				"Dhanyabaad! Remember, government offices are there to serve you. Jai Nepal!",
+				"Thank you for using ई-BADAPATRA! Come back anytime you need government service help!",
+				"Farewell! May your documents always be in order. Visit again soon!",
+				"Dhanyabaad! Pro tip: Always keep copies of important documents. See you next time!",
+				"Thanks for chatting! Remember - Mondays are busiest at government offices.",
+				"Goodbye! Need help again? I'm just a 'Namaste' away!",
+				"Dhanyabaad ji! For quick service, visit offices mid-week around 11 AM.",
+				"Thank you! Did you know many services now have online applications?",
+				"Farewell friend! Keep those documents safe and updated!",
+				"Dhanyabaad! Remember to check office hours before visiting. Until next time!"
+			]
+		},
+		{
+			"intent": "citizenship_services",
+			"patterns": [
+				"citizenship",
+				"nagarikta",
+				"citizenship certificate",
+				"citizenship by descent",
+				"naturalized citizenship",
+				"citizenship replacement",
+				"citizenship correction",
+				"citizenship lost",
+				"single parent citizenship",
+				"citizenship name correction",
+				"citizenship dob correction",
+				"nagarikta praman patra",
+				"apply for citizenship",
+				"how to get citizenship",
+				"citizenship process",
+				"citizenship application",
+				"citizen",
+				"नागरिकता",
+				"प्रमाणपत्र"
+			],
+			"responses": [
+				"For {service_name}, head to {office_name} (Office {service_no}). Documents needed:\n{required_documents}\nFee: {charge}\nProcessing: {time_taken}\nContact: {contact_section}",
+				"Nagarikta services at {office_name}:\nRequired: {required_documents}\nCost: {charge}\nTime: {time_taken}\nOfficer: {responsible_officer}",
+				"Citizenship help:\nVisit {office_name}\nBring: {required_documents}\nFee: {charge}\nWait: {time_taken}\nQuestions? {contact_section}",
+				"{service_name} details:\nOffice: {office_name}\nDocuments: {required_documents}\nCharge: {charge}\nDuration: {time_taken}",
+				"Need {service_name}? Go to {office_name} with:\n{required_documents}\nPay {charge}\nReady in {time_taken}\nContact: {responsible_officer}"
+			]
+		},
+		{
+			"intent": "passport_services",
+			"patterns": [
+				"passport",
+				"passport application",
+				"passport documents",
+				"passport fee",
+				"diplomatic passport",
+				"special passport",
+				"rapid passport",
+				"passport collection",
+				"missed passport",
+				"passport correction",
+				"passport replacement",
+				"passport lost",
+				"apply for passport",
+				"how to get passport",
+				"passport process",
+				"travel document",
+				"पासपोर्ट",
+				"यात्रा पत्र"
+			],
+			"responses": [
+				"Passport services at {office_name}:\nDocuments: {required_documents}\nFee: {charge}\nProcessing: {time_taken}\nContact: {contact_section}",
+				"For {service_name}, visit {office_name} with:\n{required_documents}\nCost: {charge}\nTime: {time_taken}\nOfficer: {responsible_officer}",
+				"Need passport? {office_name} handles it!\nBring: {required_documents}\nPay: {charge}\nWait: {time_taken}",
+				"Passport details:\nOffice: {office_name}\nRequired: {required_documents}\nFee: {charge}\nProcessing: {time_taken}",
+				"Travel document help:\nVisit {office_name}\nDocuments: {required_documents}\nCost: {charge}\nTime: {time_taken}"
+			]
+		},
+		{
+			"intent": "national_id_services",
+			"patterns": [
+				"national id",
+				"national id card",
+				"id card",
+				"national id registration",
+				"national id replacement",
+				"national id correction",
+				"national id lost",
+				"national id damaged",
+				"first time national id",
+				"nid card",
+				"national identity",
+				"apply for national id",
+				"how to get national id",
+				"national id process",
+				"identity card",
+				"राष्ट्रिय परिचयपत्र"
+			],
+			"responses": [
+				"NID services at {office_name}:\nDocuments: {required_documents}\nFee: {charge}\nProcessing: {time_taken}\nContact: {contact_section}",
+				"For {service_name}, visit {office_name} with:\n{required_documents}\nCost: {charge}\nTime: {time_taken}",
+				"National ID help:\nOffice: {office_name}\nBring: {required_documents}\nPay: {charge}\nWait: {time_taken}",
+				"Rastriya Parichayapatra details:\n{office_name} handles it\nDocuments: {required_documents}\nFee: {charge}",
+				"Need national ID? Go to {office_name}\nWith: {required_documents}\nCost: {charge}\nTime: {time_taken}"
+			]
+		},
+		{
+			"intent": "general_service_info",
+			"patterns": [
+				"documents",
+				"document",
+				"charge",
+				"cost",
+				"fee",
+				"how much",
+				"price",
+				"rate",
+				"apply",
+				"application",
+				"service",
+				"process",
+				"procedure",
+				"steps",
+				"how to apply",
+				"registration",
+				"form",
+				"paper",
+				"kagaj",
+				"kharcha",
+				"paisa",
+				"rupiya",
+				"lagcha",
+				"chahiye",
+				"what documents",
+				"ke document",
+				"service list",
+				"available services",
+				"what services",
+				"कागजात",
+				"शुल्क"
+			],
+			"responses": [
+				"Popular services I can explain:\n• Citizenship process & fees\n• Passport requirements\n• Certificate procedures\n• Business licenses\nAsk specifically like \"passport documents\" or \"citizenship fee\"!",
+				"I can detail requirements for:\n- Nagarikta applications\n- Passport renewals\n- Birth registrations\n- Land transfers\nWhat exactly do you need to know?",
+				"Government services made simple! Ask me about:\n✓ Required documents\n✓ Processing fees\n✓ Office locations\n✓ Application steps\nWhich service interests you?",
+				"Let me simplify bureaucracy for you! I know:\n• Document checklists\n• Fee structures\n• Processing times\n• Office contacts\nWhat shall we tackle today?",
+				"Need service info? I'm fluent in:\n- Citizenship procedures\n- Passport rules\n- Certificate processes\n- License requirements\nAsk me anything specific!",
+				"I specialize in explaining:\n• What papers you'll need\n• How much services cost\n• Where to apply\n• How long it takes\nWhich service shall we discuss?",
+				"Cut through red tape! I can explain:\n▸ Document requirements\n▸ Government fees\n▸ Application processes\n▸ Office locations\nWhat do you need help with?",
+				"Let's navigate government services together! I can detail:\n• Required paperwork\n• Service charges\n• Processing duration\n• Office contacts\nWhat's your query?",
+				"From nagarikta to passports, I know:\n• Essential documents\n• Fee structures\n• Processing steps\n• Office information\nWhat shall I explain?",
+				"Government services decoded! Ask me about:\n→ Application processes\n→ Required documents\n→ Service fees\n→ Processing times\nWhat's your need today?"
+			]
+		},
+		{
+			"intent": "office_hours",
+			"patterns": [
+				"office hours",
+				"timing",
+				"when open",
+				"working hours",
+				"schedule",
+				"samaya",
+				"kati baje",
+				"khulla",
+				"banda",
+				"office time",
+				"working time",
+				"office timing",
+				"time",
+				"open",
+				"close",
+				"open time",
+				"close time",
+				"holiday",
+				"working days",
+				"when should i visit",
+				"kaam garne din",
+				"खुला",
+				"बन्द",
+				"समय"
+			],
+			"responses": [
+				"Government offices operate:\nSun-Thu: 10AM-4PM\nFri: 10AM-1PM\nClosed Saturdays & holidays",
+				"Standard hours:\nWeekdays: 10:00-16:00\nFridays: 10:00-13:00\nBest visiting time: Mid-morning",
+				"Office schedule:\nM-Th: 10AM-4PM\nFriday: 10AM-1PM\nAvoid lunch hours (1-2PM)",
+				"Visit us between:\nRegular days: 10AM-4PM\nFridays: 10AM-1PM\nHolidays: Closed",
+				"Working hours:\nSunday-Thursday: 10AM-4PM\nFriday: 10AM-1PM\nCome early to avoid crowds!",
+				"Service available:\nWeekdays: 10:00-16:00\nFriday: 10:00-13:00\nClosed on public holidays",
+				"We're open:\nMost days: 10AM-4PM\nFridays: 10AM-1PM\nSaturday: Closed",
+				"Office timings:\nStandard: 10AM-4PM\nFriday: 10AM-1PM\nHolidays vary by district",
+				"Government hours:\nRegular: 10AM-4PM\nFriday: 10AM-1PM\nMornings are least busy",
+				"Visit during:\nSun-Thu: 10:00-16:00\nFri: 10:00-13:00\nPlan 30+ mins before closing"
+			]
+		},
+		{
+			"intent": "day_query",
+			"patterns": [
+				"what day is today",
+				"today is what day",
+				"which day is today",
+				"day today",
+				"aaja ke bar",
+				"aaj ko din",
+				"ke bar",
+				"today's day",
+				"what is today",
+				"today is which day",
+				"current day",
+				"what day is it",
+				"what's today's day",
+				"today day",
+				"what day today",
+				"aaj kati bar",
+				"din ke ho",
+				"आज के बार",
+				"आजको दिन"
+			],
+			"responses": [
+				"Today is {current_day}! {office_hours_response}",
+				"It's {current_day} today. {office_hours_response}",
+				"The day is {current_day}. {office_hours_response}",
+				"Aaja {current_day} ho! {office_hours_response}",
+				"Today's calendar day: {current_day}. {office_hours_response}"
+			]
+		},
+		{
+			"intent": "casual_chat",
+			"patterns": [
+				"how are you",
+				"kasto cha",
+				"ke gari rahachu",
+				"what's up",
+				"how's it going",
+				"fine",
+				"ok",
+				"alright",
+				"sanchai",
+				"thik chu",
+				"ramro",
+				"maja ma",
+				"weather",
+				"mausam",
+				"today",
+				"aja",
+				"news",
+				"khabar",
+				"कस्तो छ",
+				"के गरिरहेको",
+				"ठिक छु"
+			],
+			"responses": [
+				"I'm digital so always perfect! Ready to help with government services!",
+				"Doing great! Excited to help you navigate bureaucracy today!",
+				"100% operational! Ask me anything about government documents!",
+				"Maja ma chu! Kehi sarkari seva ko barema sodhnu huncha?",
+				"Always fine when helping citizens! What service can I explain?",
+				"Thik chu! Sarkari kagajat ko barema kehi prashna cha?",
+				"Wonderful! Let's tackle some government paperwork together!",
+				"Feeling helpful! Need passport, citizenship or other service info?",
+				"Sukhi chu! Kun sarkari seva barema jankari chahinchha?",
+				"All systems go! Ready to simplify government processes for you!"
+			]
+		},
+		{
+			"intent": "unknown",
+			"patterns": [],
+			"responses": [
+				"I didn't catch that. Try asking about citizenship, passport or other services!",
+				"Hmm, not sure I understand. Could you ask about government services?",
+				"I'm trained for government service queries. Maybe try rephrasing?",
+				"Sorry, I only handle government service questions. Try something like 'passport requirements'?",
+				"My expertise is government documents. Ask me about nagarikta, passport etc!",
+				"Let's focus on government services. Need help with certificates, licenses or permits?",
+				"I specialize in bureaucracy! Try asking about citizenship process, office hours etc.",
+				"For government service help, try queries like 'birth certificate' or 'passport fee'",
+				"I'm your government services assistant. Ask me about documents, fees or processes!",
+				"Need help with official paperwork? Ask me about passports, citizenship or certificates!"
+			]
+		}
+	]
 }
