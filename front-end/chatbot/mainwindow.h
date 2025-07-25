@@ -5,6 +5,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QSqlDatabase>
+#include <QSqlQuery>
 #include <QLabel>
 
 QT_BEGIN_NAMESPACE
@@ -38,6 +39,7 @@ private:
     QString typedText;
     QVector<Intent> intentList;
     QSqlDatabase db;
+    QString lastIntentTag;
 
     void setupDatabase();
     QJsonDocument loadIntents(const QString &fileName);
@@ -46,13 +48,17 @@ private:
     void startTypingAnimation(const QString &text);
     void addTimeLabelToTypingMessage();
     QString fetchServiceData(const QString &serviceKeyword, QString responseTemplate);
+    QString formatServiceResponse(QSqlQuery &query, QString responseTemplate);
     void addUserMessage(const QString &text);
     void addBotMessage(const QString &text);
     void handleUserInput(const QString &userText);
     void clearChat();
     double calculateSimilarity(const QString &str1, const QString &str2);
-    QString generateContextualResponse(const QString &userInput, const Intent *intent);
+    double calculateMatchScore(const QStringList &inputWords, const QStringList &patternWords);
+    bool isServiceRelated(const QString &input, const QString &intentTag);
+    QString generateContextualResponse(const QString &userInput, const Intent *intent, const QString &baseResponse);
     void testDatabaseConnection();
+    QString getOfficeHoursResponse();
 };
 
 #endif
