@@ -14,6 +14,7 @@
 #include <QCoreApplication>
 #include <QRegularExpression>
 #include <QMessageBox>
+#include <QRandomGenerator>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -62,8 +63,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->sendButton, &QPushButton::clicked, this, &MainWindow::handleSendButtonClicked);
 
     QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
-    if (!doc.isNull())
+    if (!doc.isNull()) {
         intentList = parseIntents(doc.array());
+        qDebug() << "Loaded" << intentList.size() << "intents";
+    } else {
+        qDebug() << "Failed to load intents";
+    }
     setupDatabase();
 }
 
@@ -113,10 +118,21 @@ QVector<Intent> MainWindow::parseIntents(const QJsonArray &intentsArray)
         if (obj["patterns"].isArray())
             for (const QJsonValue &p : obj["patterns"].toArray())
                 intent.patterns << p.toString();
-        intent.response = obj["response"].toString();
+        if (obj["responses"].isArray()) {
+            for (const QJsonValue &r : obj["responses"].toArray())
+                intent.responses << r.toString();
+        } else {
+            intent.responses << obj["response"].toString();
+        }
         intents.append(intent);
     }
     return intents;
+}
+
+QString MainWindow::getRandomResponse(const Intent &intent) {
+    if (intent.responses.isEmpty()) return "";
+    int index = QRandomGenerator::global()->bounded(intent.responses.size());
+    return intent.responses.at(index);
 }
 
 bool MainWindow::isNumericInput(const QString &input)
@@ -130,6 +146,7 @@ bool MainWindow::isNumericInput(const QString &input)
 const Intent *MainWindow::matchIntent(const QString &userInput)
 {
     QString input = userInput.trimmed().toLower();
+    qDebug() << "Matching intent for:" << input;
 
     if (waitingForNumberSelection && isNumericInput(input)) {
         for (const Intent &intent : intentList) {
@@ -144,13 +161,13 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
     for (const Intent &intent : intentList) {
         for (const QString &pattern : intent.patterns) {
             if (input == pattern.toLower()) {
+                qDebug() << "Exact match found:" << intent.tag;
                 return &intent;
             }
         }
     }
 
     QStringList inputWords = input.split(' ', Qt::SkipEmptyParts);
-
     const Intent *bestMatch = nullptr;
     double bestScore = 0.0;
 
@@ -169,6 +186,7 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
     }
 
     if (bestMatch) {
+        qDebug() << "Best match found:" << bestMatch->tag << "with score" << bestScore;
         return bestMatch;
     }
 
@@ -177,16 +195,19 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
 
         for (const QString &pattern : intent.patterns) {
             QString lowerPattern = pattern.toLower();
-
-            if (lowerPattern.length() > 3) {
-                if (input.contains(lowerPattern) || lowerPattern.contains(input)) {
-                    return &intent;
-                }
-            }
-
-            if (isServiceRelated(input, intent.tag)) {
+            if (lowerPattern.length() > 3 && (input.contains(lowerPattern) || lowerPattern.contains(input))) {
+                qDebug() << "Partial match found:" << intent.tag;
                 return &intent;
             }
+        }
+    }
+
+    for (const Intent &intent : intentList) {
+        if (intent.tag == "unknown") continue;
+
+        if (isServiceRelated(input, intent.tag)) {
+            qDebug() << "Service related match found:" << intent.tag;
+            return &intent;
         }
     }
 
@@ -196,6 +217,7 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
 
             for (const QString &pattern : intent.patterns) {
                 if (pattern.length() > 3 && calculateSimilarity(input, pattern.toLower()) > 0.75) {
+                    qDebug() << "Similarity match found:" << intent.tag;
                     return &intent;
                 }
             }
@@ -204,6 +226,7 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
 
     for (const Intent &intent : intentList) {
         if (intent.tag == "unknown") {
+            qDebug() << "No match found, returning unknown intent";
             return &intent;
         }
     }
@@ -665,10 +688,8 @@ void MainWindow::handleSendButtonClicked()
         return;
     }
 
-    handleUserInput(userText);
-    ui->inputLineEdit->clear();
-
     addUserMessage(userText);
+    ui->inputLineEdit->clear();
 
     if (waitingForNumberSelection && isNumericInput(userText)) {
         bool ok;
@@ -695,9 +716,8 @@ void MainWindow::handleSendButtonClicked()
         } else {
             waitingForNumberSelection = false;
             currentOptions.clear();
-
             lastIntentTag = matched->tag;
-            response = matched->response;
+            response = getRandomResponse(*matched);
 
             if (matched->tag == "day_query") {
                 QString currentDay = QDateTime::currentDateTime().toString("dddd");
@@ -719,7 +739,12 @@ void MainWindow::handleSendButtonClicked()
     {
         waitingForNumberSelection = false;
         currentOptions.clear();
-        response = "I didn't quite understand that.";
+        const Intent *unknownIntent = findIntentByTag("unknown");
+        if (unknownIntent) {
+            response = getRandomResponse(*unknownIntent);
+        } else {
+            response = "I didn't quite understand that.";
+        }
         lastIntentTag = "";
     }
     addBotMessage(response);
@@ -750,6 +775,15 @@ double MainWindow::calculateSimilarity(const QString &str1, const QString &str2)
     }
 
     return (double)commonChars / maxLen;
+}
+
+const Intent* MainWindow::findIntentByTag(const QString &tag) {
+    for (const Intent &intent : intentList) {
+        if (intent.tag == tag) {
+            return &intent;
+        }
+    }
+    return nullptr;
 }
 
 QString MainWindow::generateContextualResponse(const QString &userInput, const Intent *intent, const QString &baseResponse)

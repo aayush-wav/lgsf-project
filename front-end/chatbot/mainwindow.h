@@ -1,5 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+
 #include <QMainWindow>
 #include <QTimer>
 #include <QJsonDocument>
@@ -8,20 +9,20 @@
 #include <QSqlQuery>
 #include <QLabel>
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
+namespace Ui {
+class MainWindow;
+}
 
 struct Intent {
     QString tag;
     QStringList patterns;
-    QString response;
+    QStringList responses;
 };
 
 struct NumberedOption {
-    QString displayText;
-    QString serviceName;
     int serviceId;
+    QString serviceName;
+    QString displayText;
     QString intentTag;
 };
 
@@ -30,7 +31,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
@@ -39,38 +40,39 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    QSqlDatabase db;
+    QVector<Intent> intentList;
+    QVector<NumberedOption> currentOptions;
     int currentCharIndex;
     QTimer *typingTimer;
     QLabel *typingLabel;
     QString pendingText;
     QString typedText;
-    QVector<Intent> intentList;
-    QSqlDatabase db;
     QString lastIntentTag;
-    QVector<NumberedOption> currentOptions;
     bool waitingForNumberSelection;
 
-    void setupDatabase();
     QJsonDocument loadIntents(const QString &fileName);
     QVector<Intent> parseIntents(const QJsonArray &intentsArray);
+    QString getRandomResponse(const Intent &intent);
+    bool isNumericInput(const QString &input);
     const Intent *matchIntent(const QString &userInput);
-    void startTypingAnimation(const QString &text);
-    void addTimeLabelToTypingMessage();
-    QString fetchServiceData(const QString &serviceKeyword, QString responseTemplate);
-    QString formatServiceResponse(QSqlQuery &query, QString responseTemplate);
-    QString generateNumberedServiceList(const QString &keyword, const QString &intentTag);
-    QString handleNumberSelection(int number, const QString &userInput);
-    void addUserMessage(const QString &text);
-    void addBotMessage(const QString &text);
-    void handleUserInput(const QString &userText);
-    void clearChat();
-    double calculateSimilarity(const QString &str1, const QString &str2);
     double calculateMatchScore(const QStringList &inputWords, const QStringList &patternWords);
     bool isServiceRelated(const QString &input, const QString &intentTag);
-    QString generateContextualResponse(const QString &userInput, const Intent *intent, const QString &baseResponse);
-    void testDatabaseConnection();
+    void startTypingAnimation(const QString &text);
+    void addTimeLabelToTypingMessage();
+    QString generateNumberedServiceList(const QString &keyword, const QString &intentTag);
+    QString handleNumberSelection(int number, const QString &userInput);
+    QString fetchServiceData(const QString &userInput, QString responseTemplate);
+    QString formatServiceResponse(QSqlQuery &query, QString responseTemplate);
+    void addUserMessage(const QString &text);
+    void addBotMessage(const QString &text);
     QString getOfficeHoursResponse();
-    bool isNumericInput(const QString &input);
+    void handleUserInput(const QString &userText);
+    double calculateSimilarity(const QString &str1, const QString &str2);
+    const Intent* findIntentByTag(const QString &tag);
+    QString generateContextualResponse(const QString &userInput, const Intent *intent, const QString &baseResponse);
+    void clearChat();
+    void setupDatabase();
 };
 
 #endif
