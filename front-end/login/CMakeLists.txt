@@ -11,6 +11,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widgets Sql)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Sql)
 
+# Set PostgreSQL paths manually (adjust version number as needed)
+set(PostgreSQL_ROOT "C:/Program Files/PostgreSQL/17")
+set(PostgreSQL_INCLUDE_DIR "${PostgreSQL_ROOT}/include")
+set(PostgreSQL_LIBRARY "${PostgreSQL_ROOT}/lib/libpq.lib")
+
 # Find PostgreSQL
 find_package(PostgreSQL REQUIRED)
 
