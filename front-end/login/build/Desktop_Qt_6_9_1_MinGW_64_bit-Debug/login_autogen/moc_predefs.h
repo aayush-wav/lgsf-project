@@ -369,6 +369,7 @@
 #define __SIZEOF_SHORT__ 2
 #define __FLT32_NORM_MAX__ 3.40282346638528859811704183484516925e+38F32
 #define __SSE__ 1
+#define DEBUG_BUILD 1
 #define __LDBL_MIN_EXP__ (-16381)
 #define __FLT64_MAX__ 1.79769313486231570814527423731704357e+308F64
 #define __amd64__ 1
@@ -399,6 +400,7 @@
 #define __INT_FAST8_TYPE__ signed char
 #define __fastcall __attribute__((__fastcall__))
 #define __FLT64X_MIN__ 3.36210314311209350626267781732175260e-4932F64x
+#define QT_SQL_LIB 1
 #define __STDCPP_THREADS__ 1
 #define __BFLT16_HAS_DENORM__ 1
 #define __GNUC_STDC_INLINE__ 1

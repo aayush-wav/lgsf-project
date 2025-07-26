@@ -46,11 +46,11 @@ public:
         MainWindow->setAcceptDrops(true);
         MainWindow->setAutoFillBackground(false);
         MainWindow->setStyleSheet(QString::fromUtf8("*{\n"
-"	background-image: url(:/res/background.png);\n"
-"	background-position: center;\n"
-"	background-size:100% 100%;\n"
-"	font-family: montserrat;\n"
-"	background-color:  #1C1C1C;\n"
+"        background-image: url(:/res/background.png);\n"
+"        background-position: center;\n"
+"        background-size:100% 100%;\n"
+"        font-family: montserrat;\n"
+"        background-color:  #1C1C1C;\n"
 "}\n"
 ""));
         centralwidget = new QWidget(MainWindow);
@@ -63,7 +63,7 @@ public:
 ""));
         loginBtn = new QPushButton(centralwidget);
         loginBtn->setObjectName("loginBtn");
-        loginBtn->setGeometry(QRect(640, 483, 300, 45));
+        loginBtn->setGeometry(QRect(410, 443, 300, 45));
         QFont font1;
         font1.setFamilies({QString::fromUtf8("montserrat")});
         font1.setPointSize(12);
@@ -75,13 +75,13 @@ public:
 "color: #2148C0;"));
         passwordLineEdit = new QLineEdit(centralwidget);
         passwordLineEdit->setObjectName("passwordLineEdit");
-        passwordLineEdit->setGeometry(QRect(640, 395, 300, 45));
+        passwordLineEdit->setGeometry(QRect(410, 355, 300, 45));
         usernameLineEdit = new QLineEdit(centralwidget);
         usernameLineEdit->setObjectName("usernameLineEdit");
-        usernameLineEdit->setGeometry(QRect(640, 330, 300, 45));
+        usernameLineEdit->setGeometry(QRect(410, 290, 300, 45));
         labelBadapatra = new QLabel(centralwidget);
         labelBadapatra->setObjectName("labelBadapatra");
-        labelBadapatra->setGeometry(QRect(640, 208, 345, 111));
+        labelBadapatra->setGeometry(QRect(390, 168, 345, 111));
         QFont font2;
         font2.setFamilies({QString::fromUtf8("montserrat")});
         font2.setPointSize(22);
@@ -92,13 +92,13 @@ public:
         labelBadapatra->setAlignment(Qt::AlignmentFlag::AlignCenter);
         labelNewUser = new QLabel(centralwidget);
         labelNewUser->setObjectName("labelNewUser");
-        labelNewUser->setGeometry(QRect(640, 450, 300, 20));
+        labelNewUser->setGeometry(QRect(410, 410, 300, 20));
         labelNewUser->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
         labelNewUser->setAlignment(Qt::AlignmentFlag::AlignCenter);
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 1123, 25));
+        menubar->setGeometry(QRect(0, 0, 1123, 26));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");

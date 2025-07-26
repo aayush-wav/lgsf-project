@@ -1110,7 +1110,7 @@ void MainWindow::handleSendButtonClicked()
             addTimeLabelToTypingMessage();
             typingLabel = nullptr;
         }
-        ui->sendButton->setText("Send");
+        ui->sendButton->setText("SEND");
         ui->sendButton->setEnabled(true);
         return;
     }

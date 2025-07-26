@@ -62,7 +62,7 @@ bool MainWindow::initializeDatabase()
     // Load database configuration
     if (!loadDatabaseConfig()) {
         QMessageBox::critical(this, "Configuration Error",
-                              "Could not load database configuration. Please check your settings.");
+         "Could not load database configuration. Please check your settings.");
         return false;
     }
 
