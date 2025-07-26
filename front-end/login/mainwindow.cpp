@@ -8,7 +8,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Store original geometry for responsiveness
     originalWindowSize = this->size();
     originalGeometry.loginBtn = ui->loginBtn->geometry();
     originalGeometry.passwordLineEdit = ui->passwordLineEdit->geometry();
@@ -31,47 +30,105 @@ MainWindow::~MainWindow()
 
 void MainWindow::setupUI()
 {
-    // Maximize window
     this->showMaximized();
 
-    // Setup line edits
     ui->usernameLineEdit->setPlaceholderText("Username");
     ui->passwordLineEdit->setPlaceholderText("Password");
     ui->passwordLineEdit->setEchoMode(QLineEdit::Password);
 
-    // Setup "New User?" label as clickable link
     ui->labelNewUser->setTextFormat(Qt::RichText);
     ui->labelNewUser->setTextInteractionFlags(Qt::TextBrowserInteraction);
     ui->labelNewUser->setText("<a href=\"#\" style=\"color: white; text-decoration: underline;\">New User?</a>");
 
-    // Install event filters for placeholder text behavior
     ui->usernameLineEdit->installEventFilter(this);
     ui->passwordLineEdit->installEventFilter(this);
 
-    // Setup password visibility toggle
     togglePasswordAction = new QAction(QIcon(":/icons/eye_closed.png"), "", this);
+
+    QIcon eyeIcon(":/icons/eye_closed.png");
+    QPixmap eyePixmap = eyeIcon.pixmap(24, 24);
+
+    // Create white version of the icon
+    QPixmap whitePixmap(eyePixmap.size());
+    whitePixmap.fill(Qt::white);
+    whitePixmap.setMask(eyePixmap.createMaskFromColor(Qt::transparent));
+
+    togglePasswordAction->setIcon(QIcon(whitePixmap));
+
     ui->passwordLineEdit->addAction(togglePasswordAction, QLineEdit::TrailingPosition);
+    ui->passwordLineEdit->setStyleSheet("QLineEdit { padding-right: 30px; }");
+
     connect(togglePasswordAction, &QAction::triggered, this, &MainWindow::togglePasswordVisibility);
 
-    // Connect the "New User?" label click
     connect(ui->labelNewUser, &QLabel::linkActivated, this, &MainWindow::on_labelNewUser_linkActivated);
+
+    setupKeyboardNavigation();
+    setupValidation();
+}
+
+void MainWindow::setupKeyboardNavigation()
+{
+    connect(ui->usernameLineEdit, &QLineEdit::returnPressed, this, [this]() {
+        ui->passwordLineEdit->setFocus();
+    });
+
+    connect(ui->passwordLineEdit, &QLineEdit::returnPressed, this, [this]() {
+        on_loginBtn_clicked();
+    });
+
+    setTabOrder(ui->usernameLineEdit, ui->passwordLineEdit);
+    setTabOrder(ui->passwordLineEdit, ui->loginBtn);
+}
+
+void MainWindow::setupValidation()
+{
+    ui->usernameLineEdit->setProperty("required", true);
+    ui->passwordLineEdit->setProperty("required", true);
+
+    connect(ui->usernameLineEdit, &QLineEdit::textChanged, this, &MainWindow::validateFields);
+    connect(ui->passwordLineEdit, &QLineEdit::textChanged, this, &MainWindow::validateFields);
+
+    validateFields();
+}
+
+void MainWindow::validateFields()
+{
+    QString username = ui->usernameLineEdit->text().trimmed();
+    QString password = ui->passwordLineEdit->text();
+
+    updateFieldStyle(ui->usernameLineEdit, !username.isEmpty());
+    updateFieldStyle(ui->passwordLineEdit, !password.isEmpty());
+}
+
+void MainWindow::updateFieldStyle(QLineEdit *field, bool isValid)
+{
+    if (isValid) {
+        if (field == ui->passwordLineEdit) {
+            field->setStyleSheet("QLineEdit { padding-right: 30px; }");
+        } else {
+            field->setStyleSheet("");
+        }
+    } else {
+        if (field == ui->passwordLineEdit) {
+            field->setStyleSheet("QLineEdit { border: 2px solid #ffcccc; padding-right: 30px; }");
+        } else {
+            field->setStyleSheet("QLineEdit { border: 2px solid #ffcccc; }");
+        }
+    }
 }
 
 bool MainWindow::initializeDatabase()
 {
-    // Load database configuration
     if (!loadDatabaseConfig()) {
         QMessageBox::critical(this, "Configuration Error",
-         "Could not load database configuration. Please check your settings.");
+                              "Could not load database configuration. Please check your settings.");
         return false;
     }
 
-    // Connect to database
     if (!connectToDatabase()) {
         return false;
     }
 
-    // Create tables if they don't exist
     if (!createTablesIfNotExist()) {
         return false;
     }
@@ -82,7 +139,6 @@ bool MainWindow::initializeDatabase()
 
 bool MainWindow::loadDatabaseConfig()
 {
-    // Try to load from settings file first
     QSettings settings("database/db_config.ini", QSettings::IniFormat);
 
     if (settings.contains("Database/hostName")) {
@@ -92,14 +148,12 @@ bool MainWindow::loadDatabaseConfig()
         dbConfig.password = settings.value("Database/password").toString();
         dbConfig.port = settings.value("Database/port", 5432).toInt();
     } else {
-        // Default configuration - you should modify these values
         dbConfig.hostName = "localhost";
         dbConfig.databaseName = "UserInfo";
         dbConfig.userName = "postgres";
-        dbConfig.password = "password";  // Change this to your actual password
+        dbConfig.password = "00618";
         dbConfig.port = 5432;
 
-        // Save default configuration
         settings.setValue("Database/hostName", dbConfig.hostName);
         settings.setValue("Database/databaseName", dbConfig.databaseName);
         settings.setValue("Database/userName", dbConfig.userName);
@@ -116,7 +170,6 @@ bool MainWindow::loadDatabaseConfig()
 
 bool MainWindow::connectToDatabase()
 {
-    // Create PostgreSQL database connection
     database = QSqlDatabase::addDatabase("QPSQL");
     database.setHostName(dbConfig.hostName);
     database.setDatabaseName(dbConfig.databaseName);
@@ -138,14 +191,12 @@ bool MainWindow::connectToDatabase()
 
 bool MainWindow::createTablesIfNotExist()
 {
-    // First, try to read and execute the SQL file
     QFile sqlFile("database/UserInfo.sql");
     if (sqlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&sqlFile);
         QString sqlContent = in.readAll();
         sqlFile.close();
 
-        // Split SQL content by semicolons and execute each statement
         QStringList statements = sqlContent.split(';', Qt::SkipEmptyParts);
 
         QSqlQuery query;
@@ -161,7 +212,6 @@ bool MainWindow::createTablesIfNotExist()
 
         qDebug() << "Executed SQL file: database/UserInfo.sql";
     } else {
-        // Fallback: create basic users table if SQL file doesn't exist
         QSqlQuery query;
         QString createUsersTable = "CREATE TABLE IF NOT EXISTS users ("
                                    "id SERIAL PRIMARY KEY, "
@@ -201,24 +251,22 @@ bool MainWindow::verifyLogin(const QString &username, const QString &password)
         return false;
     }
 
-    return query.next(); // Returns true if a matching record is found
+    return query.next();
 }
 
 void MainWindow::openSignupPage()
 {
-    // Launch signup application from signup folder
     QProcess *signupProcess = new QProcess(this);
 
-    // Try different possible paths for the signup executable
-    QString signupPath = "../signup/signup.exe";  // Windows
+    QString signupPath = "../signup/signup.exe";
     if (!QFile::exists(signupPath)) {
-        signupPath = "../signup/signup";  // Linux/Mac
+        signupPath = "../signup/signup";
     }
     if (!QFile::exists(signupPath)) {
-        signupPath = "./signup/signup.exe";  // Alternative Windows path
+        signupPath = "./signup/signup.exe";
     }
     if (!QFile::exists(signupPath)) {
-        signupPath = "./signup/signup";  // Alternative Linux/Mac path
+        signupPath = "./signup/signup";
     }
 
     if (QFile::exists(signupPath)) {
@@ -234,25 +282,22 @@ void MainWindow::openSignupPage()
 
 void MainWindow::openMainUI()
 {
-    // Launch main UI application from main-ui folder
     QProcess *mainUIProcess = new QProcess(this);
 
-    // Try different possible paths for the main UI executable
-    QString mainUIPath = "../main-ui/main-ui.exe";  // Windows
+    QString mainUIPath = "../main-ui/main-ui.exe";
     if (!QFile::exists(mainUIPath)) {
-        mainUIPath = "../main-ui/main-ui";  // Linux/Mac
+        mainUIPath = "../main-ui/main-ui";
     }
     if (!QFile::exists(mainUIPath)) {
-        mainUIPath = "./main-ui/main-ui.exe";  // Alternative Windows path
+        mainUIPath = "./main-ui/main-ui.exe";
     }
     if (!QFile::exists(mainUIPath)) {
-        mainUIPath = "./main-ui/main-ui";  // Alternative Linux/Mac path
+        mainUIPath = "./main-ui/main-ui";
     }
 
     if (QFile::exists(mainUIPath)) {
         mainUIProcess->start(mainUIPath);
         if (mainUIProcess->waitForStarted()) {
-            // Close current login window after successfully launching main UI
             this->close();
         } else {
             QMessageBox::warning(this, "Error", "Could not start main UI application");
@@ -265,20 +310,16 @@ void MainWindow::openMainUI()
 
 void MainWindow::makeResponsive()
 {
-    // Enable responsive behavior
     updateLayout();
 }
 
 void MainWindow::updateLayout()
 {
-    // Get current window size
     QSize currentSize = this->size();
 
-    // Calculate scaling factors
     double scaleX = (double)currentSize.width() / originalWindowSize.width();
     double scaleY = (double)currentSize.height() / originalWindowSize.height();
 
-    // Apply scaling to all widgets
     auto scaleGeometry = [&](const QRect &original) -> QRect {
         return QRect(
             (int)(original.x() * scaleX),
@@ -307,9 +348,14 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         event->type() == QEvent::FocusIn)
     {
         QLineEdit *lineEdit = qobject_cast<QLineEdit*>(obj);
-        if (lineEdit)
+        if (lineEdit) {
             lineEdit->setPlaceholderText("");
+            if (lineEdit->text().isEmpty()) {
+                lineEdit->setStyleSheet("");
+            }
+        }
     }
+
     if ((obj == ui->usernameLineEdit || obj == ui->passwordLineEdit) &&
         event->type() == QEvent::FocusOut)
     {
@@ -319,8 +365,11 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 lineEdit->setPlaceholderText("Username");
             else if (lineEdit == ui->passwordLineEdit)
                 lineEdit->setPlaceholderText("Password");
+
+            lineEdit->setStyleSheet("QLineEdit { border: 2px solid #ffcccc; }");
         }
     }
+
     return QMainWindow::eventFilter(obj, event);
 }
 
@@ -329,64 +378,89 @@ void MainWindow::togglePasswordVisibility()
     passwordVisible = !passwordVisible;
     if (passwordVisible) {
         ui->passwordLineEdit->setEchoMode(QLineEdit::Normal);
-        togglePasswordAction->setIcon(QIcon(":/icons/eye_open.png"));
+
+        QIcon eyeIcon(":/icons/eye_open.png");
+        QPixmap eyePixmap = eyeIcon.pixmap(24, 24);
+
+        // Create white version of the icon
+        QPixmap whitePixmap(eyePixmap.size());
+        whitePixmap.fill(Qt::white);
+        whitePixmap.setMask(eyePixmap.createMaskFromColor(Qt::transparent));
+
+        togglePasswordAction->setIcon(QIcon(whitePixmap));
     } else {
         ui->passwordLineEdit->setEchoMode(QLineEdit::Password);
-        togglePasswordAction->setIcon(QIcon(":/icons/eye_closed.png"));
+
+        QIcon eyeIcon(":/icons/eye_closed.png");
+        QPixmap eyePixmap = eyeIcon.pixmap(24, 24);
+
+        // Create white version of the icon
+        QPixmap whitePixmap(eyePixmap.size());
+        whitePixmap.fill(Qt::white);
+        whitePixmap.setMask(eyePixmap.createMaskFromColor(Qt::transparent));
+
+        togglePasswordAction->setIcon(QIcon(whitePixmap));
     }
 }
 
-// Login button click handler
 void MainWindow::on_loginBtn_clicked()
 {
     QString username = ui->usernameLineEdit->text().trimmed();
     QString password = ui->passwordLineEdit->text();
 
-    // Validate input
-    if (username.isEmpty() || password.isEmpty()) {
-        QMessageBox::warning(this, "Login Error", "Please enter both username and password.");
+    if (username.isEmpty() && password.isEmpty()) {
+        QMessageBox::warning(this, "Login Error",
+                             "Both username and password are required.\nPlease fill in both fields.");
+        ui->usernameLineEdit->setFocus();
         return;
     }
 
-    // Verify login credentials
+    if (username.isEmpty()) {
+        QMessageBox::warning(this, "Login Error",
+                             "Username is required.\nPlease enter your username.");
+        ui->usernameLineEdit->setFocus();
+        return;
+    }
+
+    if (password.isEmpty()) {
+        QMessageBox::warning(this, "Login Error",
+                             "Password is required.\nPlease enter your password.");
+        ui->passwordLineEdit->setFocus();
+        return;
+    }
+
     if (verifyLogin(username, password)) {
         QMessageBox::information(this, "Success", "Login verified successfully!");
         qDebug() << "Login successful for user:" << username;
-
-        // Open main UI
         openMainUI();
     } else {
-        QMessageBox::warning(this, "Login Failed", "Password or username not verified.");
+        QMessageBox::warning(this, "Login Failed",
+                             "Invalid username or password.\nPlease check your credentials and try again.");
         qDebug() << "Login failed for user:" << username;
-
-        // Clear password field for security
         ui->passwordLineEdit->clear();
+        ui->usernameLineEdit->setFocus();
+        ui->usernameLineEdit->selectAll();
     }
 }
 
-// New User label click handler
 void MainWindow::on_labelNewUser_linkActivated(const QString &link)
 {
     Q_UNUSED(link)
     openSignupPage();
 }
 
-// Legacy handlers (keeping for compatibility)
 void MainWindow::on_pushButton_Login_clicked()
 {
-    // This might be called if you have another login button
     on_loginBtn_clicked();
 }
 
 void MainWindow::on_labelBadapatra_linkActivated(const QString &link)
 {
     Q_UNUSED(link)
-    // Handle main label click if needed
 }
 
 void MainWindow::on_usernameLineEdit_cursorPositionChanged(int arg1, int arg2)
 {
     Q_UNUSED(arg1)
     Q_UNUSED(arg2)
-    // Handle cursor position change if needed
 }

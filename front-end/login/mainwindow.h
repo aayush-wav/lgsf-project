@@ -75,6 +75,11 @@ private:
     void openSignupPage();
     void openMainUI();
 
+    void setupKeyboardNavigation();
+    void setupValidation();
+    void validateFields();
+    void updateFieldStyle(QLineEdit *field, bool isValid);
+
     // Original widget positions and sizes for responsiveness
     struct WidgetGeometry {
         QRect loginBtn;
