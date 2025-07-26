@@ -13,6 +13,8 @@
 #include <QFrame>
 #include <QScrollArea>
 #include <QPropertyAnimation>
+#include <QDateTime>
+#include <QUuid>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -31,6 +33,33 @@ struct NumberedOption {
     QString intentTag;
 };
 
+struct Message {
+    int messageId;
+    QString conversationId;
+    QString messageText;
+    QString messageType;
+    QDateTime timestamp;
+};
+
+struct Conversation {
+    QString conversationId;
+    QString conversationName;
+    QDateTime createdAt;
+    QDateTime lastActivity;
+    QVector<Message> messages;
+};
+
+class ConversationButton : public QPushButton
+{
+    Q_OBJECT
+public:
+    ConversationButton(const QString &conversationId, const QString &text, QWidget *parent = nullptr);
+    QString getConversationId() const { return m_conversationId; }
+
+private:
+    QString m_conversationId;
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -39,10 +68,14 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void deleteConversation(const QString &conversationId);
+
 private slots:
     void onTypingTimeout();
     void handleSendButtonClicked();
     void toggleSidebar();
+    void onConversationClicked();
+    void deleteCurrentConversation();
 
 private:
     Ui::MainWindow *ui;
@@ -58,6 +91,7 @@ private:
     bool waitingForNumberSelection;
     bool hasStartedChatting;
 
+    // UI components
     QWidget *centralWidget;
     QHBoxLayout *mainLayout;
     QFrame *sidebar;
@@ -74,10 +108,34 @@ private:
     QPropertyAnimation *sidebarAnimation;
     bool sidebarVisible;
 
+    QString currentConversationId;
+    QVector<Conversation> conversations;
+    QVector<ConversationButton*> conversationButtons;
+    QPushButton *newConversationButton;
+    QPushButton *deleteConversationButton;
+
+    void setupDatabase();
+    void createDatabaseTables();
+    bool testDatabaseConnection();
+
+    void createNewConversation(const QString &firstMessage = "");
+    void saveMessage(const QString &messageText, const QString &messageType);
+    void loadConversation(const QString &conversationId);
+    void loadAllConversations();
+    void updateConversationName(const QString &conversationId, const QString &name);
+    void refreshConversationList();
+    QString generateConversationName(const QString &firstMessage);
+
     void setupUI();
     void setupSidebar();
     void setupChatArea();
-    void setupDatabase();
+    void updateWelcomeLabelVisibility();
+    void clearChatDisplay();
+    void displayConversationMessages(const Conversation &conversation);
+
+    void addUserMessageFromHistory(const QString &text);
+    void addBotMessageFromHistory(const QString &text);
+
     QJsonDocument loadIntents(const QString &fileName);
     QVector<Intent> parseIntents(const QJsonArray &intentsArray);
     const Intent *matchIntent(const QString &userInput);
@@ -96,10 +154,9 @@ private:
     double calculateMatchScore(const QStringList &inputWords, const QStringList &patternWords);
     bool isServiceRelated(const QString &input, const QString &intentTag);
     QString generateContextualResponse(const QString &userInput, const Intent *intent, const QString &baseResponse);
-    void testDatabaseConnection();
+    void testDatabaseQueries();
     QString getOfficeHoursResponse();
     bool isNumericInput(const QString &input);
-    void updateWelcomeLabelVisibility();
     QString selectRandomResponse(const QStringList &responses);
 };
 

@@ -21,6 +21,58 @@
 #include <QPropertyAnimation>
 #include <QEasingCurve>
 #include <QRandomGenerator>
+#include <QUuid>
+#include <QApplication>
+#include <QMenu>
+#include <QAction>
+
+ConversationButton::ConversationButton(const QString &conversationId, const QString &text, QWidget *parent)
+    : QPushButton(text, parent), m_conversationId(conversationId)
+{
+    setStyleSheet(R"(
+        QPushButton {
+            background-color: #404040;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13px;
+            color: #cccccc;
+            text-align: left;
+            min-height: 20px;
+        }
+        QPushButton:hover {
+            background-color: #4a4a4a;
+        }
+        QPushButton:pressed, QPushButton:checked {
+            background-color: #4a9eff;
+            color: #ffffff;
+        }
+    )");
+    setCheckable(true);
+    setMinimumHeight(45);
+
+    setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(this, &QPushButton::customContextMenuRequested, [this, conversationId](const QPoint &pos) {
+        QMenu *menu = new QMenu(this);
+        QAction *deleteAction = menu->addAction("Delete Conversation");
+
+
+        connect(deleteAction, &QAction::triggered, [this, conversationId]() {
+            if (QMessageBox::question(this, "Delete Conversation",
+                                      "Are you sure you want to delete this conversation?",
+                                      QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+
+                MainWindow* mainWindow = qobject_cast<MainWindow*>(this->window());
+                if (mainWindow) {
+                    mainWindow->deleteConversation(conversationId);
+                }
+            }
+        });
+        menu->exec(mapToGlobal(pos));
+        menu->deleteLater();
+    });
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -31,7 +83,10 @@ MainWindow::MainWindow(QWidget *parent)
     lastIntentTag(""),
     waitingForNumberSelection(false),
     hasStartedChatting(false),
-    sidebarVisible(false)
+    sidebarVisible(false),
+    currentConversationId(""),
+    newConversationButton(nullptr),
+    deleteConversationButton(nullptr)
 {
     ui->setupUi(this);
     setupUI();
@@ -39,10 +94,24 @@ MainWindow::MainWindow(QWidget *parent)
     typingTimer->setInterval(30);
     connect(typingTimer, &QTimer::timeout, this, &MainWindow::onTypingTimeout);
 
+
     QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
     if (!doc.isNull())
         intentList = parseIntents(doc.array());
+
     setupDatabase();
+    if(testDatabaseConnection()) {
+        createDatabaseTables();
+        loadAllConversations();
+
+
+        if(conversations.isEmpty()) {
+            createNewConversation();
+        } else {
+
+            loadConversation(conversations.first().conversationId);
+        }
+    }
 }
 
 MainWindow::~MainWindow()
@@ -103,6 +172,32 @@ void MainWindow::setupSidebar()
     )");
     sidebarLayout->addWidget(sidebarTitle);
 
+
+    newConversationButton = new QPushButton("+ New Conversation");
+    newConversationButton->setStyleSheet(R"(
+        QPushButton {
+            background-color: #4a9eff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13px;
+            color: #ffffff;
+            font-weight: bold;
+        }
+        QPushButton:hover {
+            background-color: #3d8ce6;
+        }
+        QPushButton:pressed {
+            background-color: #3579cc;
+        }
+    )");
+    newConversationButton->setMinimumHeight(45);
+    connect(newConversationButton, &QPushButton::clicked, [this]() {
+        createNewConversation();
+    });
+    sidebarLayout->addWidget(newConversationButton);
+
+
     historyScrollArea = new QScrollArea();
     historyScrollArea->setStyleSheet(R"(
         QScrollArea {
@@ -127,26 +222,34 @@ void MainWindow::setupSidebar()
     historyLayout->setAlignment(Qt::AlignTop);
     historyLayout->setSpacing(8);
 
-    for (int i = 0; i < 5; i++) {
-        QLabel *placeholder = new QLabel(QString("Conversation %1").arg(i + 1));
-        placeholder->setStyleSheet(R"(
-            QLabel {
-                background-color: #404040;
-                border-radius: 8px;
-                padding: 12px;
-                font-size: 13px;
-                color: #cccccc;
-            }
-            QLabel:hover {
-                background-color: #4a4a4a;
-            }
-        )");
-        placeholder->setMinimumHeight(45);
-        historyLayout->addWidget(placeholder);
-    }
-
     historyScrollArea->setWidget(historyWidget);
     sidebarLayout->addWidget(historyScrollArea);
+
+
+    deleteConversationButton = new QPushButton("🗑 Delete Current");
+    deleteConversationButton->setStyleSheet(R"(
+        QPushButton {
+            background-color: #dc3545;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13px;
+            color: #ffffff;
+        }
+        QPushButton:hover {
+            background-color: #c82333;
+        }
+        QPushButton:pressed {
+            background-color: #bd2130;
+        }
+        QPushButton:disabled {
+            background-color: #666666;
+            color: #999999;
+        }
+    )");
+    deleteConversationButton->setMinimumHeight(45);
+    connect(deleteConversationButton, &QPushButton::clicked, this, &MainWindow::deleteCurrentConversation);
+    sidebarLayout->addWidget(deleteConversationButton);
 
     mainLayout->addWidget(sidebar);
 
@@ -336,6 +439,436 @@ void MainWindow::setupChatArea()
     mainLayout->addWidget(chatArea);
 }
 
+void MainWindow::setupDatabase()
+{
+    db = QSqlDatabase::addDatabase("QPSQL");
+    db.setHostName("localhost");
+    db.setPort(5432);
+    db.setDatabaseName("LgsfInfo");
+    db.setUserName("postgres");
+    db.setPassword("00618");
+
+    if (!db.open()) {
+        qWarning() << "Database connection failed:" << db.lastError().text();
+
+        QMessageBox::critical(this, "Database Error",
+                              QString("Failed to connect to database:\n%1\n\nPlease ensure:\n"
+                                      "1. PostgreSQL service is running\n"
+                                      "2. Database 'LgsfInfo' exists\n"
+                                      "3. Username/password are correct\n"
+                                      "4. PostgreSQL driver is installed")
+                                  .arg(db.lastError().text()));
+    } else {
+        qDebug() << "Database connected successfully!";
+    }
+}
+
+bool MainWindow::testDatabaseConnection()
+{
+    if (!db.isOpen()) {
+        return false;
+    }
+
+    QSqlQuery testQuery(db);
+    if (!testQuery.exec("SELECT 1")) {
+        qWarning() << "Database test query failed:" << testQuery.lastError().text();
+        return false;
+    }
+
+    qDebug() << "Database test query successful";
+    return true;
+}
+
+void MainWindow::createDatabaseTables()
+{
+    QSqlQuery query(db);
+
+
+    QString createConversationsTable = R"(
+        CREATE TABLE IF NOT EXISTS conversations (
+            conversation_id VARCHAR(36) PRIMARY KEY,
+            conversation_name TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    )";
+
+    if (!query.exec(createConversationsTable)) {
+        qWarning() << "Failed to create conversations table:" << query.lastError().text();
+        return;
+    }
+
+
+    QString createMessagesTable = R"(
+        CREATE TABLE IF NOT EXISTS messages (
+            message_id SERIAL PRIMARY KEY,
+            conversation_id VARCHAR(36) REFERENCES conversations(conversation_id) ON DELETE CASCADE,
+            message_text TEXT NOT NULL,
+            message_type VARCHAR(10) NOT NULL CHECK (message_type IN ('user', 'bot')),
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    )";
+
+    if (!query.exec(createMessagesTable)) {
+        qWarning() << "Failed to create messages table:" << query.lastError().text();
+        return;
+    }
+
+    query.exec("CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages(conversation_id)");
+    query.exec("CREATE INDEX IF NOT EXISTS idx_messages_timestamp ON messages(timestamp)");
+
+    qDebug() << "Database tables created successfully";
+}
+
+void MainWindow::createNewConversation(const QString &firstMessage)
+{
+    clearChatDisplay();
+
+    currentConversationId = "";
+    waitingForNumberSelection = false;
+    currentOptions.clear();
+    lastIntentTag = "";
+
+    if (db.isOpen()) {
+        QString conversationId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        QString conversationName = firstMessage.isEmpty() ? "New Conversation" : generateConversationName(firstMessage);
+
+        QSqlQuery query(db);
+        query.prepare("INSERT INTO conversations (conversation_id, conversation_name) VALUES (?, ?)");
+        query.addBindValue(conversationId);
+        query.addBindValue(conversationName);
+
+        if (query.exec()) {
+            currentConversationId = conversationId;
+
+            Conversation newConv;
+            newConv.conversationId = conversationId;
+            newConv.conversationName = conversationName;
+            newConv.createdAt = QDateTime::currentDateTime();
+            newConv.lastActivity = QDateTime::currentDateTime();
+
+            conversations.prepend(newConv);
+            refreshConversationList();
+
+            qDebug() << "New conversation created:" << conversationId;
+        } else {
+            qWarning() << "Failed to create new conversation:" << query.lastError().text();
+        }
+    } else {
+        currentConversationId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        qDebug() << "New conversation created (no database):" << currentConversationId;
+    }
+}
+
+void MainWindow::saveMessage(const QString &messageText, const QString &messageType)
+{
+    if (currentConversationId.isEmpty()) {
+        if (messageType == "user") {
+            createNewConversation(messageText);
+        } else {
+            return;
+        }
+    }
+
+    QSqlQuery query(db);
+    query.prepare("INSERT INTO messages (conversation_id, message_text, message_type) VALUES (?, ?, ?)");
+    query.addBindValue(currentConversationId);
+    query.addBindValue(messageText);
+    query.addBindValue(messageType);
+
+    if (query.exec()) {
+
+        QSqlQuery updateQuery(db);
+        updateQuery.prepare("UPDATE conversations SET last_activity = CURRENT_TIMESTAMP WHERE conversation_id = ?");
+        updateQuery.addBindValue(currentConversationId);
+        updateQuery.exec();
+
+        if (messageType == "user") {
+            for (auto &conv : conversations) {
+                if (conv.conversationId == currentConversationId) {
+                    if (conv.conversationName == "New Conversation") {
+                        QString newName = generateConversationName(messageText);
+                        updateConversationName(currentConversationId, newName);
+                        conv.conversationName = newName;
+                        refreshConversationList();
+                    }
+                    break;
+                }
+            }
+        }
+
+        qDebug() << "Message saved:" << messageType << messageText.left(50);
+    } else {
+        qWarning() << "Failed to save message:" << query.lastError().text();
+    }
+}
+
+void MainWindow::loadConversation(const QString &conversationId)
+{
+    currentConversationId = conversationId;
+    clearChatDisplay();
+
+    QSqlQuery query(db);
+    query.prepare(R"(
+        SELECT message_text, message_type, timestamp
+        FROM messages
+        WHERE conversation_id = ?
+        ORDER BY timestamp ASC
+    )");
+    query.addBindValue(conversationId);
+
+    if (query.exec()) {
+        bool hasMessages = false;
+        while (query.next()) {
+            hasMessages = true;
+            QString messageText = query.value("message_text").toString();
+            QString messageType = query.value("message_type").toString();
+
+            if (messageType == "user") {
+                addUserMessageFromHistory(messageText);
+            } else {
+                addBotMessageFromHistory(messageText);
+            }
+        }
+
+        if (hasMessages) {
+            hasStartedChatting = true;
+            updateWelcomeLabelVisibility();
+        }
+
+
+        for (ConversationButton *button : conversationButtons) {
+            button->setChecked(button->getConversationId() == conversationId);
+        }
+
+        qDebug() << "Conversation loaded:" << conversationId;
+    } else {
+        qWarning() << "Failed to load conversation:" << query.lastError().text();
+    }
+}
+
+void MainWindow::loadAllConversations()
+{
+    conversations.clear();
+
+    QSqlQuery query(db);
+    if (query.exec("SELECT conversation_id, conversation_name, created_at, last_activity FROM conversations ORDER BY last_activity DESC")) {
+        while (query.next()) {
+            Conversation conv;
+            conv.conversationId = query.value("conversation_id").toString();
+            conv.conversationName = query.value("conversation_name").toString();
+            conv.createdAt = query.value("created_at").toDateTime();
+            conv.lastActivity = query.value("last_activity").toDateTime();
+
+            conversations.append(conv);
+        }
+
+        refreshConversationList();
+        qDebug() << "Loaded" << conversations.size() << "conversations";
+    } else {
+        qWarning() << "Failed to load conversations:" << query.lastError().text();
+    }
+}
+
+void MainWindow::deleteConversation(const QString &conversationId)
+{
+    QSqlQuery query(db);
+    query.prepare("DELETE FROM conversations WHERE conversation_id = ?");
+    query.addBindValue(conversationId);
+
+    if (query.exec()) {
+
+        conversations.removeIf([conversationId](const Conversation &conv) {
+            return conv.conversationId == conversationId;
+        });
+
+        if (currentConversationId == conversationId) {
+            if (!conversations.isEmpty()) {
+                loadConversation(conversations.first().conversationId);
+            } else {
+                createNewConversation();
+            }
+        }
+
+        refreshConversationList();
+        qDebug() << "Conversation deleted:" << conversationId;
+    } else {
+        qWarning() << "Failed to delete conversation:" << query.lastError().text();
+    }
+}
+
+void MainWindow::deleteCurrentConversation()
+{
+    if (!currentConversationId.isEmpty()) {
+        if (QMessageBox::question(this, "Delete Conversation",
+                                  "Are you sure you want to delete the current conversation?",
+                                  QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+            deleteConversation(currentConversationId);
+        }
+    }
+}
+
+void MainWindow::updateConversationName(const QString &conversationId, const QString &name)
+{
+    QSqlQuery query(db);
+    query.prepare("UPDATE conversations SET conversation_name = ? WHERE conversation_id = ?");
+    query.addBindValue(name);
+    query.addBindValue(conversationId);
+    query.exec();
+}
+
+void MainWindow::refreshConversationList()
+{
+
+    for (ConversationButton *button : conversationButtons) {
+        historyLayout->removeWidget(button);
+        button->deleteLater();
+    }
+    conversationButtons.clear();
+
+    for (const Conversation &conv : conversations) {
+        ConversationButton *button = new ConversationButton(conv.conversationId, conv.conversationName, this);
+        connect(button, &QPushButton::clicked, this, &MainWindow::onConversationClicked);
+
+        if (conv.conversationId == currentConversationId) {
+            button->setChecked(true);
+        }
+
+        conversationButtons.append(button);
+        historyLayout->addWidget(button);
+    }
+   deleteConversationButton->setEnabled(!conversations.isEmpty());
+}
+
+QString MainWindow::generateConversationName(const QString &firstMessage)
+{
+    QString name = firstMessage.trimmed();
+    if (name.length() > 30) {
+        name = name.left(27) + "...";
+    }
+    if (name.isEmpty()) {
+        name = "New Conversation";
+    }
+    return name;
+}
+
+void MainWindow::onConversationClicked()
+{
+    ConversationButton *button = qobject_cast<ConversationButton*>(sender());
+    if (button) {
+        loadConversation(button->getConversationId());
+    }
+}
+
+void MainWindow::clearChatDisplay()
+{
+
+    QLayoutItem* item;
+    while ((item = ui->chatLayout->takeAt(0))) {
+        if (item->widget() && item->widget() != welcomeLabel) {
+            delete item->widget();
+        }
+        delete item;
+    }
+
+    hasStartedChatting = false;
+
+
+    welcomeLabel->show();
+    ui->chatLayout->addStretch();
+    ui->chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
+    ui->chatLayout->addStretch();
+
+    ui->chatScrollArea->verticalScrollBar()->setValue(0);
+}
+
+void MainWindow::displayConversationMessages(const Conversation &conversation)
+{
+    for (const Message &message : conversation.messages) {
+        if (message.messageType == "user") {
+            addUserMessageFromHistory(message.messageText);
+        } else {
+            addBotMessageFromHistory(message.messageText);
+        }
+    }
+}
+
+void MainWindow::addUserMessageFromHistory(const QString &text)
+{
+    QLabel *messageLabel = new QLabel(text);
+    messageLabel->setWordWrap(true);
+    messageLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    messageLabel->setAlignment(Qt::AlignLeft);
+    messageLabel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    messageLabel->setStyleSheet(R"(
+        QLabel {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 15px;
+            color: #ffffff;
+            background-color: #4a9eff;
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin: 5px 5px 5px 50px;
+        }
+    )");
+
+    QVBoxLayout *vLayout = new QVBoxLayout();
+    vLayout->addWidget(messageLabel);
+    vLayout->setSpacing(2);
+    vLayout->setContentsMargins(0, 0, 0, 0);
+
+    QWidget *container = new QWidget();
+    container->setLayout(vLayout);
+
+    QHBoxLayout *hLayout = new QHBoxLayout();
+    hLayout->addStretch();
+    hLayout->addWidget(container);
+
+    QWidget *wrapper = new QWidget();
+    wrapper->setLayout(hLayout);
+    wrapper->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    ui->chatLayout->addWidget(wrapper);
+}
+
+void MainWindow::addBotMessageFromHistory(const QString &text)
+{
+    QLabel *messageLabel = new QLabel(text);
+    messageLabel->setStyleSheet(R"(
+        QLabel {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 15px;
+            color: #e0e0e0;
+            background-color: #2d2d2d;
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin: 5px 50px 5px 5px;
+        }
+    )");
+    messageLabel->setAlignment(Qt::AlignLeft);
+    messageLabel->setWordWrap(true);
+    messageLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    messageLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
+    QVBoxLayout* vLayout = new QVBoxLayout();
+    vLayout->addWidget(messageLabel);
+    vLayout->setSpacing(2);
+    vLayout->setContentsMargins(0,0,0,0);
+
+    QWidget* messageContainer = new QWidget();
+    messageContainer->setLayout(vLayout);
+
+    QHBoxLayout *hLayout = new QHBoxLayout();
+    hLayout->addWidget(messageContainer);
+    hLayout->addStretch();
+
+    QWidget *wrapper = new QWidget();
+    wrapper->setLayout(hLayout);
+    wrapper->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    ui->chatLayout->addWidget(wrapper);
+}
+
 void MainWindow::toggleSidebar()
 {
     if (sidebarVisible) {
@@ -362,38 +895,6 @@ void MainWindow::updateWelcomeLabelVisibility()
         }
 
         ui->chatLayout->setAlignment(Qt::AlignTop);
-    }
-}
-
-void MainWindow::setupDatabase()
-{
-    db = QSqlDatabase::addDatabase("QPSQL");
-    db.setHostName("localhost");
-    db.setPort(5432);
-    db.setDatabaseName("LgsfInfo");
-    db.setUserName("postgres");
-    db.setPassword("00618");
-
-    if (!db.open()) {
-        qWarning() << "Database connection failed:" << db.lastError().text();
-        qWarning() << "Driver error:" << db.lastError().driverText();
-        qWarning() << "Database error:" << db.lastError().databaseText();
-
-        QMessageBox::critical(this, "Database Error",
-                              QString("Failed to connect to database:\n%1\n\nPlease ensure:\n"
-                                      "1. PostgreSQL service is running\n"
-                                      "2. Database 'LgsfInfo' exists\n"
-                                      "3. Username/password are correct")
-                                  .arg(db.lastError().text()));
-    } else {
-        qDebug() << "Database connected successfully!";
-
-        QSqlQuery testQuery(db);
-        if (testQuery.exec("SELECT 1")) {
-            qDebug() << "Database test query successful";
-        } else {
-            qWarning() << "Database test query failed:" << testQuery.lastError().text();
-        }
     }
 }
 
@@ -742,6 +1243,10 @@ void MainWindow::onTypingTimeout()
         ui->sendButton->setText("SEND");
         ui->sendButton->setEnabled(true);
         addTimeLabelToTypingMessage();
+
+        // Save the bot message
+        saveMessage(pendingText, "bot");
+
         typingLabel = nullptr;
     }
 }
@@ -999,6 +1504,9 @@ QString MainWindow::formatServiceResponse(QSqlQuery &query, QString responseTemp
 
 void MainWindow::addUserMessage(const QString &text)
 {
+    // Save user message to database
+    saveMessage(text, "user");
+
     QLabel *messageLabel = new QLabel(text);
     messageLabel->setWordWrap(true);
     messageLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
@@ -1108,6 +1616,8 @@ void MainWindow::handleSendButtonClicked()
         if (typingLabel) {
             typingLabel->setText(pendingText);
             addTimeLabelToTypingMessage();
+            // Save the bot message that was being typed
+            saveMessage(pendingText, "bot");
             typingLabel = nullptr;
         }
         ui->sendButton->setText("SEND");
@@ -1117,7 +1627,6 @@ void MainWindow::handleSendButtonClicked()
 
     if (userText.isEmpty())
         return;
-
 
     handleUserInput(userText);
     if (userText.trimmed().toLower() == "clear" || userText.trimmed().toLower() == "cls") {
@@ -1234,7 +1743,7 @@ QString MainWindow::generateContextualResponse(const QString &userInput, const I
     return response;
 }
 
-void MainWindow::testDatabaseConnection()
+void MainWindow::testDatabaseQueries()
 {
     qDebug() << "=== Testing Database Connection ===";
 
@@ -1330,7 +1839,7 @@ void MainWindow::testDatabaseConnection()
 
 void MainWindow::clearChat()
 {
-
+    // Clear chat layout
     QLayoutItem* item;
     while ((item = ui->chatLayout->takeAt(0))) {
         if (item->widget()) {
@@ -1346,12 +1855,13 @@ void MainWindow::clearChat()
     waitingForNumberSelection = false;
     currentOptions.clear();
 
-
+    // Show welcome label
     welcomeLabel->show();
     ui->chatLayout->addStretch();
     ui->chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
     ui->chatLayout->addStretch();
 
-
+    // Reset scroll position
     ui->chatScrollArea->verticalScrollBar()->setValue(0);
 }
+
