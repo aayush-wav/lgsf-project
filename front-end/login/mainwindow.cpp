@@ -96,7 +96,7 @@ bool MainWindow::loadDatabaseConfig()
         dbConfig.hostName = "localhost";
         dbConfig.databaseName = "UserInfo";
         dbConfig.userName = "postgres";
-        dbConfig.password = "password";  // Change this to your actual password
+        dbConfig.password = "00618";  // Change this to your actual password
         dbConfig.port = 5432;
 
         // Save default configuration
