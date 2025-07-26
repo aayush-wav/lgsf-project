@@ -1,5 +1,8 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include <QDir>
+#include <QSysInfo>
+#include "dbhandler.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -16,15 +19,15 @@ MainWindow::MainWindow(QWidget *parent)
     originalGeometry.labelNewUser = ui->labelNewUser->geometry();
 
     setupUI();
-    initializeDatabase();
+    if (!DBHandler::instance().connectToDB()) {
+        QMessageBox::critical(this, "Database Error", "Failed to connect to the database.");
+        // Optionally disable login button or close app
+    }
     makeResponsive();
 }
 
 MainWindow::~MainWindow()
 {
-    if (database.isOpen()) {
-        database.close();
-    }
     delete ui;
 }
 
@@ -48,7 +51,6 @@ void MainWindow::setupUI()
     QIcon eyeIcon(":/icons/eye_closed.png");
     QPixmap eyePixmap = eyeIcon.pixmap(24, 24);
 
-    // Create white version of the icon
     QPixmap whitePixmap(eyePixmap.size());
     whitePixmap.fill(Qt::white);
     whitePixmap.setMask(eyePixmap.createMaskFromColor(Qt::transparent));
@@ -59,7 +61,6 @@ void MainWindow::setupUI()
     ui->passwordLineEdit->setStyleSheet("QLineEdit { padding-right: 30px; }");
 
     connect(togglePasswordAction, &QAction::triggered, this, &MainWindow::togglePasswordVisibility);
-
     connect(ui->labelNewUser, &QLabel::linkActivated, this, &MainWindow::on_labelNewUser_linkActivated);
 
     setupKeyboardNavigation();
@@ -117,157 +118,10 @@ void MainWindow::updateFieldStyle(QLineEdit *field, bool isValid)
     }
 }
 
-bool MainWindow::initializeDatabase()
-{
-    if (!loadDatabaseConfig()) {
-        QMessageBox::critical(this, "Configuration Error",
-                              "Could not load database configuration. Please check your settings.");
-        return false;
-    }
-
-    if (!connectToDatabase()) {
-        return false;
-    }
-
-    if (!createTablesIfNotExist()) {
-        return false;
-    }
-
-    qDebug() << "Database initialized successfully";
-    return true;
-}
-
-bool MainWindow::loadDatabaseConfig()
-{
-    QSettings settings("database/db_config.ini", QSettings::IniFormat);
-
-    if (settings.contains("Database/hostName")) {
-        dbConfig.hostName = settings.value("Database/hostName").toString();
-        dbConfig.databaseName = settings.value("Database/databaseName").toString();
-        dbConfig.userName = settings.value("Database/userName").toString();
-        dbConfig.password = settings.value("Database/password").toString();
-        dbConfig.port = settings.value("Database/port", 5432).toInt();
-    } else {
-        dbConfig.hostName = "localhost";
-        dbConfig.databaseName = "UserInfo";
-        dbConfig.userName = "postgres";
-        dbConfig.password = "password";  // Change this to your actual password
-        dbConfig.port = 5432;
-
-        settings.setValue("Database/hostName", dbConfig.hostName);
-        settings.setValue("Database/databaseName", dbConfig.databaseName);
-        settings.setValue("Database/userName", dbConfig.userName);
-        settings.setValue("Database/password", dbConfig.password);
-        settings.setValue("Database/port", dbConfig.port);
-        settings.sync();
-
-        qDebug() << "Created default database configuration file at: database/db_config.ini";
-        qDebug() << "Please update the configuration with your actual database credentials.";
-    }
-
-    return true;
-}
-
-bool MainWindow::connectToDatabase()
-{
-    database = QSqlDatabase::addDatabase("QPSQL");
-    database.setHostName(dbConfig.hostName);
-    database.setDatabaseName(dbConfig.databaseName);
-    database.setUserName(dbConfig.userName);
-    database.setPassword(dbConfig.password);
-    database.setPort(dbConfig.port);
-
-    if (!database.open()) {
-        QMessageBox::critical(this, "Database Connection Error",
-                              "Could not connect to PostgreSQL database:\n" +
-                                  database.lastError().text() + "\n\n" +
-                                  "Please check your database configuration in database/db_config.ini");
-        return false;
-    }
-
-    qDebug() << "Connected to PostgreSQL database successfully";
-    return true;
-}
-
-bool MainWindow::createTablesIfNotExist()
-{
-    QFile sqlFile("database/UserInfo.sql");
-    if (sqlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QTextStream in(&sqlFile);
-        QString sqlContent = in.readAll();
-        sqlFile.close();
-
-        QStringList statements = sqlContent.split(';', Qt::SkipEmptyParts);
-
-        QSqlQuery query;
-        for (const QString &statement : statements) {
-            QString trimmedStatement = statement.trimmed();
-            if (!trimmedStatement.isEmpty()) {
-                if (!query.exec(trimmedStatement)) {
-                    qDebug() << "SQL execution warning:" << query.lastError().text();
-                    qDebug() << "Statement:" << trimmedStatement;
-                }
-            }
-        }
-
-        qDebug() << "Executed SQL file: database/UserInfo.sql";
-    } else {
-        QSqlQuery query;
-        QString createUsersTable = "CREATE TABLE IF NOT EXISTS users ("
-                                   "id SERIAL PRIMARY KEY, "
-                                   "username VARCHAR(255) UNIQUE NOT NULL, "
-                                   "password_hash VARCHAR(255) NOT NULL, "
-                                   "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
-
-        if (!query.exec(createUsersTable)) {
-            QMessageBox::critical(this, "Database Error",
-                                  "Could not create users table: " + query.lastError().text());
-            return false;
-        }
-
-        qDebug() << "Created basic users table (UserInfo.sql file not found)";
-    }
-
-    return true;
-}
-
-QString MainWindow::hashPassword(const QString &password)
-{
-    QByteArray hashed = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256);
-    return hashed.toHex();
-}
-
-bool MainWindow::verifyLogin(const QString &username, const QString &password)
-{
-    QString hashedPassword = hashPassword(password);
-
-    QSqlQuery query;
-    query.prepare("SELECT username FROM users WHERE username = $1 AND password_hash = $2");
-    query.bindValue(0, username);
-    query.bindValue(1, hashedPassword);
-
-    if (!query.exec()) {
-        qDebug() << "Database query error:" << query.lastError().text();
-        return false;
-    }
-
-    return query.next();
-}
-
 void MainWindow::openSignupPage()
 {
     QProcess *signupProcess = new QProcess(this);
-
-    QString signupPath = "../signup/signup.exe";
-    if (!QFile::exists(signupPath)) {
-        signupPath = "../signup/signup";
-    }
-    if (!QFile::exists(signupPath)) {
-        signupPath = "./signup/signup.exe";
-    }
-    if (!QFile::exists(signupPath)) {
-        signupPath = "./signup/signup";
-    }
+    QString signupPath = QDir::currentPath() + "/signup/signup" + (QSysInfo::kernelType() == "winnt" ? ".exe" : "");
 
     if (QFile::exists(signupPath)) {
         signupProcess->start(signupPath);
@@ -283,17 +137,7 @@ void MainWindow::openSignupPage()
 void MainWindow::openMainUI()
 {
     QProcess *mainUIProcess = new QProcess(this);
-
-    QString mainUIPath = "../main-ui/main-ui.exe";
-    if (!QFile::exists(mainUIPath)) {
-        mainUIPath = "../main-ui/main-ui";
-    }
-    if (!QFile::exists(mainUIPath)) {
-        mainUIPath = "./main-ui/main-ui.exe";
-    }
-    if (!QFile::exists(mainUIPath)) {
-        mainUIPath = "./main-ui/main-ui";
-    }
+    QString mainUIPath = QDir::currentPath() + "/main-ui/main-ui" + (QSysInfo::kernelType() == "winnt" ? ".exe" : "");
 
     if (QFile::exists(mainUIPath)) {
         mainUIProcess->start(mainUIPath);
@@ -326,7 +170,7 @@ void MainWindow::updateLayout()
             (int)(original.y() * scaleY),
             (int)(original.width() * scaleX),
             (int)(original.height() * scaleY)
-            );
+        );
     };
 
     ui->loginBtn->setGeometry(scaleGeometry(originalGeometry.loginBtn));
@@ -382,7 +226,6 @@ void MainWindow::togglePasswordVisibility()
         QIcon eyeIcon(":/icons/eye_open.png");
         QPixmap eyePixmap = eyeIcon.pixmap(24, 24);
 
-        // Create white version of the icon
         QPixmap whitePixmap(eyePixmap.size());
         whitePixmap.fill(Qt::white);
         whitePixmap.setMask(eyePixmap.createMaskFromColor(Qt::transparent));
@@ -394,7 +237,6 @@ void MainWindow::togglePasswordVisibility()
         QIcon eyeIcon(":/icons/eye_closed.png");
         QPixmap eyePixmap = eyeIcon.pixmap(24, 24);
 
-        // Create white version of the icon
         QPixmap whitePixmap(eyePixmap.size());
         whitePixmap.fill(Qt::white);
         whitePixmap.setMask(eyePixmap.createMaskFromColor(Qt::transparent));
@@ -441,6 +283,11 @@ void MainWindow::on_loginBtn_clicked()
         ui->usernameLineEdit->setFocus();
         ui->usernameLineEdit->selectAll();
     }
+}
+
+bool MainWindow::verifyLogin(const QString &username, const QString &password)
+{
+    return DBHandler::instance().authenticateUser(username, password);
 }
 
 void MainWindow::on_labelNewUser_linkActivated(const QString &link)
