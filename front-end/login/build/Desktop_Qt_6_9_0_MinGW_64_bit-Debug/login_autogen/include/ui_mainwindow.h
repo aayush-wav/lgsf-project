@@ -46,11 +46,11 @@ public:
         MainWindow->setAcceptDrops(true);
         MainWindow->setAutoFillBackground(false);
         MainWindow->setStyleSheet(QString::fromUtf8("*{\n"
-"	background-image: url(:/res/background.png);\n"
-"	background-position: center;\n"
-"	background-size:100% 100%;\n"
-"	font-family: montserrat;\n"
-"	background-color:  #1C1C1C;\n"
+"        background-image: url(:/res/background.png);\n"
+"        background-position: center;\n"
+"        background-size:100% 100%;\n"
+"        font-family: montserrat;\n"
+"        background-color:  #1C1C1C;\n"
 "}\n"
 ""));
         centralwidget = new QWidget(MainWindow);
@@ -98,7 +98,7 @@ public:
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 1123, 24));
+        menubar->setGeometry(QRect(0, 0, 1123, 26));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");

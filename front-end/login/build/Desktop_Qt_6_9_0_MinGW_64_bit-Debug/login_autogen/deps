@@ -7,6 +7,7 @@ login_autogen/timestamp: \
 	C:/Qt/6.9.0/mingw_64/include/QtCore/QObject \
 	C:/Qt/6.9.0/mingw_64/include/QtCore/QProcess \
 	C:/Qt/6.9.0/mingw_64/include/QtCore/QRect \
+	C:/Qt/6.9.0/mingw_64/include/QtCore/QSettings \
 	C:/Qt/6.9.0/mingw_64/include/QtCore/QSize \
 	C:/Qt/6.9.0/mingw_64/include/QtCore/QSizeF \
 	C:/Qt/6.9.0/mingw_64/include/QtCore/q17memory.h \
@@ -101,6 +102,7 @@ login_autogen/timestamp: \
 	C:/Qt/6.9.0/mingw_64/include/QtCore/qscopedpointer.h \
 	C:/Qt/6.9.0/mingw_64/include/QtCore/qscopeguard.h \
 	C:/Qt/6.9.0/mingw_64/include/QtCore/qset.h \
+	C:/Qt/6.9.0/mingw_64/include/QtCore/qsettings.h \
 	C:/Qt/6.9.0/mingw_64/include/QtCore/qshareddata.h \
 	C:/Qt/6.9.0/mingw_64/include/QtCore/qshareddata_impl.h \
 	C:/Qt/6.9.0/mingw_64/include/QtCore/qsharedpointer.h \
@@ -223,6 +225,7 @@ login_autogen/timestamp: \
 	C:/Qt/6.9.0/mingw_64/include/QtWidgets/qtwidgetsexports.h \
 	C:/Qt/6.9.0/mingw_64/include/QtWidgets/qtwidgetsglobal.h \
 	C:/Qt/6.9.0/mingw_64/include/QtWidgets/qwidget.h \
+	C:/Qt/6.9.0/mingw_64/lib/cmake/Qt6/FindPostgreSQL.cmake \
 	C:/Qt/6.9.0/mingw_64/lib/cmake/Qt6/FindWrapAtomic.cmake \
 	C:/Qt/6.9.0/mingw_64/lib/cmake/Qt6/FindWrapVulkanHeaders.cmake \
 	C:/Qt/6.9.0/mingw_64/lib/cmake/Qt6/Qt6Config.cmake \
@@ -454,6 +457,7 @@ login_autogen/timestamp: \
 	C:/Qt/Tools/CMake_64/share/cmake-3.30/Modules/Compiler/GNU.cmake \
 	C:/Qt/Tools/CMake_64/share/cmake-3.30/Modules/FindPackageHandleStandardArgs.cmake \
 	C:/Qt/Tools/CMake_64/share/cmake-3.30/Modules/FindPackageMessage.cmake \
+	C:/Qt/Tools/CMake_64/share/cmake-3.30/Modules/FindPostgreSQL.cmake \
 	C:/Qt/Tools/CMake_64/share/cmake-3.30/Modules/FindThreads.cmake \
 	C:/Qt/Tools/CMake_64/share/cmake-3.30/Modules/FindVulkan.cmake \
 	C:/Qt/Tools/CMake_64/share/cmake-3.30/Modules/GNUInstallDirs.cmake \
@@ -467,6 +471,7 @@ login_autogen/timestamp: \
 	C:/Qt/Tools/CMake_64/share/cmake-3.30/Modules/Platform/Windows-windres.cmake \
 	C:/Qt/Tools/CMake_64/share/cmake-3.30/Modules/Platform/Windows.cmake \
 	C:/Qt/Tools/CMake_64/share/cmake-3.30/Modules/Platform/WindowsPaths.cmake \
+	C:/Qt/Tools/CMake_64/share/cmake-3.30/Modules/SelectLibraryConfigurations.cmake \
 	C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/algorithm \
 	C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/array \
 	C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/atomic \
@@ -715,6 +720,8 @@ login_autogen/timestamp: \
 	D:/LGSF/lgsf-project/front-end/login/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/CMakeFiles/3.30.5/CMakeRCCompiler.cmake \
 	D:/LGSF/lgsf-project/front-end/login/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/CMakeFiles/3.30.5/CMakeSystem.cmake \
 	D:/LGSF/lgsf-project/front-end/login/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/login_autogen/moc_predefs.h \
+	D:/LGSF/lgsf-project/front-end/login/dbhandler.cpp \
+	D:/LGSF/lgsf-project/front-end/login/dbhandler.h \
 	D:/LGSF/lgsf-project/front-end/login/icons.qrc \
 	D:/LGSF/lgsf-project/front-end/login/image.qrc \
 	D:/LGSF/lgsf-project/front-end/login/main.cpp \
