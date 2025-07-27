@@ -23,7 +23,7 @@ bool DBHandler::loadDatabaseConfig() {
         dbConfig.hostName = "localhost";
         dbConfig.databaseName = "UserInfo";
         dbConfig.userName = "postgres";
-        dbConfig.password = "00618"; // Update with actual password
+        dbConfig.password = "00618";
         dbConfig.port = 5432;
 
         settings.setValue("Database/hostName", dbConfig.hostName);
@@ -52,13 +52,11 @@ bool DBHandler::connectToDB() {
         return false;
     }
 
-    // Create users table if it doesn't exist
     QSqlQuery query(m_db);
     QString createUsersTable = "CREATE TABLE IF NOT EXISTS users ("
-                              "id SERIAL PRIMARY KEY, "
-                              "username VARCHAR(255) UNIQUE NOT NULL, "
-                              "password_hash VARCHAR(255) NOT NULL, "
-                              "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+                              "user_id SERIAL PRIMARY KEY, "
+                              "username text NOT NULL UNIQUE, "
+                              "password_hash text NOT NULL)";
     if (!query.exec(createUsersTable)) {
         QMessageBox::critical(nullptr, "Database Error",
                               "Could not create users table: " + query.lastError().text());
@@ -93,5 +91,16 @@ bool DBHandler::authenticateUser(const QString &username, const QString &passwor
         return query.value(0).toString() == hashPassword(password);
     }
     qDebug() << "Authentication error:" << query.lastError().text();
+    return false;
+}
+
+bool DBHandler::usernameExists(const QString &username) {
+    QSqlQuery query(m_db);
+    query.prepare("SELECT COUNT(*) FROM users WHERE username = :username");
+    query.bindValue(":username", username);
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt() > 0;
+    }
+    qDebug() << "Username check error:" << query.lastError().text();
     return false;
 }
