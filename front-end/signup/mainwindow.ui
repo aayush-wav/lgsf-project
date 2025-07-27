@@ -115,8 +115,6 @@ color: #2148C0;</string>
     </property>
     <property name="text">
      <string>SIGN UP</string>
-<<<<<<< HEAD
-=======
     </property>
    </widget>
    <widget class="QLineEdit" name="repasswordLineEdit">
@@ -130,20 +128,14 @@ color: #2148C0;</string>
     </property>
     <property name="text">
      <string/>
->>>>>>> d785178002d886a58191fe1022d493f39d666a74
     </property>
    </widget>
    <zorder>labelEbadapatra</zorder>
    <zorder>usernameLineEdit</zorder>
    <zorder>passwordLineEdit</zorder>
-<<<<<<< HEAD
-   <zorder>labelAlreadyAccount</zorder>
-   <zorder>signupBtn</zorder>
-=======
    <zorder>labelAlreadyHaveAccount</zorder>
    <zorder>signupBtn</zorder>
    <zorder>repasswordLineEdit</zorder>
->>>>>>> d785178002d886a58191fe1022d493f39d666a74
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
