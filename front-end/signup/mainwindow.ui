@@ -20,8 +20,8 @@
    <widget class="QLineEdit" name="usernameLineEdit">
     <property name="geometry">
      <rect>
-      <x>410</x>
-      <y>290</y>
+      <x>600</x>
+      <y>310</y>
       <width>300</width>
       <height>45</height>
      </rect>
@@ -33,10 +33,10 @@
    <widget class="QLabel" name="labelEbadapatra">
     <property name="geometry">
      <rect>
-      <x>390</x>
-      <y>168</y>
+      <x>580</x>
+      <y>180</y>
       <width>345</width>
-      <height>111</height>
+      <height>121</height>
      </rect>
     </property>
     <property name="font">
@@ -59,8 +59,8 @@
    <widget class="QLineEdit" name="passwordLineEdit">
     <property name="geometry">
      <rect>
-      <x>410</x>
-      <y>355</y>
+      <x>600</x>
+      <y>370</y>
       <width>300</width>
       <height>45</height>
      </rect>
@@ -69,11 +69,11 @@
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="labelAlreadyAccount">
+   <widget class="QLabel" name="labelAlreadyHaveAccount">
     <property name="geometry">
      <rect>
-      <x>410</x>
-      <y>410</y>
+      <x>600</x>
+      <y>480</y>
       <width>300</width>
       <height>20</height>
      </rect>
@@ -91,11 +91,11 @@
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="loginBtn">
+   <widget class="QPushButton" name="signupBtn">
     <property name="geometry">
      <rect>
-      <x>410</x>
-      <y>443</y>
+      <x>600</x>
+      <y>510</y>
       <width>300</width>
       <height>45</height>
      </rect>
@@ -114,14 +114,28 @@ border-radius: 4;
 color: #2148C0;</string>
     </property>
     <property name="text">
-     <string>LOGIN</string>
+     <string>SIGN UP</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="repasswordLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>430</y>
+      <width>300</width>
+      <height>45</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
    <zorder>labelEbadapatra</zorder>
    <zorder>usernameLineEdit</zorder>
    <zorder>passwordLineEdit</zorder>
-   <zorder>labelAlreadyAccount</zorder>
-   <zorder>loginBtn</zorder>
+   <zorder>labelAlreadyHaveAccount</zorder>
+   <zorder>signupBtn</zorder>
+   <zorder>repasswordLineEdit</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -129,7 +143,7 @@ color: #2148C0;</string>
      <x>0</x>
      <y>0</y>
      <width>1378</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>
