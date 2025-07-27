@@ -164,7 +164,7 @@ void MainWindow::setupSidebar()
     sidebarLayout->setContentsMargins(15, 20, 15, 20);
     sidebarLayout->setSpacing(15);
 
-    QLabel *sidebarTitle = new QLabel("Conversations");
+    QLabel *sidebarTitle = new QLabel("Conversation History:");
     sidebarTitle->setStyleSheet(R"(
         QLabel {
             font-family: 'Segoe UI', sans-serif;
@@ -303,7 +303,7 @@ void MainWindow::setupChatArea()
     connect(menuButton, &QPushButton::clicked, this, &MainWindow::toggleSidebar);
     headerLayout->addWidget(menuButton);
 
-    headerLabel = new QLabel("ई - BADAPATRA");
+    headerLabel = new QLabel("ई");
     headerLabel->setStyleSheet(R"(
         QLabel {
             font-family: 'Segoe UI', sans-serif;
