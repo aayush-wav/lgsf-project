@@ -91,7 +91,7 @@
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="loginBtn">
+   <widget class="QPushButton" name="signupBtn">
     <property name="geometry">
      <rect>
       <x>410</x>
@@ -114,14 +114,14 @@ border-radius: 4;
 color: #2148C0;</string>
     </property>
     <property name="text">
-     <string>LOGIN</string>
+     <string>SIGN UP</string>
     </property>
    </widget>
    <zorder>labelEbadapatra</zorder>
    <zorder>usernameLineEdit</zorder>
    <zorder>passwordLineEdit</zorder>
    <zorder>labelAlreadyAccount</zorder>
-   <zorder>loginBtn</zorder>
+   <zorder>signupBtn</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
