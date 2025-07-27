@@ -605,10 +605,8 @@ void MainWindow::saveMessage(const QString &messageText, const QString &messageT
         }
     }
 
-    // Save to JSON file
     saveConversationToJson(currentConversationId);
 
-    // Also save to SQLite for metadata
     if (db.isOpen()) {
         QSqlQuery query(db);
         query.prepare("INSERT INTO messages (conversation_id, message_text, message_type) VALUES (?, ?, ?)");
@@ -617,13 +615,11 @@ void MainWindow::saveMessage(const QString &messageText, const QString &messageT
         query.addBindValue(messageType);
         query.exec();
 
-        // Update conversation metadata
         QSqlQuery updateQuery(db);
         updateQuery.prepare("UPDATE conversations SET last_activity = CURRENT_TIMESTAMP WHERE conversation_id = ?");
         updateQuery.addBindValue(currentConversationId);
         updateQuery.exec();
 
-        // Update conversation name if needed
         if (messageType == "user") {
             for (auto &conv : conversations) {
                 if (conv.conversationId == currentConversationId) {
@@ -1787,7 +1783,6 @@ void MainWindow::handleSendButtonClicked()
         if (typingLabel) {
             typingLabel->setText(pendingText);
             addTimeLabelToTypingMessage();
-            // Save the bot message that was being typed
             saveMessage(pendingText, "bot");
             typingLabel = nullptr;
         }
