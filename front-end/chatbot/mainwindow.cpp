@@ -99,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(typingTimer, &QTimer::timeout, this, &MainWindow::onTypingTimeout);
 
 
-    QJsonDocument doc = loadIntents("D:/LGSF/lgsf-project/back-end/json/responses.json");
+    QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
     if (!doc.isNull())
         intentList = parseIntents(doc.array());
 

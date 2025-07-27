@@ -9,5 +9,3 @@ out/
 CMakeFiles/
 CMakeCache.txt
 .vs/
-*.exe
-*.ninja_log
