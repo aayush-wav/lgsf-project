@@ -90,6 +90,13 @@ private:
     QVector<NumberedOption> currentOptions;
     bool waitingForNumberSelection;
     bool hasStartedChatting;
+    QSqlDatabase servicesDb;
+    void resetTypingState();
+    QString conversationsDir;
+    void saveConversationToJson(const QString &conversationId);
+    void loadConversationFromJson(const QString &conversationId);
+    void clearChatLayoutCompletely();
+    QList<QWidget*> messageWidgets;
 
     // UI components
     QWidget *centralWidget;

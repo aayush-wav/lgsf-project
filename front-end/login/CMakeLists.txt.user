@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
+<<<<<<< HEAD
 <!-- Written by QtCreator 17.0.0, 2025-07-26T12:02:36. -->
+=======
+<!-- Written by QtCreator 17.0.0, 2025-07-26T12:37:36. -->
+>>>>>>> d604d5e1fdfd3979d07f358be4a342dd458dd060
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
-  <value type="QByteArray">{aaebf961-9fee-4f74-b03c-a4e43497abd3}</value>
+  <value type="QByteArray">{eca0e5b4-b9e1-4a24-a63e-1a5855d75c82}</value>
  </data>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -79,7 +83,7 @@
     <value type="bool" key="ClangTools.AnalyzeOpenFiles">true</value>
     <value type="bool" key="ClangTools.BuildBeforeAnalysis">true</value>
     <value type="QString" key="ClangTools.DiagnosticConfig">Builtin.DefaultTidyAndClazy</value>
-    <value type="int" key="ClangTools.ParallelJobs">6</value>
+    <value type="int" key="ClangTools.ParallelJobs">8</value>
     <value type="bool" key="ClangTools.PreferConfigFile">true</value>
     <valuelist type="QVariantList" key="ClangTools.SelectedDirs"/>
     <valuelist type="QVariantList" key="ClangTools.SelectedFiles"/>
@@ -93,9 +97,9 @@
   <valuemap type="QVariantMap">
    <value type="QString" key="DeviceType">Desktop</value>
    <value type="bool" key="HasPerBcDcs">true</value>
-   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Desktop Qt 6.9.1 MinGW 64-bit</value>
-   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Desktop Qt 6.9.1 MinGW 64-bit</value>
-   <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">qt.qt6.691.win64_mingw_kit</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Desktop Qt 6.9.0 MinGW 64-bit</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Desktop Qt 6.9.0 MinGW 64-bit</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">qt.qt6.690.win64_mingw_kit</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveBuildConfiguration">0</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveRunConfiguration">0</value>
@@ -104,6 +108,7 @@
     <value type="int" key="CMake.Configure.BaseEnvironment">2</value>
     <value type="bool" key="CMake.Configure.ClearSystemEnvironment">false</value>
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
+<<<<<<< HEAD
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_CXX_COMPILER:FILEPATH=%{Compiler:Executable:Cxx}
 -DCMAKE_CXX_FLAGS_INIT:STRING=%{Qt:QML_DEBUG_FLAG}
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
@@ -114,8 +119,21 @@
 -DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
 -DQT_MAINTENANCE_TOOL:FILEPATH=D:/QT/MaintenanceTool.exe
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}</value>
+=======
+    <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
+-DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
+-DCMAKE_CXX_FLAGS_INIT:STRING=%{Qt:QML_DEBUG_FLAG}
+-DCMAKE_BUILD_TYPE:STRING=Debug
+-DCMAKE_CXX_COMPILER:FILEPATH=%{Compiler:Executable:Cxx}
+-DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
+-DCMAKE_GENERATOR:STRING=Ninja
+-DCMAKE_COLOR_DIAGNOSTICS:BOOL=ON
+-DQT_MAINTENANCE_TOOL:FILEPATH=C:/Qt/MaintenanceTool.exe</value>
+    <value type="QString" key="CMake.Source.Directory">D:\LGSF\lgsf-project\front-end\login</value>
+>>>>>>> d604d5e1fdfd3979d07f358be4a342dd458dd060
     <value type="int" key="EnableQmlDebugging">0</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">D:\LGSF\front-end\login\build\Desktop_Qt_6_9_1_MinGW_64_bit-Debug</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">D:\LGSF\lgsf-project\front-end\login\build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="QString" key="CMakeProjectManager.MakeStep.BuildPreset"></value>
@@ -155,7 +173,7 @@
     <valuelist type="QVariantList" key="ProjectExplorer.BuildConfiguration.CustomParsers"/>
     <value type="bool" key="ProjectExplorer.BuildConfiguration.ParseStandardOutput">false</value>
     <valuelist type="QVariantList" key="ProjectExplorer.BuildConfiguration.UserEnvironmentChanges"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Debug</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Debug (imported)</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeBuildConfiguration</value>
     <value type="qlonglong" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
     <value type="qlonglong" key="ProjectExplorer.Target.ActiveRunConfiguration">0</value>
@@ -223,7 +241,7 @@
      <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
      <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
      <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-     <value type="QString" key="RunConfiguration.WorkingDirectory.default">D:/LGSF/front-end/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug</value>
+     <value type="QString" key="RunConfiguration.WorkingDirectory.default">D:/LGSF/lgsf-project/front-end/login/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug</value>
     </valuemap>
     <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
    </valuemap>
@@ -292,7 +310,7 @@
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">D:/LGSF/front-end/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">D:/LGSF/lgsf-project/front-end/login/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug</value>
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

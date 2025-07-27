@@ -25,6 +25,10 @@
 #include <QApplication>
 #include <QMenu>
 #include <QAction>
+#include <QStandardPaths>
+#include <QDir>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 ConversationButton::ConversationButton(const QString &conversationId, const QString &text, QWidget *parent)
     : QPushButton(text, parent), m_conversationId(conversationId)
@@ -441,55 +445,76 @@ void MainWindow::setupChatArea()
 
 void MainWindow::setupDatabase()
 {
-    db = QSqlDatabase::addDatabase("QPSQL");
-    db.setHostName("localhost");
-    db.setPort(5432);
-    db.setDatabaseName("LgsfInfo");
-    db.setUserName("postgres");
-    db.setPassword("00618");
+    conversationsDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/conversations";
+    QDir().mkpath(conversationsDir);
+    qDebug() << "Conversations directory:" << conversationsDir;
+
+    db = QSqlDatabase::addDatabase("QSQLITE", "conversations");
+    QString dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir().mkpath(dbPath);
+    db.setDatabaseName(dbPath + "/badapatra_conversations.db");
 
     if (!db.open()) {
-        qWarning() << "Database connection failed:" << db.lastError().text();
-
+        qWarning() << "Conversation database connection failed:" << db.lastError().text();
         QMessageBox::critical(this, "Database Error",
-                              QString("Failed to connect to database:\n%1\n\nPlease ensure:\n"
-                                      "1. PostgreSQL service is running\n"
-                                      "2. Database 'LgsfInfo' exists\n"
-                                      "3. Username/password are correct\n"
-                                      "4. PostgreSQL driver is installed")
+                              QString("Failed to create/open conversation database:\n%1")
                                   .arg(db.lastError().text()));
     } else {
-        qDebug() << "Database connected successfully!";
+        qDebug() << "SQLite conversation database connected successfully!";
+        qDebug() << "Database location:" << db.databaseName();
+    }
+
+    servicesDb = QSqlDatabase::addDatabase("QPSQL", "services");
+    servicesDb.setHostName("localhost");
+    servicesDb.setPort(5432);
+    servicesDb.setDatabaseName("LgsfInfo");
+    servicesDb.setUserName("postgres");
+    servicesDb.setPassword("00618");
+
+    if (!servicesDb.open()) {
+        qWarning() << "Services database connection failed:" << servicesDb.lastError().text();
+        qDebug() << "App will work with limited functionality (no service lookups)";
+    } else {
+        qDebug() << "PostgreSQL services database connected successfully!";
     }
 }
 
 bool MainWindow::testDatabaseConnection()
 {
-    if (!db.isOpen()) {
-        return false;
+    bool conversationsOk = false;
+    bool servicesOk = false;
+
+
+    if (db.isOpen()) {
+        QSqlQuery testQuery(db);
+        if (testQuery.exec("SELECT 1")) {
+            conversationsOk = true;
+            qDebug() << "Conversations database test successful";
+        }
     }
 
-    QSqlQuery testQuery(db);
-    if (!testQuery.exec("SELECT 1")) {
-        qWarning() << "Database test query failed:" << testQuery.lastError().text();
-        return false;
+
+    if (servicesDb.isOpen()) {
+        QSqlQuery testQuery(servicesDb);
+        if (testQuery.exec("SELECT 1")) {
+            servicesOk = true;
+            qDebug() << "Services database test successful";
+        }
     }
 
-    qDebug() << "Database test query successful";
-    return true;
+    return conversationsOk;
 }
 
 void MainWindow::createDatabaseTables()
 {
     QSqlQuery query(db);
 
-
     QString createConversationsTable = R"(
         CREATE TABLE IF NOT EXISTS conversations (
-            conversation_id VARCHAR(36) PRIMARY KEY,
+            conversation_id TEXT PRIMARY KEY,
             conversation_name TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            last_activity DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     )";
 
@@ -498,14 +523,13 @@ void MainWindow::createDatabaseTables()
         return;
     }
 
-
     QString createMessagesTable = R"(
         CREATE TABLE IF NOT EXISTS messages (
-            message_id SERIAL PRIMARY KEY,
-            conversation_id VARCHAR(36) REFERENCES conversations(conversation_id) ON DELETE CASCADE,
+            message_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            conversation_id TEXT REFERENCES conversations(conversation_id) ON DELETE CASCADE,
             message_text TEXT NOT NULL,
-            message_type VARCHAR(10) NOT NULL CHECK (message_type IN ('user', 'bot')),
-            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            message_type TEXT NOT NULL CHECK (message_type IN ('user', 'bot')),
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     )";
 
@@ -517,11 +541,22 @@ void MainWindow::createDatabaseTables()
     query.exec("CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages(conversation_id)");
     query.exec("CREATE INDEX IF NOT EXISTS idx_messages_timestamp ON messages(timestamp)");
 
-    qDebug() << "Database tables created successfully";
+    qDebug() << "Conversation database tables created successfully";
 }
-
 void MainWindow::createNewConversation(const QString &firstMessage)
 {
+    if (typingTimer->isActive()) {
+        typingTimer->stop();
+        if (typingLabel) {
+            typingLabel->setText(pendingText);
+            addTimeLabelToTypingMessage();
+            saveMessage(pendingText, "bot");
+            typingLabel = nullptr;
+        }
+        ui->sendButton->setText("SEND");
+        ui->sendButton->setEnabled(true);
+    }
+
     clearChatDisplay();
 
     currentConversationId = "";
@@ -570,19 +605,25 @@ void MainWindow::saveMessage(const QString &messageText, const QString &messageT
         }
     }
 
-    QSqlQuery query(db);
-    query.prepare("INSERT INTO messages (conversation_id, message_text, message_type) VALUES (?, ?, ?)");
-    query.addBindValue(currentConversationId);
-    query.addBindValue(messageText);
-    query.addBindValue(messageType);
+    // Save to JSON file
+    saveConversationToJson(currentConversationId);
 
-    if (query.exec()) {
+    // Also save to SQLite for metadata
+    if (db.isOpen()) {
+        QSqlQuery query(db);
+        query.prepare("INSERT INTO messages (conversation_id, message_text, message_type) VALUES (?, ?, ?)");
+        query.addBindValue(currentConversationId);
+        query.addBindValue(messageText);
+        query.addBindValue(messageType);
+        query.exec();
 
+        // Update conversation metadata
         QSqlQuery updateQuery(db);
         updateQuery.prepare("UPDATE conversations SET last_activity = CURRENT_TIMESTAMP WHERE conversation_id = ?");
         updateQuery.addBindValue(currentConversationId);
         updateQuery.exec();
 
+        // Update conversation name if needed
         if (messageType == "user") {
             for (auto &conv : conversations) {
                 if (conv.conversationId == currentConversationId) {
@@ -596,57 +637,150 @@ void MainWindow::saveMessage(const QString &messageText, const QString &messageT
                 }
             }
         }
-
-        qDebug() << "Message saved:" << messageType << messageText.left(50);
-    } else {
-        qWarning() << "Failed to save message:" << query.lastError().text();
     }
+
+    qDebug() << "Message saved:" << messageType << messageText.left(50);
+}
+
+void MainWindow::saveConversationToJson(const QString &conversationId)
+{
+    QString filePath = conversationsDir + "/" + conversationId + ".json";
+
+    QJsonObject conversationObj;
+    QJsonArray messagesArray;
+
+    QFile file(filePath);
+    if (file.exists() && file.open(QIODevice::ReadOnly)) {
+        QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+        conversationObj = doc.object();
+        messagesArray = conversationObj["messages"].toArray();
+        file.close();
+    }
+
+    if (!conversationObj.contains("conversation_id")) {
+        conversationObj["conversation_id"] = conversationId;
+        conversationObj["created_at"] = QDateTime::currentDateTime().toString(Qt::ISODate);
+    }
+    conversationObj["last_activity"] = QDateTime::currentDateTime().toString(Qt::ISODate);
+
+    QJsonArray newMessagesArray;
+
+    for (int i = 0; i < ui->chatLayout->count(); ++i) {
+        QLayoutItem* item = ui->chatLayout->itemAt(i);
+        if (!item || !item->widget()) continue;
+
+        QWidget* wrapper = item->widget();
+        if (wrapper == welcomeLabel) continue;
+
+        QList<QLabel*> labels = wrapper->findChildren<QLabel*>();
+        for (QLabel* label : labels) {
+            QString text = label->text();
+            if (text.isEmpty() || text.length() < 3) continue;
+
+            QString style = label->styleSheet();
+            QString messageType = "bot";
+            if (style.contains("#4a9eff") || style.contains("background-color: #4a9eff")) {
+                messageType = "user";
+            }
+
+            if (text.contains(QRegularExpression("^\\d{2}:\\d{2}$"))) continue;
+
+            QJsonObject messageObj;
+            messageObj["text"] = text;
+            messageObj["type"] = messageType;
+            messageObj["timestamp"] = QDateTime::currentDateTime().toString(Qt::ISODate);
+
+            newMessagesArray.append(messageObj);
+        }
+    }
+
+    conversationObj["messages"] = newMessagesArray;
+
+    if (file.open(QIODevice::WriteOnly)) {
+        QJsonDocument doc(conversationObj);
+        file.write(doc.toJson());
+        file.close();
+        qDebug() << "Conversation saved to JSON:" << filePath;
+    }
+}
+
+void MainWindow::loadConversationFromJson(const QString &conversationId)
+{
+    QString filePath = conversationsDir + "/" + conversationId + ".json";
+    QFile file(filePath);
+
+    if (!file.exists() || !file.open(QIODevice::ReadOnly)) {
+        qDebug() << "No JSON file found for conversation:" << conversationId;
+        return;
+    }
+
+    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+    file.close();
+
+    QJsonObject conversationObj = doc.object();
+    QJsonArray messagesArray = conversationObj["messages"].toArray();
+
+    if (messagesArray.isEmpty()) {
+        qDebug() << "No messages found in conversation:" << conversationId;
+        return;
+    }
+
+    hasStartedChatting = true;
+    updateWelcomeLabelVisibility();
+
+    for (const QJsonValue &messageVal : messagesArray) {
+        QJsonObject messageObj = messageVal.toObject();
+        QString text = messageObj["text"].toString();
+        QString type = messageObj["type"].toString();
+
+        if (text.isEmpty()) continue;
+
+        if (type == "user") {
+            addUserMessageFromHistory(text);
+        } else {
+            addBotMessageFromHistory(text);
+        }
+    }
+
+    QTimer::singleShot(100, [this]() {
+        ui->chatScrollArea->verticalScrollBar()->setValue(
+            ui->chatScrollArea->verticalScrollBar()->maximum()
+            );
+    });
+
+    qDebug() << "Loaded" << messagesArray.size() << "messages from JSON";
 }
 
 void MainWindow::loadConversation(const QString &conversationId)
 {
+    if (typingTimer->isActive()) {
+        typingTimer->stop();
+        if (typingLabel) {
+            typingLabel->setText(pendingText);
+            addTimeLabelToTypingMessage();
+            saveMessage(pendingText, "bot");
+            typingLabel = nullptr;
+        }
+        ui->sendButton->setText("SEND");
+        ui->sendButton->setEnabled(true);
+    }
+
     currentConversationId = conversationId;
+
     clearChatDisplay();
 
-    QSqlQuery query(db);
-    query.prepare(R"(
-        SELECT message_text, message_type, timestamp
-        FROM messages
-        WHERE conversation_id = ?
-        ORDER BY timestamp ASC
-    )");
-    query.addBindValue(conversationId);
+    waitingForNumberSelection = false;
+    currentOptions.clear();
+    lastIntentTag = "";
 
-    if (query.exec()) {
-        bool hasMessages = false;
-        while (query.next()) {
-            hasMessages = true;
-            QString messageText = query.value("message_text").toString();
-            QString messageType = query.value("message_type").toString();
+    loadConversationFromJson(conversationId);
 
-            if (messageType == "user") {
-                addUserMessageFromHistory(messageText);
-            } else {
-                addBotMessageFromHistory(messageText);
-            }
-        }
-
-        if (hasMessages) {
-            hasStartedChatting = true;
-            updateWelcomeLabelVisibility();
-        }
-
-
-        for (ConversationButton *button : conversationButtons) {
-            button->setChecked(button->getConversationId() == conversationId);
-        }
-
-        qDebug() << "Conversation loaded:" << conversationId;
-    } else {
-        qWarning() << "Failed to load conversation:" << query.lastError().text();
+    for (ConversationButton *button : conversationButtons) {
+        button->setChecked(button->getConversationId() == conversationId);
     }
-}
 
+    qDebug() << "Conversation loaded:" << conversationId;
+}
 void MainWindow::loadAllConversations()
 {
     conversations.clear();
@@ -677,7 +811,6 @@ void MainWindow::deleteConversation(const QString &conversationId)
     query.addBindValue(conversationId);
 
     if (query.exec()) {
-
         conversations.removeIf([conversationId](const Conversation &conv) {
             return conv.conversationId == conversationId;
         });
@@ -696,7 +829,6 @@ void MainWindow::deleteConversation(const QString &conversationId)
         qWarning() << "Failed to delete conversation:" << query.lastError().text();
     }
 }
-
 void MainWindow::deleteCurrentConversation()
 {
     if (!currentConversationId.isEmpty()) {
@@ -762,26 +894,39 @@ void MainWindow::onConversationClicked()
 
 void MainWindow::clearChatDisplay()
 {
-
-    QLayoutItem* item;
-    while ((item = ui->chatLayout->takeAt(0))) {
-        if (item->widget() && item->widget() != welcomeLabel) {
-            delete item->widget();
+    if (typingTimer->isActive()) {
+        typingTimer->stop();
+        if (typingLabel) {
+            typingLabel->setText(pendingText);
+            addTimeLabelToTypingMessage();
+            saveMessage(pendingText, "bot");
+            typingLabel = nullptr;
         }
-        delete item;
+        ui->sendButton->setText("SEND");
+        ui->sendButton->setEnabled(true);
     }
 
-    hasStartedChatting = false;
+    clearChatLayoutCompletely();
 
+    hasStartedChatting = false;
+    waitingForNumberSelection = false;
+    currentOptions.clear();
+    lastIntentTag = "";
+
+    pendingText.clear();
+    typedText.clear();
+    currentCharIndex = 0;
+    typingLabel = nullptr;
 
     welcomeLabel->show();
     ui->chatLayout->addStretch();
     ui->chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
     ui->chatLayout->addStretch();
 
-    ui->chatScrollArea->verticalScrollBar()->setValue(0);
+    QTimer::singleShot(50, [this]() {
+        ui->chatScrollArea->verticalScrollBar()->setValue(0);
+    });
 }
-
 void MainWindow::displayConversationMessages(const Conversation &conversation)
 {
     for (const Message &message : conversation.messages) {
@@ -1234,31 +1379,39 @@ void MainWindow::onTypingTimeout()
     if (currentCharIndex < pendingText.length())
     {
         typedText += pendingText[currentCharIndex++];
-        typingLabel->setText(typedText);
-        ui->chatScrollArea->verticalScrollBar()->setValue(ui->chatScrollArea->verticalScrollBar()->maximum());
+        if (typingLabel) {
+            typingLabel->setText(typedText);
+            ui->chatScrollArea->verticalScrollBar()->setValue(ui->chatScrollArea->verticalScrollBar()->maximum());
+        }
     }
     else
     {
         typingTimer->stop();
         ui->sendButton->setText("SEND");
         ui->sendButton->setEnabled(true);
-        addTimeLabelToTypingMessage();
 
-        // Save the bot message
+        if (typingLabel) {
+            addTimeLabelToTypingMessage();
+        }
+
         saveMessage(pendingText, "bot");
 
         typingLabel = nullptr;
+
+        pendingText.clear();
+        typedText.clear();
+        currentCharIndex = 0;
     }
 }
 
 QString MainWindow::generateNumberedServiceList(const QString &keyword, const QString &intentTag)
 {
-    if (!db.isOpen()) {
-        return "I'm sorry, but I can't access the database right now. Please try again later or contact the office directly.";
+    if (!servicesDb.isOpen()) {
+        return "I'm sorry, but I can't access the services database right now. Please try again later or contact the office directly.";
     }
 
     currentOptions.clear();
-    QSqlQuery query(db);
+    QSqlQuery query(servicesDb);
 
     QString searchQuery;
     if (keyword.toLower().contains("marriage") || keyword.toLower().contains("bibaha")) {
@@ -1344,7 +1497,7 @@ QString MainWindow::handleNumberSelection(int number, const QString &userInput)
 
     NumberedOption selectedOption = currentOptions[number - 1];
 
-    QSqlQuery query(db);
+    QSqlQuery query(servicesDb);
     query.prepare(R"(
         SELECT
             s.service_name,
@@ -1381,11 +1534,11 @@ QString MainWindow::handleNumberSelection(int number, const QString &userInput)
 
 QString MainWindow::fetchServiceData(const QString &userInput, QString responseTemplate)
 {
-    if (!db.isOpen()) {
-        return "I'm sorry, but I can't access the database right now. Please try again later or contact the office directly.";
+    if (!servicesDb.isOpen()) {
+        return "I'm sorry, but I can't access the services database right now. Please try again later or contact the office directly.";
     }
 
-    QSqlQuery query(db);
+    QSqlQuery query(servicesDb);
 
     query.prepare(R"(
         SELECT
@@ -1504,7 +1657,6 @@ QString MainWindow::formatServiceResponse(QSqlQuery &query, QString responseTemp
 
 void MainWindow::addUserMessage(const QString &text)
 {
-    // Save user message to database
     saveMessage(text, "user");
 
     QLabel *messageLabel = new QLabel(text);
@@ -1553,8 +1705,15 @@ void MainWindow::addUserMessage(const QString &text)
     wrapper->setLayout(hLayout);
     wrapper->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
+    messageWidgets.append(wrapper);
+
     ui->chatLayout->addWidget(wrapper);
-    ui->chatScrollArea->verticalScrollBar()->setValue(ui->chatScrollArea->verticalScrollBar()->maximum());
+
+    QTimer::singleShot(50, [this]() {
+        ui->chatScrollArea->verticalScrollBar()->setValue(
+            ui->chatScrollArea->verticalScrollBar()->maximum()
+            );
+    });
 }
 
 void MainWindow::addBotMessage(const QString &text)
@@ -1589,6 +1748,18 @@ void MainWindow::handleUserInput(const QString &userText)
 {
     QString input = userText.trimmed().toLower();
     if (input == "clear" || input == "cls") {
+        if (typingTimer->isActive()) {
+            typingTimer->stop();
+            if (typingLabel) {
+                typingLabel->setText(pendingText);
+                addTimeLabelToTypingMessage();
+                saveMessage(pendingText, "bot");
+                typingLabel = nullptr;
+            }
+            ui->sendButton->setText("SEND");
+            ui->sendButton->setEnabled(true);
+        }
+
         clearChat();
         lastIntentTag = "";
         waitingForNumberSelection = false;
@@ -1837,31 +2008,73 @@ void MainWindow::testDatabaseQueries()
     qDebug() << "=== Database Test Complete ===\n";
 }
 
+void MainWindow::resetTypingState()
+{
+    if (typingTimer->isActive()) {
+        typingTimer->stop();
+    }
+
+    if (typingLabel) {
+        typingLabel = nullptr;
+    }
+
+    pendingText.clear();
+    typedText.clear();
+    currentCharIndex = 0;
+
+    ui->sendButton->setText("SEND");
+    ui->sendButton->setEnabled(true);
+}
+
 void MainWindow::clearChat()
 {
-    // Clear chat layout
-    QLayoutItem* item;
-    while ((item = ui->chatLayout->takeAt(0))) {
-        if (item->widget()) {
-            if (item->widget() != welcomeLabel) {
-                delete item->widget();
-            }
+    if (typingTimer->isActive()) {
+        typingTimer->stop();
+        if (typingLabel) {
+            typingLabel->setText(pendingText);
+            addTimeLabelToTypingMessage();
+            saveMessage(pendingText, "bot");
+            typingLabel = nullptr;
         }
-        delete item;
+        ui->sendButton->setText("SEND");
+        ui->sendButton->setEnabled(true);
     }
+
+    clearChatLayoutCompletely();
 
     hasStartedChatting = false;
     lastIntentTag = "";
     waitingForNumberSelection = false;
     currentOptions.clear();
+    pendingText.clear();
+    typedText.clear();
+    currentCharIndex = 0;
 
-    // Show welcome label
     welcomeLabel->show();
     ui->chatLayout->addStretch();
     ui->chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
     ui->chatLayout->addStretch();
 
-    // Reset scroll position
-    ui->chatScrollArea->verticalScrollBar()->setValue(0);
+    QTimer::singleShot(50, [this]() {
+        ui->chatScrollArea->verticalScrollBar()->setValue(0);
+    });
 }
+void MainWindow::clearChatLayoutCompletely()
+{
+    if (welcomeLabel->parent()) {
+        ui->chatLayout->removeWidget(welcomeLabel);
+    }
 
+    QLayoutItem* item;
+    while ((item = ui->chatLayout->takeAt(0))) {
+        if (item->widget()) {
+            item->widget()->setParent(nullptr);
+            item->widget()->deleteLater();
+        }
+        delete item;
+    }
+
+    messageWidgets.clear();
+
+    QCoreApplication::processEvents();
+}
