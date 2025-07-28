@@ -9,14 +9,17 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Qt modules
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Sql)
 
+# PostgreSQL
+find_package(PostgreSQL REQUIRED)
+
+# Print Qt version
 string(REGEX MATCH "^[0-9]+" QT_VERSION_MAJOR "${QT_VERSION}")
 message(STATUS "Detected Qt major version: ${QT_VERSION_MAJOR}")
 
-find_package(PostgreSQL REQUIRED)
-
-# Add dbhandler as a static library with correct path
+# Add dbhandler as a static library
 add_library(dbhandler STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/dbhandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dbhandler.h
@@ -27,10 +30,12 @@ target_include_directories(dbhandler PUBLIC
 target_link_libraries(dbhandler PRIVATE
     Qt6::Core
     Qt6::Sql
+    Qt6::Widgets          # ✅ REQUIRED for QMessageBox
     ${PostgreSQL_LIBRARY}
 )
 message(STATUS "DBHandler source path: ${CMAKE_CURRENT_SOURCE_DIR}/dbhandler.cpp")
 
+# Main app sources
 set(PROJECT_SOURCES
     main.cpp
     mainwindow.cpp
@@ -46,6 +51,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/icons.qrc")
     list(APPEND RESOURCE_FILES icons.qrc)
 endif()
 
+# Main application target
 if(QT_VERSION_MAJOR GREATER_EQUAL 6)
     qt_add_executable(login
         MANUAL_FINALIZATION
@@ -80,6 +86,7 @@ target_link_libraries(login PRIVATE
     dbhandler
 )
 
+# Set bundle properties
 if(QT_VERSION VERSION_LESS "6.1.0")
     set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.login)
 endif()
@@ -92,20 +99,24 @@ set_target_properties(login PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
+# Installation
 install(TARGETS login
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
+# Finalize for Qt6
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(login)
 endif()
 
+# Diagnostic messages
 message(STATUS "Building login application with Qt${QT_VERSION_MAJOR}")
 message(STATUS "C++ Standard: ${CMAKE_CXX_STANDARD}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
+# Debug flag
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "Debug build - additional logging enabled")
     target_compile_definitions(login PRIVATE DEBUG_BUILD)

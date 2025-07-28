@@ -16,8 +16,9 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QScrollArea>
 #include <QtWidgets/QStatusBar>
-#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -28,8 +29,11 @@ public:
     QWidget *widget;
     QLineEdit *inputLineEdit;
     QPushButton *sendButton;
-    QTextEdit *responseTextEdit;
     QLabel *badapatraLabel;
+    QScrollArea *chatScrollArea;
+    QWidget *chatContainerWidget;
+    QWidget *verticalLayoutWidget;
+    QVBoxLayout *chatLayout;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -71,26 +75,49 @@ public:
         sendButton->setStyleSheet(QString::fromUtf8("color:  #2148C0;\n"
 "background-color: rgb(255, 255, 255);\n"
 "border-radius: 6;"));
-        responseTextEdit = new QTextEdit(widget);
-        responseTextEdit->setObjectName("responseTextEdit");
-        responseTextEdit->setGeometry(QRect(150, 40, 1031, 540));
-        QFont font3;
-        font3.setFamilies({QString::fromUtf8("0xProto Nerd Font Mono")});
-        font3.setPointSize(12);
-        responseTextEdit->setFont(font3);
-        responseTextEdit->setFrameShape(QFrame::Shape::NoFrame);
-        responseTextEdit->setFrameShadow(QFrame::Shadow::Plain);
-        responseTextEdit->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByKeyboard|Qt::TextInteractionFlag::TextSelectableByMouse);
         badapatraLabel = new QLabel(widget);
         badapatraLabel->setObjectName("badapatraLabel");
         badapatraLabel->setGeometry(QRect(468, 30, 345, 111));
-        QFont font4;
-        font4.setPointSize(22);
-        font4.setBold(true);
-        font4.setKerning(false);
-        badapatraLabel->setFont(font4);
+        QFont font3;
+        font3.setPointSize(22);
+        font3.setBold(true);
+        font3.setKerning(false);
+        badapatraLabel->setFont(font3);
         badapatraLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
+        chatScrollArea = new QScrollArea(widget);
+        chatScrollArea->setObjectName("chatScrollArea");
+        chatScrollArea->setGeometry(QRect(0, 0, 1280, 550));
+        QSizePolicy sizePolicy(QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(chatScrollArea->sizePolicy().hasHeightForWidth());
+        chatScrollArea->setSizePolicy(sizePolicy);
+        chatScrollArea->setMinimumSize(QSize(1280, 550));
+        QFont font4;
+        font4.setFamilies({QString::fromUtf8("0xProto Nerd Font")});
+        font4.setPointSize(14);
+        chatScrollArea->setFont(font4);
+        chatScrollArea->setFrameShape(QFrame::Shape::NoFrame);
+        chatScrollArea->setFrameShadow(QFrame::Shadow::Plain);
+        chatScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
+        chatScrollArea->setWidgetResizable(true);
+        chatContainerWidget = new QWidget();
+        chatContainerWidget->setObjectName("chatContainerWidget");
+        chatContainerWidget->setGeometry(QRect(0, 0, 1280, 550));
+        chatContainerWidget->setMinimumSize(QSize(0, 550));
+        chatContainerWidget->setFont(font4);
+        verticalLayoutWidget = new QWidget(chatContainerWidget);
+        verticalLayoutWidget->setObjectName("verticalLayoutWidget");
+        verticalLayoutWidget->setGeometry(QRect(20, 30, 1221, 511));
+        chatLayout = new QVBoxLayout(verticalLayoutWidget);
+        chatLayout->setObjectName("chatLayout");
+        chatLayout->setContentsMargins(0, 0, 0, 0);
+        chatScrollArea->setWidget(chatContainerWidget);
         MainWindow->setCentralWidget(widget);
+        chatScrollArea->raise();
+        inputLineEdit->raise();
+        sendButton->raise();
+        badapatraLabel->raise();
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
         menubar->setGeometry(QRect(0, 0, 1280, 27));

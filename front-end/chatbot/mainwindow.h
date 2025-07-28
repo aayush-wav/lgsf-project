@@ -97,6 +97,7 @@ private:
     void loadConversationFromJson(const QString &conversationId);
     void clearChatLayoutCompletely();
     QList<QWidget*> messageWidgets;
+    QString selectContextualResponse(const QStringList &responses, const QString &userInput);
 
     // UI components
     QWidget *centralWidget;

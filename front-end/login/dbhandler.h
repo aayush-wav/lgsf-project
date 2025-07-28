@@ -4,32 +4,21 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
-#include <QSettings>
-#include <QMessageBox>
-#include <QCryptographicHash>
-
-struct DatabaseConfig {
-    QString hostName;
-    QString databaseName;
-    QString userName;
-    QString password;
-    int port;
-};
+#include <QString>
 
 class DBHandler {
 public:
     static DBHandler& instance();
+
     bool connectToDB();
-    bool createUser(const QString &username, const QString &password);
-    bool authenticateUser(const QString &username, const QString &password);
+    bool createUser(const QString &username, const QString &passwordHash);
     bool usernameExists(const QString &username);
-    QString hashPassword(const QString &password);
+    bool authenticateUser(const QString &username, const QString &password);
+    QString hashPassword(const QString &password);  // THIS was missing before
 
 private:
     DBHandler();
-    bool loadDatabaseConfig();
-    QSqlDatabase m_db;
-    DatabaseConfig dbConfig;
+    QSqlDatabase db;
 };
 
 #endif // DBHANDLER_H

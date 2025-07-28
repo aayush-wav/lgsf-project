@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QCryptographicHash>
+#include <QProcess>
 #include <QDebug>
 #include "dbhandler.h"
 
@@ -33,6 +34,7 @@ private:
     QString hashPassword(const QString &password);
     bool checkUsernameExists(const QString &username);
     void openLoginPage();
+    QProcess *loginProcess = nullptr;
 };
 
 #endif // MAINWINDOW_H

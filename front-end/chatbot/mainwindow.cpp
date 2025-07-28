@@ -865,7 +865,7 @@ void MainWindow::refreshConversationList()
         conversationButtons.append(button);
         historyLayout->addWidget(button);
     }
-   deleteConversationButton->setEnabled(!conversations.isEmpty());
+    deleteConversationButton->setEnabled(!conversations.isEmpty());
 }
 
 QString MainWindow::generateConversationName(const QString &firstMessage)
