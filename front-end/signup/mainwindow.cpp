@@ -133,6 +133,6 @@ void MainWindow::openLoginPage()
 void MainWindow::on_labelAlreadyHaveAccount_linkActivated(const QString &link)
 {
     Q_UNUSED(link)
-    qDebug() << "Login link clicked!"; // Debug to verify link works
+    qDebug() << "Login link clicked!";
     openLoginPage();
 }
