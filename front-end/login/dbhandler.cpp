@@ -1,4 +1,5 @@
 #include "dbhandler.h"
+#include<QMessageBox>
 
 DBHandler& DBHandler::instance() {
     static DBHandler instance;

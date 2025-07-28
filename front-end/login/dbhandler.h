@@ -5,7 +5,6 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSettings>
-#include <QMessageBox>
 #include <QCryptographicHash>
 
 struct DatabaseConfig {

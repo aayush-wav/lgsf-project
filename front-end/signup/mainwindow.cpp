@@ -25,6 +25,7 @@ MainWindow::~MainWindow()
 void MainWindow::setupUI()
 {
     this->showMaximized();
+
     ui->usernameLineEdit->setPlaceholderText("Username");
     ui->passwordLineEdit->setPlaceholderText("Password");
     ui->passwordLineEdit->setEchoMode(QLineEdit::Password);
@@ -35,19 +36,32 @@ void MainWindow::setupUI()
     ui->labelAlreadyHaveAccount->setTextInteractionFlags(Qt::TextBrowserInteraction);
     ui->labelAlreadyHaveAccount->setText("<a href=\"#\" style=\"color: white; text-decoration: underline;\">Already have an account?</a>");
 
-    // CRITICAL: Explicit signal connections to ensure buttons work
     connect(ui->signupBtn, &QPushButton::clicked, this, &MainWindow::on_signupBtn_clicked);
     connect(ui->labelAlreadyHaveAccount, &QLabel::linkActivated, this, &MainWindow::on_labelAlreadyHaveAccount_linkActivated);
 
-    // Optional: Allow Enter key to trigger signup
-    connect(ui->usernameLineEdit, &QLineEdit::returnPressed, this, &MainWindow::on_signupBtn_clicked);
-    connect(ui->passwordLineEdit, &QLineEdit::returnPressed, this, &MainWindow::on_signupBtn_clicked);
+    connect(ui->usernameLineEdit, &QLineEdit::returnPressed, [this]() {
+        if (ui->usernameLineEdit->text().trimmed().isEmpty()) {
+            QMessageBox::warning(this, "Input Error", "Username is required.");
+        } else {
+            ui->passwordLineEdit->setFocus();
+        }
+    });
+
+    connect(ui->passwordLineEdit, &QLineEdit::returnPressed, [this]() {
+        if (ui->passwordLineEdit->text().isEmpty()) {
+            QMessageBox::warning(this, "Input Error", "Password is required.");
+        } else {
+            ui->repasswordLineEdit->setFocus();
+        }
+    });
+
     connect(ui->repasswordLineEdit, &QLineEdit::returnPressed, this, &MainWindow::on_signupBtn_clicked);
 }
 
+
 void MainWindow::on_signupBtn_clicked()
 {
-    qDebug() << "Signup button clicked!"; // Debug to verify button works
+    qDebug() << "Signup button clicked!";
 
     if (!validateInputs()) {
         return;
