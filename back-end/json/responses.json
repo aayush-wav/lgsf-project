@@ -578,7 +578,7 @@
 			"तिमी को हौ",
 			"नाम के हो"
 		],
-		"response": "मैं ई-BADAPATRA हूँ!\n\nAbout Me:\n• Your digital government services assistant\n• Specialized in Nepal's government procedures\n• Here to make bureaucracy easier for you!\n• I speak both Nepali and English\n\nMy Mission:\n• Simplify government service information\n• Help you understand document requirements\n• Provide office hours and location details\n• Save your time and reduce confusion\n\nFun Fact: BADAPATRA means \"big document\" - representing all the important government documents I help you with!\n\nReady to help you navigate Nepal's government services with ease! What do you need today?"
+		"response": "म ई-BADAPATRA हो!\n\nAbout Me:\n• Your digital government services assistant\n• Specialized in Nepal's government procedures\n• Here to make bureaucracy easier for you!\n• I speak both Nepali and English\n\nMy Mission:\n• Simplify government service information\n• Help you understand document requirements\n• Provide office hours and location details\n• Save your time and reduce confusion\n\nFun Fact: BADAPATRA means \"big document\" - representing all the important government documents I help you with!\n\nReady to help you navigate Nepal's government services with ease! What do you need today?"
 	},
 	{
 		"intent": "language_support",
