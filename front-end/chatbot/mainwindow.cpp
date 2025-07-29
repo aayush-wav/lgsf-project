@@ -90,7 +90,10 @@ MainWindow::MainWindow(QWidget *parent)
     sidebarVisible(false),
     currentConversationId(""),
     newConversationButton(nullptr),
-    deleteConversationButton(nullptr)
+    deleteConversationButton(nullptr),
+    welcomeTypingTimer(new QTimer(this)),
+    welcomeCurrentCharIndex(0),
+    welcomeAnimationComplete(false)
 {
     ui->setupUi(this);
     setupUI();
@@ -98,8 +101,11 @@ MainWindow::MainWindow(QWidget *parent)
     typingTimer->setInterval(30);
     connect(typingTimer, &QTimer::timeout, this, &MainWindow::onTypingTimeout);
 
+    // Setup welcome typing animation
+    welcomeTypingTimer->setInterval(80);
+    connect(welcomeTypingTimer, &QTimer::timeout, this, &MainWindow::onWelcomeTypingTimeout);
 
-    QJsonDocument doc = loadIntents("D:/LGSF/lgsf-project/back-end/json/responses.json");
+    QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
     if (!doc.isNull())
         intentList = parseIntents(doc.array());
 
@@ -108,15 +114,17 @@ MainWindow::MainWindow(QWidget *parent)
         createDatabaseTables();
         loadAllConversations();
 
-
         if(conversations.isEmpty()) {
             createNewConversation();
         } else {
-
             loadConversation(conversations.first().conversationId);
         }
     }
+
+    // Start welcome animation after everything is loaded
+    QTimer::singleShot(500, this, &MainWindow::startWelcomeAnimation);
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -327,8 +335,8 @@ void MainWindow::setupChatArea()
     welcomeLabel->setAlignment(Qt::AlignCenter);
     welcomeLabel->setStyleSheet(R"(
         QLabel {
-            font-family: 'Segoe UI', sans-serif;
-            font-size: 48px;
+            font-family: 'OxNerdfont';
+            font-size: 25px;
             font-weight: bold;
             color: #FFFFFF;
             background-color: transparent;
@@ -477,6 +485,58 @@ void MainWindow::setupDatabase()
     } else {
         qDebug() << "PostgreSQL services database connected successfully!";
     }
+}
+
+void MainWindow::onWelcomeTypingTimeout()
+{
+    if (welcomeCurrentCharIndex < welcomeText.length()) {
+        welcomeTypedText += welcomeText[welcomeCurrentCharIndex++];
+        welcomeLabel->setText(welcomeTypedText);
+    } else {
+        welcomeTypingTimer->stop();
+        welcomeAnimationComplete = true;
+
+        // Change color to white when complete
+        QTimer::singleShot(200, [this]() {
+            if (!hasStartedChatting && welcomeLabel->isVisible()) {
+                welcomeLabel->setStyleSheet(R"(
+                    QLabel {
+                        font-family: 'OxNerdfont';
+                        font-size: 25px;
+                        font-weight: bold;
+                        color: #FFFFFF;
+                        background-color: transparent;
+                        margin: 50px;
+                    }
+                )");
+            }
+        });
+    }
+}
+
+void MainWindow::startWelcomeAnimation()
+{
+    if (hasStartedChatting) return;
+
+    welcomeText = "Welcome to ई-BADAPATRA!\nHow may I help you?";
+    welcomeTypedText.clear();
+    welcomeCurrentCharIndex = 0;
+    welcomeAnimationComplete = false;
+
+    // Start with empty text and blue color
+    welcomeLabel->setText("");
+    welcomeLabel->setStyleSheet(R"(
+        QLabel {
+            font-family: OxNerdfont;
+            font-size: 25px;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: transparent;
+            margin: 50px;
+        }
+    )");
+
+    welcomeTypingTimer->start();
 }
 
 bool MainWindow::testDatabaseConnection()
@@ -675,7 +735,7 @@ void MainWindow::saveConversationToJson(const QString &conversationId)
 
             QString style = label->styleSheet();
             QString messageType = "bot";
-            if (style.contains("#4a9eff") || style.contains("background-color: #4a9eff")) {
+            if (style.contains("#ffffff") || style.contains("background-color: #ffffff")) {
                 messageType = "user";
             }
 
@@ -919,10 +979,14 @@ void MainWindow::clearChatDisplay()
     ui->chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
     ui->chatLayout->addStretch();
 
+    // Restart welcome animation
+    QTimer::singleShot(300, this, &MainWindow::startWelcomeAnimation);
+
     QTimer::singleShot(50, [this]() {
         ui->chatScrollArea->verticalScrollBar()->setValue(0);
     });
 }
+
 void MainWindow::displayConversationMessages(const Conversation &conversation)
 {
     for (const Message &message : conversation.messages) {
@@ -945,8 +1009,8 @@ void MainWindow::addUserMessageFromHistory(const QString &text)
         QLabel {
             font-family: 'Segoe UI', sans-serif;
             font-size: 15px;
-            color: #ffffff;
-            background-color: #4a9eff;
+            color: #4a9eff;
+            background-color: #ffffff;
             border-radius: 15px;
             padding: 15px 20px;
             margin: 5px 5px 5px 50px;
@@ -1027,6 +1091,11 @@ void MainWindow::toggleSidebar()
 void MainWindow::updateWelcomeLabelVisibility()
 {
     if (hasStartedChatting && welcomeLabel->isVisible()) {
+        // Stop welcome animation if it's running
+        if (welcomeTypingTimer->isActive()) {
+            welcomeTypingTimer->stop();
+        }
+
         ui->chatLayout->removeWidget(welcomeLabel);
         welcomeLabel->hide();
 
@@ -2027,6 +2096,9 @@ void MainWindow::clearChat()
     ui->chatLayout->addStretch();
     ui->chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
     ui->chatLayout->addStretch();
+
+    // Restart welcome animation
+    QTimer::singleShot(300, this, &MainWindow::startWelcomeAnimation);
 
     QTimer::singleShot(50, [this]() {
         ui->chatScrollArea->verticalScrollBar()->setValue(0);

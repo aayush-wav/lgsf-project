@@ -76,6 +76,9 @@ private slots:
     void toggleSidebar();
     void onConversationClicked();
     void deleteCurrentConversation();
+    void onWelcomeTypingTimeout();
+    void startWelcomeAnimation();
+
 
 private:
     Ui::MainWindow *ui;
@@ -98,6 +101,12 @@ private:
     void clearChatLayoutCompletely();
     QList<QWidget*> messageWidgets;
     QString selectContextualResponse(const QStringList &responses, const QString &userInput);
+
+    QTimer *welcomeTypingTimer;
+    QString welcomeText;
+    QString welcomeTypedText;
+    int welcomeCurrentCharIndex;
+    bool welcomeAnimationComplete;
 
     // UI components
     QWidget *centralWidget;
