@@ -101,7 +101,6 @@ MainWindow::MainWindow(QWidget *parent)
     typingTimer->setInterval(30);
     connect(typingTimer, &QTimer::timeout, this, &MainWindow::onTypingTimeout);
 
-    // Setup welcome typing animation
     welcomeTypingTimer->setInterval(80);
     connect(welcomeTypingTimer, &QTimer::timeout, this, &MainWindow::onWelcomeTypingTimeout);
 
@@ -121,7 +120,6 @@ MainWindow::MainWindow(QWidget *parent)
         }
     }
 
-    // Start welcome animation after everything is loaded
     QTimer::singleShot(500, this, &MainWindow::startWelcomeAnimation);
 }
 
@@ -496,7 +494,6 @@ void MainWindow::onWelcomeTypingTimeout()
         welcomeTypingTimer->stop();
         welcomeAnimationComplete = true;
 
-        // Change color to white when complete
         QTimer::singleShot(200, [this]() {
             if (!hasStartedChatting && welcomeLabel->isVisible()) {
                 welcomeLabel->setStyleSheet(R"(
@@ -523,7 +520,6 @@ void MainWindow::startWelcomeAnimation()
     welcomeCurrentCharIndex = 0;
     welcomeAnimationComplete = false;
 
-    // Start with empty text and blue color
     welcomeLabel->setText("");
     welcomeLabel->setStyleSheet(R"(
         QLabel {
@@ -979,7 +975,6 @@ void MainWindow::clearChatDisplay()
     ui->chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
     ui->chatLayout->addStretch();
 
-    // Restart welcome animation
     QTimer::singleShot(300, this, &MainWindow::startWelcomeAnimation);
 
     QTimer::singleShot(50, [this]() {
@@ -1091,7 +1086,6 @@ void MainWindow::toggleSidebar()
 void MainWindow::updateWelcomeLabelVisibility()
 {
     if (hasStartedChatting && welcomeLabel->isVisible()) {
-        // Stop welcome animation if it's running
         if (welcomeTypingTimer->isActive()) {
             welcomeTypingTimer->stop();
         }
@@ -2097,7 +2091,6 @@ void MainWindow::clearChat()
     ui->chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
     ui->chatLayout->addStretch();
 
-    // Restart welcome animation
     QTimer::singleShot(300, this, &MainWindow::startWelcomeAnimation);
 
     QTimer::singleShot(50, [this]() {
