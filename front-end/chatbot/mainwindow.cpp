@@ -99,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(typingTimer, &QTimer::timeout, this, &MainWindow::onTypingTimeout);
 
 
-    QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
+    QJsonDocument doc = loadIntents("D:/LGSF/lgsf-project/back-end/json/responses.json");
     if (!doc.isNull())
         intentList = parseIntents(doc.array());
 
@@ -1107,28 +1107,6 @@ const Intent *MainWindow::matchIntent(const QString &userInput)
     }
 
     input = input.remove(QRegularExpression("[.,!?;:]")).simplified();
-
-    if (input.contains("marriage") || input.contains("bibaha") || input.contains("विवाह")) {
-        for (const Intent &intent : intentList) {
-            if (intent.tag == "certificate_services") {
-                for (const QString &pattern : intent.patterns) {
-                    if (pattern.toLower().contains("marriage") ||
-                        pattern.toLower().contains("bibaha") ||
-                        pattern.toLower().contains("विवाह")) {
-                        return &intent;
-                    }
-                }
-            }
-        }
-    }
-
-    if (input.contains("divorce") || input.contains("talak") || input.contains("तलाक")) {
-        for (const Intent &intent : intentList) {
-            if (intent.tag == "certificate_services") {
-                return &intent;
-            }
-        }
-    }
 
     for (const Intent &intent : intentList) {
         for (const QString &pattern : intent.patterns) {
