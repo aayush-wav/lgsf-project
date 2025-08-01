@@ -731,7 +731,7 @@ void MainWindow::saveConversationToJson(const QString &conversationId)
 
             QString style = label->styleSheet();
             QString messageType = "bot";
-            if (style.contains("#ffffff") || style.contains("background-color: #ffffff")) {
+            if (style.contains("#ffffff") || style.contains("background-color: #transparent")) {
                 messageType = "user";
             }
 
