@@ -79,7 +79,6 @@ private slots:
     void onWelcomeTypingTimeout();
     void startWelcomeAnimation();
 
-
 private:
     Ui::MainWindow *ui;
     int currentCharIndex;
@@ -102,6 +101,7 @@ private:
     QList<QWidget*> messageWidgets;
     QString selectContextualResponse(const QStringList &responses, const QString &userInput);
 
+    // Welcome animation members - moved before deleteConversationButton
     QTimer *welcomeTypingTimer;
     QString welcomeText;
     QString welcomeTypedText;
@@ -119,6 +119,11 @@ private:
     QPushButton *menuButton;
     QLabel *headerLabel;
     QLabel *welcomeLabel;
+    
+    // Chat UI elements - these replace the missing ui-> members
+    QScrollArea *chatScrollArea;
+    QVBoxLayout *chatLayout;
+    
     QScrollArea *historyScrollArea;
     QWidget *historyWidget;
     QVBoxLayout *historyLayout;
@@ -129,7 +134,7 @@ private:
     QVector<Conversation> conversations;
     QVector<ConversationButton*> conversationButtons;
     QPushButton *newConversationButton;
-    QPushButton *deleteConversationButton;
+    QPushButton *deleteConversationButton;  // Now comes after welcomeTypingTimer
 
     void setupDatabase();
     void createDatabaseTables();

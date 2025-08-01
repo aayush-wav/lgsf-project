@@ -89,11 +89,11 @@ MainWindow::MainWindow(QWidget *parent)
     hasStartedChatting(false),
     sidebarVisible(false),
     currentConversationId(""),
-    newConversationButton(nullptr),
-    deleteConversationButton(nullptr),
     welcomeTypingTimer(new QTimer(this)),
     welcomeCurrentCharIndex(0),
-    welcomeAnimationComplete(false)
+    welcomeAnimationComplete(false),
+    newConversationButton(nullptr),
+    deleteConversationButton(nullptr)
 {
     ui->setupUi(this);
     setupUI();
@@ -104,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent)
     welcomeTypingTimer->setInterval(80);
     connect(welcomeTypingTimer, &QTimer::timeout, this, &MainWindow::onWelcomeTypingTimeout);
 
-    QJsonDocument doc = loadIntents("D:/LGSF/back-end/json/responses.json");
+    QJsonDocument doc = loadIntents("D:/LGSF/lgsf-project/back-end/json/responses.json");
     if (!doc.isNull())
         intentList = parseIntents(doc.array());
 
@@ -309,7 +309,7 @@ void MainWindow::setupChatArea()
     connect(menuButton, &QPushButton::clicked, this, &MainWindow::toggleSidebar);
     headerLayout->addWidget(menuButton);
 
-    headerLabel = new QLabel("ई");
+    headerLabel = new QLabel("ई-BADAPATRA");
     headerLabel->setStyleSheet(R"(
         QLabel {
             font-family: 'Segoe UI', sans-serif;
@@ -342,8 +342,8 @@ void MainWindow::setupChatArea()
         }
     )");
 
-    ui->chatScrollArea = new QScrollArea();
-    ui->chatScrollArea->setStyleSheet(R"(
+    chatScrollArea = new QScrollArea();
+    chatScrollArea->setStyleSheet(R"(
         QScrollArea {
             border: none;
             background-color: #1a1a1a;
@@ -363,21 +363,21 @@ void MainWindow::setupChatArea()
     )");
 
     QWidget* scrollWidget = new QWidget();
-    ui->chatLayout = new QVBoxLayout(scrollWidget);
-    ui->chatLayout->setAlignment(Qt::AlignTop);
-    ui->chatLayout->setSpacing(15);
-    ui->chatLayout->setContentsMargins(20, 20, 20, 20);
+    chatLayout = new QVBoxLayout(scrollWidget);
+    chatLayout->setAlignment(Qt::AlignTop);
+    chatLayout->setSpacing(15);
+    chatLayout->setContentsMargins(20, 20, 20, 20);
 
-    ui->chatLayout->addStretch();
-    ui->chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
-    ui->chatLayout->addStretch();
+    chatLayout->addStretch();
+    chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
+    chatLayout->addStretch();
 
-    ui->chatScrollArea->setWidget(scrollWidget);
-    ui->chatScrollArea->setWidgetResizable(true);
-    ui->chatScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    ui->chatScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    chatScrollArea->setWidget(scrollWidget);
+    chatScrollArea->setWidgetResizable(true);
+    chatScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    chatScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    chatContentLayout->addWidget(ui->chatScrollArea);
+    chatContentLayout->addWidget(chatScrollArea);
 
     QFrame *inputFrame = new QFrame();
     inputFrame->setFixedHeight(80);
@@ -717,8 +717,8 @@ void MainWindow::saveConversationToJson(const QString &conversationId)
 
     QJsonArray newMessagesArray;
 
-    for (int i = 0; i < ui->chatLayout->count(); ++i) {
-        QLayoutItem* item = ui->chatLayout->itemAt(i);
+    for (int i = 0; i < chatLayout->count(); ++i) {
+        QLayoutItem* item = chatLayout->itemAt(i);
         if (!item || !item->widget()) continue;
 
         QWidget* wrapper = item->widget();
@@ -795,8 +795,8 @@ void MainWindow::loadConversationFromJson(const QString &conversationId)
     }
 
     QTimer::singleShot(100, [this]() {
-        ui->chatScrollArea->verticalScrollBar()->setValue(
-            ui->chatScrollArea->verticalScrollBar()->maximum()
+        chatScrollArea->verticalScrollBar()->setValue(
+            chatScrollArea->verticalScrollBar()->maximum()
             );
     });
 
@@ -971,14 +971,14 @@ void MainWindow::clearChatDisplay()
     typingLabel = nullptr;
 
     welcomeLabel->show();
-    ui->chatLayout->addStretch();
-    ui->chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
-    ui->chatLayout->addStretch();
+    chatLayout->addStretch();
+    chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
+    chatLayout->addStretch();
 
     QTimer::singleShot(300, this, &MainWindow::startWelcomeAnimation);
 
     QTimer::singleShot(50, [this]() {
-        ui->chatScrollArea->verticalScrollBar()->setValue(0);
+        chatScrollArea->verticalScrollBar()->setValue(0);
     });
 }
 
@@ -1028,7 +1028,7 @@ void MainWindow::addUserMessageFromHistory(const QString &text)
     wrapper->setLayout(hLayout);
     wrapper->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    ui->chatLayout->addWidget(wrapper);
+    chatLayout->addWidget(wrapper);
 }
 
 void MainWindow::addBotMessageFromHistory(const QString &text)
@@ -1066,7 +1066,7 @@ void MainWindow::addBotMessageFromHistory(const QString &text)
     wrapper->setLayout(hLayout);
     wrapper->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    ui->chatLayout->addWidget(wrapper);
+    chatLayout->addWidget(wrapper);
 }
 
 void MainWindow::toggleSidebar()
@@ -1090,15 +1090,15 @@ void MainWindow::updateWelcomeLabelVisibility()
             welcomeTypingTimer->stop();
         }
 
-        ui->chatLayout->removeWidget(welcomeLabel);
+        chatLayout->removeWidget(welcomeLabel);
         welcomeLabel->hide();
 
         QLayoutItem* item;
-        while ((item = ui->chatLayout->takeAt(0))) {
+        while ((item = chatLayout->takeAt(0))) {
             delete item;
         }
 
-        ui->chatLayout->setAlignment(Qt::AlignTop);
+        chatLayout->setAlignment(Qt::AlignTop);
     }
 }
 
@@ -1370,9 +1370,9 @@ void MainWindow::startTypingAnimation(const QString &text)
     wrapper->setLayout(hLayout);
     wrapper->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    ui->chatLayout->addWidget(wrapper);
+    chatLayout->addWidget(wrapper);
     QCoreApplication::processEvents();
-    ui->chatScrollArea->verticalScrollBar()->setValue(ui->chatScrollArea->verticalScrollBar()->maximum());
+    chatScrollArea->verticalScrollBar()->setValue(chatScrollArea->verticalScrollBar()->maximum());
     typingTimer->start();
 }
 
@@ -1418,7 +1418,7 @@ void MainWindow::onTypingTimeout()
         typedText += pendingText[currentCharIndex++];
         if (typingLabel) {
             typingLabel->setText(typedText);
-            ui->chatScrollArea->verticalScrollBar()->setValue(ui->chatScrollArea->verticalScrollBar()->maximum());
+            chatScrollArea->verticalScrollBar()->setValue(chatScrollArea->verticalScrollBar()->maximum());
         }
     }
     else
@@ -1528,6 +1528,7 @@ QString MainWindow::generateNumberedServiceList(const QString &keyword, const QS
 
 QString MainWindow::handleNumberSelection(int number, const QString &userInput)
 {
+    Q_UNUSED(userInput);
     if (number < 1 || number > currentOptions.size()) {
         return QString("Please select a number between 1 and %1, or ask me a new question.").arg(currentOptions.size());
     }
@@ -1632,6 +1633,7 @@ QString MainWindow::fetchServiceData(const QString &userInput, QString responseT
 
 QString MainWindow::formatServiceResponse(QSqlQuery &query, QString responseTemplate)
 {
+    Q_UNUSED(responseTemplate);
     QString service_name = query.value("service_name").toString();
     QString office_name = query.value("office_name").toString();
     QString ministry_name = query.value("ministry_name").toString();
@@ -1744,11 +1746,11 @@ void MainWindow::addUserMessage(const QString &text)
 
     messageWidgets.append(wrapper);
 
-    ui->chatLayout->addWidget(wrapper);
+    chatLayout->addWidget(wrapper);
 
     QTimer::singleShot(50, [this]() {
-        ui->chatScrollArea->verticalScrollBar()->setValue(
-            ui->chatScrollArea->verticalScrollBar()->maximum()
+        chatScrollArea->verticalScrollBar()->setValue(
+            chatScrollArea->verticalScrollBar()->maximum()
             );
     });
 }
@@ -2087,24 +2089,25 @@ void MainWindow::clearChat()
     currentCharIndex = 0;
 
     welcomeLabel->show();
-    ui->chatLayout->addStretch();
-    ui->chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
-    ui->chatLayout->addStretch();
+    chatLayout->addStretch();
+    chatLayout->addWidget(welcomeLabel, 0, Qt::AlignCenter);
+    chatLayout->addStretch();
 
     QTimer::singleShot(300, this, &MainWindow::startWelcomeAnimation);
 
     QTimer::singleShot(50, [this]() {
-        ui->chatScrollArea->verticalScrollBar()->setValue(0);
+        chatScrollArea->verticalScrollBar()->setValue(0);
     });
 }
+
 void MainWindow::clearChatLayoutCompletely()
 {
     if (welcomeLabel->parent()) {
-        ui->chatLayout->removeWidget(welcomeLabel);
+        chatLayout->removeWidget(welcomeLabel);
     }
 
     QLayoutItem* item;
-    while ((item = ui->chatLayout->takeAt(0))) {
+    while ((item = chatLayout->takeAt(0))) {
         if (item->widget()) {
             item->widget()->setParent(nullptr);
             item->widget()->deleteLater();
