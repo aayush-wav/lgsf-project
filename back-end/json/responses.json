@@ -27,7 +27,6 @@
 			"sanchai",
 			"hehe",
 			"k cha soltii",
-			"wagwan",
 			"long time man",
 			"cp dinchas",
 			"start",
@@ -36,6 +35,15 @@
 			"नमस्ते"
 		],
 		"response": "Namaste! I'm ई-BADAPATRA, your friendly government services assistant!\n\nI'm here to help you with:\n• Citizenship & National ID services\n• Passport & Visa information\n• Certificates (Birth, Death, Marriage)\n• Business & Land services\n• Trekking permits\n• Labor services\n• Office hours & locations\n\nWhat can I help you with today? Try asking \"what day is today?\" or about any government service!"
+	},
+	{
+		"intent": "happybros"
+		"patterns": [
+			"wagwan",
+			"soltii",
+			"cp na de hai bhai"
+		],
+		"response": "k chaaa broo quino hannu parni sangai"
 	},
 	{
 		"intent": "farewell",
